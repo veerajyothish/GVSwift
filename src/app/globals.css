@@ -7,31 +7,31 @@
 
 :root {
   /* ── Color Palette ──────────────────────────────────────────────────────── */
-  --color-primary: #0B0B0C;        /* near-black, not pure #000 — softer */
-  --color-primary-light: #1F1F22;
+  --color-primary: #FAF8F3;        /* light off-white text/elements */
+  --color-primary-light: #FAF8F3;
   --color-accent: #D4A943;         /* gold */
   --color-accent-dark: #B8902F;    /* gold, hover/pressed state */
   --color-accent-text: #1F1500;    /* text ON gold backgrounds — AA compliant */
 
   /* Surfaces */
-  --color-bg: #FAF8F3;             /* warm off-white page background */
-  --color-surface: #FFFFFF;        /* cards, form containers */
-  --color-border: #E4E0D6;
+  --color-bg: #0B0B0C;             /* near-black page background */
+  --color-surface: #1F1F22;        /* dark card and input surface */
+  --color-border: #2D2D30;         /* subtle dark border */
 
   /* Text */
-  --color-text-primary: #0B0B0C;
-  --color-text-secondary: #5C5C58;
+  --color-text-primary: #FAF8F3;   /* light text */
+  --color-text-secondary: #A0A09B; /* muted text */
   --color-text-on-dark: #FAF8F3;
 
   /* Semantic status colors */
-  --color-success: #1F6E4A;
-  --color-success-bg: #EAF3DE;
-  --color-warning: #854F0B;
-  --color-warning-bg: #FAEEDA;
-  --color-error: #A32D2D;
-  --color-error-bg: #FCEBEB;
-  --color-info: #185FA5;
-  --color-info-bg: #E6F1FB;
+  --color-success: #2ec17e;
+  --color-success-bg: rgba(46, 193, 126, 0.15);
+  --color-warning: #d49843;
+  --color-warning-bg: rgba(212, 152, 67, 0.15);
+  --color-error: #ff5c5c;
+  --color-error-bg: rgba(255, 92, 92, 0.15);
+  --color-info: #5ca6ff;
+  --color-info-bg: rgba(92, 166, 255, 0.15);
 
   /* ── Spacing Scale (4px base) ───────────────────────────────────────────── */
   --space-1: 4px;
@@ -185,7 +185,7 @@ button, input, select, textarea {
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--color-primary);
-  color: var(--color-text-on-dark);
+  color: #0B0B0C;
 }
 
 .btn-danger {
@@ -302,7 +302,7 @@ textarea.input-field {
 
 select.input-field {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235c5c58' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23FAF8F3' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   background-size: 16px;
