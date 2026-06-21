@@ -53,7 +53,11 @@ export async function getCart(userId: string) {
     include: {
       items: {
         include: {
-          product: true,
+          product: {
+            include: {
+              images: true,
+            },
+          },
           variant: true,
         },
         orderBy: {
@@ -86,7 +90,11 @@ export async function getCartById(userId: string, cartId: string) {
     include: {
       items: {
         include: {
-          product: true,
+          product: {
+            include: {
+              images: true,
+            },
+          },
           variant: true,
         },
         orderBy: {

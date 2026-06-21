@@ -29,6 +29,9 @@ export function Navbar() {
           <Link href="/products" className="site-navbar-link">
             Shop
           </Link>
+          <Link href="/cart" className="site-navbar-link">
+            Cart
+          </Link>
         </div>
       </div>
     </nav>
