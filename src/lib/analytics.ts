@@ -16,7 +16,6 @@
  */
 
 declare global {
-  // eslint-disable-next-line no-var
   var gtag: (
     command: "config" | "event" | "consent",
     targetOrAction: string,

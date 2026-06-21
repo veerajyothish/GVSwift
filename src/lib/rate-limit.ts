@@ -41,11 +41,13 @@ export interface RateLimitResult {
  * be built without the rate limiting fully wired up.
  */
 export async function checkRateLimit(
-  _identifier: string,
-  _config: RateLimitConfig
+  identifier: string,
+  config: RateLimitConfig
 ): Promise<RateLimitResult> {
   // TODO: TICKET-901 — replace with @upstash/ratelimit sliding window check
   // using UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN from env.
+  void identifier;
+  void config;
   return {
     success: true,
     remaining: 999,

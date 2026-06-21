@@ -6,7 +6,7 @@
  * Response: 200 { message: string } | 500 { error, code }
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { logoutUser } from "@/features/auth/service";
 import { toSafeError } from "@/lib/errors";
 
