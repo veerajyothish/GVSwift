@@ -1,0 +1,27 @@
+/*
+ * globals.css — GVSwift base styles
+ * The full Stitch CSS design system (custom properties, typography scale,
+ * component classes) is implemented in TICKET-004. This file is the entry
+ * point; TICKET-004 will expand it with the Black & Gold palette tokens,
+ * Google Fonts import, and base component classes.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
