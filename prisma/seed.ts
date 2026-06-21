@@ -100,6 +100,65 @@ async function main() {
   }
 
   console.log(`✅ Seeded ${serviceablePincodes.length} serviceable pincodes`);
+
+  // ── 3. Sample Categories and Products ─────────────────────────────────
+  const apparelCategory = await prisma.category.upsert({
+    where: { slug: "apparel" },
+    update: {},
+    create: {
+      name: "Apparel",
+      slug: "apparel",
+    },
+  });
+
+  const footwearCategory = await prisma.category.upsert({
+    where: { slug: "footwear" },
+    update: {},
+    create: {
+      name: "Footwear",
+      slug: "footwear",
+    },
+  });
+
+  console.log("✅ Seeded categories");
+
+  // Premium Jacket Product
+  const jacketProduct = await prisma.product.upsert({
+    where: { slug: "stitch-gold-trimmed-premium-jacket" },
+    update: {},
+    create: {
+      name: "Stitch Gold-Trimmed Premium Jacket",
+      slug: "stitch-gold-trimmed-premium-jacket",
+      description: "A premium, stylish black jacket with subtle gold zipper and stitching details. Part of the exclusive Stitch Launch collection.",
+      basePricePaise: 499900, // ₹4,999.00
+      isActive: true,
+      categoryId: apparelCategory.id,
+      variants: {
+        createMany: {
+          data: [
+            { sku: "STITCH-JKT-BLK-S", stock: 15, priceDeltaPaise: 0 },
+            { sku: "STITCH-JKT-BLK-M", stock: 20, priceDeltaPaise: 0 },
+            { sku: "STITCH-JKT-BLK-L", stock: 10, priceDeltaPaise: 0 },
+            { sku: "STITCH-JKT-BLK-XL", stock: 5, priceDeltaPaise: 50000 }, // XL is ₹5,499.00 (+₹500.00 delta)
+          ],
+        },
+      },
+      images: {
+        createMany: {
+          data: [
+            {
+              url: "/fashion_product_mockup.png",
+              altText: "Front view of Stitch Gold-Trimmed Premium Jacket",
+              isPrimary: true,
+              sortOrder: 0,
+            },
+          ],
+        },
+      },
+    },
+  });
+
+  console.log(`✅ Seeded product: ${jacketProduct.name}`);
   console.log("🌱 Seed complete.");
 }
 
