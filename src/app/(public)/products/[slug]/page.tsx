@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/features/catalog/service";
 import { ProductDetailClient } from "@/components/product/ProductDetailClient";
+import { Navbar } from "@/components/ui/Navbar";
 
 interface ProductDetailPageProps {
   params: Promise<{
@@ -23,5 +24,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     notFound();
   }
 
-  return <ProductDetailClient product={product} />;
+  return (
+    <>
+      <Navbar />
+      <ProductDetailClient product={product} />
+    </>
+  );
 }

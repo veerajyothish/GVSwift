@@ -2,8 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getProducts, getCategories } from "@/features/catalog/service";
+import { searchProducts } from "@/features/catalog/search";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Navbar } from "@/components/ui/Navbar";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -20,15 +22,24 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const currentSearch = params.search ?? "";
 
   // Fetch data in parallel
+  // When a search query is present, delegate to the search abstraction
+  // (TICKET-105: search logic lives entirely behind features/catalog/search.ts)
   const [categories, productsResult] = await Promise.all([
     getCategories(),
-    getProducts({
-      page: currentPage.toString(),
-      categoryId: currentCategoryId || undefined,
-      search: currentSearch || undefined,
-      limit: "12", // 12 items per page (fits 2, 3, or 4 column grids nicely)
-    }),
+    currentSearch
+      ? searchProducts({
+          query: currentSearch,
+          page: currentPage,
+          limit: 12,
+          categoryId: currentCategoryId || undefined,
+        })
+      : getProducts({
+          page: currentPage.toString(),
+          categoryId: currentCategoryId || undefined,
+          limit: "12",
+        }),
   ]);
+
 
   const { products, totalPages } = productsResult;
 
@@ -59,7 +70,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
-      {/* ── Navbar Spacer / Header ── */}
+      {/* ── Navbar with Search ── */}
+      <Navbar />
+
+      {/* ── Page Header ── */}
       <header
         style={{
           borderBottom: "1px solid var(--color-border)",
