@@ -32,6 +32,9 @@ export function Navbar() {
           <Link href="/cart" className="site-navbar-link">
             Cart
           </Link>
+          <Link href="/account/addresses" className="site-navbar-link">
+            Addresses
+          </Link>
         </div>
       </div>
     </nav>
