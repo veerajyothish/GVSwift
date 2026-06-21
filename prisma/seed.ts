@@ -41,17 +41,22 @@ async function main() {
     },
     {
       key: "max_delivery_attempts",
-      value: JSON.stringify(3), // auto-RTO after 3 failed delivery attempts
+      value: JSON.stringify(2), // Operations §2: balanced — 2 attempts before auto-RTO
     },
     {
-      key: "auto_flag_failed_delivery_threshold",
-      value: JSON.stringify(3), // flag address after 3 failures in 90 days
+      key: "failed_delivery_watchlist_threshold",
+      value: JSON.stringify(1), // Operations §2: 1 failure in 90 days → MEDIUM/WATCHLIST
     },
     {
-      key: "auto_flag_cancellation_threshold",
-      value: JSON.stringify(3), // flag user after 3 post-confirmation cancellations
+      key: "failed_delivery_high_risk_threshold",
+      value: JSON.stringify(2), // Operations §2: 2 failures in 90 days → HIGH/HIGH_RISK
+    },
+    {
+      key: "cancellation_risk_threshold",
+      value: JSON.stringify(3), // 3 post-CONFIRMED cancellations in 30 days
     },
   ];
+
 
   for (const setting of settings) {
     await prisma.setting.upsert({
