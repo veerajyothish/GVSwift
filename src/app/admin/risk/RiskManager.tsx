@@ -1,0 +1,391 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/Toast";
+import { Button } from "@/components/ui/Button";
+import type { PaginatedRiskFlagsResult, RiskFlag } from "@/features/risk/types";
+
+interface RiskManagerProps {
+  initialData: PaginatedRiskFlagsResult;
+}
+
+export default function RiskManager({ initialData }: RiskManagerProps) {
+  const { toast } = useToast();
+  
+  // State for listing & search filters
+  const [flags, setFlags] = useState<RiskFlag[]>(initialData.flags);
+  const [totalCount, setTotalCount] = useState(initialData.totalCount);
+  const [page, setPage] = useState(initialData.page);
+  const [totalPages, setTotalPages] = useState(initialData.totalPages);
+  const [limit] = useState(initialData.limit);
+  
+  const [filterType, setFilterType] = useState<string>("");
+  const [filterLevel, setFilterLevel] = useState<string>("");
+  const [searchVal, setSearchVal] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+
+  // State for creating a new flag
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newType, setNewType] = useState<string>("PHONE");
+  const [newValue, setNewValue] = useState<string>("");
+  const [newLevel, setNewLevel] = useState<string>("LOW");
+  const [newReason, setNewReason] = useState<string>("");
+  const [createLoading, setCreateLoading] = useState(false);
+
+  // Fetch flags whenever filters or page changes
+  const fetchFlags = async (targetPage: number) => {
+    setLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: targetPage.toString(),
+        limit: limit.toString(),
+      });
+      if (filterType) queryParams.set("entityType", filterType);
+      if (filterLevel) queryParams.set("riskLevel", filterLevel);
+      if (searchVal) queryParams.set("entityValue", searchVal);
+
+      const res = await fetch(`/api/v1/admin/risk?${queryParams.toString()}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch risk flags");
+      }
+      const data: PaginatedRiskFlagsResult = await res.json();
+      setFlags(data.flags);
+      setTotalCount(data.totalCount);
+      setPage(data.page);
+      setTotalPages(data.totalPages);
+    } catch (err: any) {
+      toast.error(err.message || "Could not retrieve risk flags", "Error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Trigger search/filter submit
+  const handleFilterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchFlags(1);
+  };
+
+  // Reset filters
+  const handleResetFilters = () => {
+    setFilterType("");
+    setFilterLevel("");
+    setSearchVal("");
+    // We defer the fetch to the useEffect that will watch changes, or call it directly:
+    setTimeout(() => fetchFlags(1), 0);
+  };
+
+  // Create a new risk flag
+  const handleCreateFlag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newValue.trim()) {
+      toast.error("Entity Value is required", "Validation Error");
+      return;
+    }
+    if (!newReason.trim()) {
+      toast.error("A reason is required to document this manual risk flag change", "Validation Error");
+      return;
+    }
+
+    setCreateLoading(true);
+    try {
+      const res = await fetch("/api/v1/admin/risk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entityType: newType,
+          entityValue: newValue.trim(),
+          riskLevel: newLevel,
+          reason: newReason.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to create risk flag");
+      }
+
+      toast.success(`Risk flag created for ${newType} "${newValue}"`, "Flag Created");
+      
+      // Reset form
+      setNewValue("");
+      setNewReason("");
+      setShowCreateForm(false);
+      
+      // Refresh list
+      fetchFlags(1);
+    } catch (err: any) {
+      toast.error(err.message || "Could not create risk flag", "Save Failed");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  // Delete a risk flag
+  const handleDeleteFlag = async (id: string, type: string, val: string) => {
+    const reason = window.prompt(`Are you sure you want to delete the risk flag for ${type} "${val}"?\nEnter reason for deletion:`);
+    
+    if (reason === null) return; // User cancelled
+    
+    if (reason.trim() === "") {
+      toast.error("A reason is required to delete a risk flag", "Action Cancelled");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v1/admin/risk/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim() }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete risk flag");
+      }
+
+      toast.success("Risk flag removed successfully", "Flag Deleted");
+      // Refresh current page
+      fetchFlags(page);
+    } catch (err: any) {
+      toast.error(err.message || "Could not delete risk flag", "Delete Failed");
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Create Flag Trigger & Form */}
+      <div>
+        {!showCreateForm ? (
+          <Button onClick={() => setShowCreateForm(true)} variant="primary">
+            + Create Manual Risk Flag
+          </Button>
+        ) : (
+          <form onSubmit={handleCreateFlag} className="card p-5" style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "600px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h2 className="text-lg font-semibold" style={{ color: "var(--color-accent)" }}>Create Risk Flag</h2>
+              <button
+                type="button"
+                onClick={() => setShowCreateForm(false)}
+                style={{ background: "transparent", border: "none", color: "var(--color-text-secondary)", cursor: "pointer" }}
+              >
+                Cancel
+              </button>
+            </div>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="input-group">
+                <label className="input-label">Entity Type</label>
+                <select className="input-field" value={newType} onChange={(e) => setNewType(e.target.value)}>
+                  <option value="PHONE">PHONE</option>
+                  <option value="ADDRESS">ADDRESS</option>
+                  <option value="PINCODE">PINCODE</option>
+                  <option value="USER">USER</option>
+                </select>
+              </div>
+
+              <div className="input-group">
+                <label className="input-label">Risk Level</label>
+                <select className="input-field" value={newLevel} onChange={(e) => setNewLevel(e.target.value)}>
+                  <option value="LOW">LOW</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="HIGH">HIGH</option>
+                  <option value="BLOCKED">BLOCKED</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Entity Value</label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder={
+                  newType === "PHONE" ? "+919876543210" :
+                  newType === "PINCODE" ? "530001" :
+                  newType === "USER" ? "user-uuid" : "Address ID / Unique string"
+                }
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Reason for Flagging</label>
+              <textarea
+                className="input-field"
+                placeholder="Required. Provide justification for this risk override..."
+                value={newReason}
+                onChange={(e) => setNewReason(e.target.value)}
+                required
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "8px" }}>
+              <Button type="button" variant="secondary" onClick={() => setShowCreateForm(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" loading={createLoading}>
+                Save Flag
+              </Button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      {/* Filter / Search Form */}
+      <form onSubmit={handleFilterSubmit} className="card p-4" style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "end" }}>
+        <div className="input-group" style={{ flex: "1 1 200px", margin: 0 }}>
+          <label className="input-label text-xs">Search Value</label>
+          <input
+            type="text"
+            className="input-field"
+            style={{ minHeight: "38px", padding: "8px 12px" }}
+            placeholder="Search phone, pincode, user..."
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+          />
+        </div>
+
+        <div className="input-group" style={{ flex: "1 1 150px", margin: 0 }}>
+          <label className="input-label text-xs">Entity Type</label>
+          <select
+            className="input-field"
+            style={{ minHeight: "38px", padding: "8px 12px" }}
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+          >
+            <option value="">All Types</option>
+            <option value="PHONE">PHONE</option>
+            <option value="ADDRESS">ADDRESS</option>
+            <option value="PINCODE">PINCODE</option>
+            <option value="USER">USER</option>
+          </select>
+        </div>
+
+        <div className="input-group" style={{ flex: "1 1 150px", margin: 0 }}>
+          <label className="input-label text-xs">Risk Level</label>
+          <select
+            className="input-field"
+            style={{ minHeight: "38px", padding: "8px 12px" }}
+            value={filterLevel}
+            onChange={(e) => setFilterLevel(e.target.value)}
+          >
+            <option value="">All Levels</option>
+            <option value="LOW">LOW</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HIGH">HIGH</option>
+            <option value="BLOCKED">BLOCKED</option>
+          </select>
+        </div>
+
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+          <Button type="button" variant="secondary" onClick={handleResetFilters} style={{ minHeight: "38px", padding: "8px 16px" }}>
+            Reset
+          </Button>
+          <Button type="submit" variant="primary" loading={loading} style={{ minHeight: "38px", padding: "8px 16px" }}>
+            Filter
+          </Button>
+        </div>
+      </form>
+
+      {/* Flag List */}
+      <div className="card" style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
+          <thead>
+            <tr style={{ borderBottom: "1px solid var(--color-border)", backgroundColor: "rgba(255, 255, 255, 0.02)" }}>
+              <th style={{ padding: "16px" }}>Entity Type</th>
+              <th style={{ padding: "16px" }}>Entity Value</th>
+              <th style={{ padding: "16px" }}>Risk Level</th>
+              <th style={{ padding: "16px" }}>Date Added</th>
+              <th style={{ padding: "16px", width: "100px", textAlign: "center" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {flags.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ padding: "32px", textAlign: "center", color: "var(--color-text-secondary)" }}>
+                  No risk flags found.
+                </td>
+              </tr>
+            ) : (
+              flags.map((flag) => (
+                <tr key={flag.id} style={{ borderBottom: "1px solid var(--color-border)" }}>
+                  <td style={{ padding: "16px" }}>
+                    <span style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.06)",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                      fontSize: "12px",
+                      fontWeight: 500
+                    }}>
+                      {flag.entityType}
+                    </span>
+                  </td>
+                  <td style={{ padding: "16px", fontFamily: "monospace" }}>{flag.entityValue}</td>
+                  <td style={{ padding: "16px" }}>
+                    <span style={{
+                      color:
+                        flag.riskLevel === "BLOCKED" ? "var(--color-error)" :
+                        flag.riskLevel === "HIGH" ? "var(--color-warning)" :
+                        flag.riskLevel === "MEDIUM" ? "#d4b843" : "var(--color-success)",
+                      fontWeight: 600
+                    }}>
+                      {flag.riskLevel}
+                    </span>
+                  </td>
+                  <td style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
+                    {new Date(flag.createdAt).toLocaleDateString()}
+                  </td>
+                  <td style={{ padding: "16px", textAlign: "center" }}>
+                    <button
+                      onClick={() => handleDeleteFlag(flag.id, flag.entityType, flag.entityValue)}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: "var(--color-error)",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        fontWeight: 500
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
+          <span style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
+            Showing page {page} of {totalPages} ({totalCount} total flags)
+          </span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Button
+              variant="secondary"
+              disabled={page <= 1}
+              onClick={() => fetchFlags(page - 1)}
+              style={{ minHeight: "36px", padding: "4px 12px" }}
+            >
+              &larr; Prev
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={page >= totalPages}
+              onClick={() => fetchFlags(page + 1)}
+              style={{ minHeight: "36px", padding: "4px 12px" }}
+            >
+              Next &rarr;
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
