@@ -36,17 +36,35 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     return { size, color };
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) return;
     
     setIsAddingToCart(true);
-    setTimeout(() => {
-      setIsAddingToCart(false);
+    try {
+      const res = await fetch("/api/v1/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: selectedVariant.id,
+          quantity: 1,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to add item to cart");
+      }
+
       toast.success(
         `Added 1x ${product.name} (${parseVariantSku(selectedVariant.sku).size}) to your cart!`,
         "Added to Cart"
       );
-    }, 1000);
+    } catch (err: any) {
+      toast.error(err.message || "Could not add item to cart", "Error");
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const primaryImage =
