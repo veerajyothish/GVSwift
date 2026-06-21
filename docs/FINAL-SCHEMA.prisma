@@ -1,0 +1,379 @@
+// schema.prisma — GVSwift FINAL schema
+// This supersedes the conceptual table descriptions in docs/05-Database-Design.md
+// if the two ever disagree. This file is the source of truth for `prisma migrate`.
+//
+// Changes from the originally pasted schema, per confirmed decisions in Phase 4 review:
+//   1. Added Order.trackingReference (manual tracking text field)
+//   2. Added onDelete: Restrict on Order.addressId (prevents deleting addresses used in orders)
+//   3. Risk model kept as the four-tier version (RiskStatus, RiskLevel) — already correct as pasted
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
+}
+
+/// ===== ENUMS =====
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RiskStatus {
+  NORMAL
+  WATCHLIST
+  HIGH_RISK
+  BLACKLISTED
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  FAILED_DELIVERY
+  RTO
+  RETURN_REQUESTED
+  RETURNED
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum RiskEntityType {
+  PHONE
+  ADDRESS
+  PINCODE
+  USER
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  BLOCKED
+}
+
+enum PaymentMethod {
+  COD
+  PREPAID // reserved for post-MVP, not implemented
+}
+
+/// ===== MODELS =====
+
+model User {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  supabaseId String     @unique
+  email      String     @unique
+  phone      String?    @unique
+  role       Role       @default(USER)
+  riskStatus RiskStatus @default(NORMAL)
+
+  addresses  Address[]
+  carts      Cart[]
+  orders     Order[]
+  tickets    SupportTicket[]
+  auditLogs  AuditLog[]      @relation("AuditLogActor")
+  ticketMsgs TicketMessage[] @relation("TicketMessageAuthor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Address {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  fullName  String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  phone     String
+  isDefault Boolean @default(false)
+
+  // onDelete: Restrict — confirmed Phase 4 decision. A customer cannot delete
+  // an address that's referenced by a past order; the FK blocks the delete at
+  // the DB level. The UI (TICKET-203) must catch this and show a friendly
+  // message instead of surfacing the raw constraint error.
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([pincode])
+}
+
+model Category {
+  id       String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String     @unique
+  slug     String     @unique
+  parentId String?
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryToCategory")
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  slug           String  @unique
+  description    String?
+  basePricePaise Int
+  isActive       Boolean @default(true)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  variants   ProductVariant[]
+  images     ProductImage[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([slug])
+}
+
+model ProductVariant {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  sku             String @unique
+  stock           Int
+  priceDeltaPaise Int
+
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  url       String
+  altText   String? // nullable in DB; admin upload form (TICKET-104) enforces required at the form layer
+  isPrimary Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+}
+
+model Cart {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model CartItem {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+
+  quantity Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cartId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Order {
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id], onDelete: Restrict) // CONFIRMED Phase 4
+
+  status        OrderStatus   @default(PLACED)
+  paymentMethod PaymentMethod @default(COD)
+
+  subtotalPaise Int
+  shippingPaise Int @default(0)
+  codFeePaise   Int @default(0)
+  totalPaise    Int
+
+  idempotencyKey String? @unique
+
+  // CONFIRMED decision: manual tracking reference, free text, admin-entered
+  // after marking SHIPPED. No live courier API at MVP (Shiprocket is post-MVP).
+  trackingReference String?
+
+  deliveryAttempts Int @default(0)
+
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+  auditLogs     AuditLog[]
+  tickets       SupportTicket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+
+  quantity       Int
+  unitPricePaise Int // snapshot at time of order — price integrity preserved even without full snapshotting
+  lineTotalPaise Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model OrderStatusHistory {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  reason      String?
+  changedById String? // null = system-triggered (e.g. auto-cancel on out-of-stock)
+  changedBy   User?   @relation(fields: [changedById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([changedById])
+}
+
+model SupportTicket {
+  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id])
+
+  subject     String
+  description String?
+  status      TicketStatus @default(OPEN)
+
+  messages TicketMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId String
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id])
+
+  authorId String?
+  author   User?   @relation("TicketMessageAuthor", fields: [authorId], references: [id])
+
+  message    String
+  isInternal Boolean @default(false) // admin-only notes never shown to the customer
+
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([authorId])
+}
+
+model AuditLog {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId String?
+  actor   User?   @relation("AuditLogActor", fields: [actorId], references: [id])
+
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id])
+
+  action  String // e.g. "ORDER_STATUS_CHANGE", "PRODUCT_UPDATED", "RISK_FLAG_SET"
+  details String? // JSON-encoded string; parse at the application boundary
+
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([orderId])
+}
+
+model RiskFlag {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType  RiskEntityType
+  entityValue String // phone, address identifier, pincode, or userId depending on entityType
+  riskLevel   RiskLevel
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([entityType, entityValue], name: "risk_entity_idx")
+}
+
+model Setting {
+  key       String   @id
+  value     String // JSON-encoded string for structured values; parse at the application boundary
+  updatedAt DateTime @updatedAt
+}
