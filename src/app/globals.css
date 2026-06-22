@@ -1122,3 +1122,108 @@ select.input-field {
     padding: 12px 16px;
   }
 }
+
+/* ==========================================================================
+   ── Site Footer (Stitch System) ──
+   ========================================================================== */
+
+.site-footer {
+  background-color: rgba(11, 11, 12, 0.98);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: 48px 20px 24px 20px;
+  width: 100%;
+  font-family: var(--font-body);
+}
+
+.site-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-header-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 16px;
+  font-family: var(--font-heading);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.footer-link {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: var(--color-accent);
+  transform: translateX(4px);
+}
+
+/* Accordion layout on mobile */
+@media (max-width: 767px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .footer-col {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 12px;
+  }
+  .footer-chevron {
+    display: inline-block !important;
+    color: var(--color-text-secondary);
+    font-size: 10px;
+  }
+  .footer-content {
+    display: none;
+  }
+  .footer-content.open {
+    display: flex;
+  }
+}
+
+/* Grid on desktop */
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .footer-chevron {
+    display: none !important;
+  }
+  .footer-header-btn {
+    pointer-events: none;
+    cursor: default !important;
+  }
+  .footer-content {
+    display: flex !important;
+  }
+}
+
