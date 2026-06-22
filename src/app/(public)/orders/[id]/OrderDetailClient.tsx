@@ -3,13 +3,14 @@
 /**
  * OrderDetailClient — Client component for order detail rendering.
  *
- * TICKET-302: Renders order items, status timeline, tracking reference,
- * and cancel/return action buttons. Cancel and return flows are stubbed
- * (will be wired in TICKET-303 and TICKET-304).
+ * TICKET-302: Renders order items, status timeline, tracking reference.
+ * TICKET-303: Real cancel flow with confirmation modal, reason input, and API call.
+ * TICKET-304: Return button still stubbed (Coming Soon).
  */
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 
@@ -116,10 +117,111 @@ export default function OrderDetailClient({
   canReturn,
   returnWindowDays,
 }: OrderDetailClientProps) {
+  const router = useRouter();
   const statusCfg = STATUS_CONFIG[order.status] ?? {
     label: order.status,
     colorVar: "var(--color-text-secondary)",
   };
+
+  // Cancel flow state
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState(false);
+
+  async function handleCancelOrder() {
+    const trimmed = cancelReason.trim();
+    if (!trimmed) {
+      setCancelError("Please provide a reason for cancellation.");
+      return;
+    }
+    if (trimmed.length > 500) {
+      setCancelError("Reason must be under 500 characters.");
+      return;
+    }
+
+    setCancelError(null);
+    setCancelLoading(true);
+
+    try {
+      const res = await fetch(`/api/v1/orders/${order.id}/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: trimmed }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCancelError(data.error || "Failed to cancel order. Please try again.");
+        setCancelLoading(false);
+        return;
+      }
+
+      setCancelSuccess(true);
+      setCancelLoading(false);
+
+      // Refresh the page to show updated status after a brief moment
+      setTimeout(() => {
+        router.refresh();
+        setShowCancelModal(false);
+      }, 1500);
+    } catch {
+      setCancelError("Network error. Please check your connection and try again.");
+      setCancelLoading(false);
+    }
+  }
+
+  // Return flow state
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnReason, setReturnReason] = useState("");
+  const [returnError, setReturnError] = useState<string | null>(null);
+  const [returnLoading, setReturnLoading] = useState(false);
+  const [returnSuccess, setReturnSuccess] = useState(false);
+
+  async function handleReturnOrder() {
+    const trimmed = returnReason.trim();
+    if (!trimmed) {
+      setReturnError("Please provide a reason for the return request.");
+      return;
+    }
+    if (trimmed.length > 500) {
+      setReturnError("Reason must be under 500 characters.");
+      return;
+    }
+
+    setReturnError(null);
+    setReturnLoading(true);
+
+    try {
+      const res = await fetch(`/api/v1/orders/${order.id}/return`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: trimmed }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setReturnError(data.error || "Failed to request return. Please try again.");
+        setReturnLoading(false);
+        return;
+      }
+
+      setReturnSuccess(true);
+      setReturnLoading(false);
+
+      // Refresh the page to show updated status after a brief moment
+      setTimeout(() => {
+        router.refresh();
+        setShowReturnModal(false);
+      }, 1500);
+    } catch {
+      setReturnError("Network error. Please check your connection and try again.");
+      setReturnLoading(false);
+    }
+  }
 
   return (
     <div className="order-detail">
@@ -411,29 +513,272 @@ export default function OrderDetailClient({
               {canCancel && (
                 <button
                   className="btn btn-danger w-full"
-                  disabled
-                  title="Cancellation flow coming soon (TICKET-303)"
+                  onClick={() => setShowCancelModal(true)}
                   id="cancel-order-btn"
                 >
                   Cancel Order
-                  <span className="order-coming-soon-tag">Coming Soon</span>
                 </button>
               )}
               {canReturn && (
                 <button
                   className="btn btn-secondary w-full"
-                  disabled
-                  title={`Return flow coming soon (TICKET-304). Return window: ${returnWindowDays} days from delivery.`}
+                  onClick={() => setShowReturnModal(true)}
                   id="return-order-btn"
                 >
                   Request Return
-                  <span className="order-coming-soon-tag">Coming Soon</span>
                 </button>
               )}
             </section>
           )}
         </div>
       </div>
+
+      {/* ── Cancel Confirmation Modal ───────────────────────────────────── */}
+      {showCancelModal && (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !cancelLoading) {
+              setShowCancelModal(false);
+              setCancelError(null);
+              setCancelReason("");
+              setCancelSuccess(false);
+            }
+          }}
+        >
+          <div className="modal-container" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+            <div className="modal-header">
+              <h3 id="cancel-modal-title" className="modal-title">
+                Cancel Order
+              </h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => {
+                  if (!cancelLoading) {
+                    setShowCancelModal(false);
+                    setCancelError(null);
+                    setCancelReason("");
+                    setCancelSuccess(false);
+                  }
+                }}
+                aria-label="Close"
+                disabled={cancelLoading}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {cancelSuccess ? (
+                <div className="alert-banner alert-success" style={{ marginBottom: 0 }}>
+                  <span>✓</span>
+                  <div>
+                    <strong>Order cancelled successfully.</strong>
+                    <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                      Stock has been restored. Redirecting...
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="alert-banner alert-warning" style={{ marginBottom: "20px" }}>
+                    <span>⚠</span>
+                    <div>
+                      <strong>Are you sure you want to cancel this order?</strong>
+                      <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                        This action cannot be undone. The reserved stock will be released.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="cancel-reason" className="input-label input-required">
+                      Reason for cancellation
+                    </label>
+                    <textarea
+                      id="cancel-reason"
+                      className={`input-field ${cancelError ? "input-error" : ""}`}
+                      placeholder="Please tell us why you're cancelling this order..."
+                      value={cancelReason}
+                      onChange={(e) => {
+                        setCancelReason(e.target.value);
+                        if (cancelError) setCancelError(null);
+                      }}
+                      rows={3}
+                      maxLength={500}
+                      disabled={cancelLoading}
+                      autoFocus
+                    />
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      {cancelError ? (
+                        <span className="input-error-msg">⚠ {cancelError}</span>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+                        {cancelReason.length}/500
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {!cancelSuccess && (
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setCancelError(null);
+                    setCancelReason("");
+                  }}
+                  disabled={cancelLoading}
+                >
+                  Keep Order
+                </button>
+                <button
+                  className={`btn btn-danger ${cancelLoading ? "btn-loading" : ""}`}
+                  onClick={handleCancelOrder}
+                  disabled={cancelLoading || !cancelReason.trim()}
+                  id="confirm-cancel-btn"
+                >
+                  Cancel Order
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Return Confirmation Modal ───────────────────────────────────── */}
+      {showReturnModal && (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !returnLoading) {
+              setShowReturnModal(false);
+              setReturnError(null);
+              setReturnReason("");
+              setReturnSuccess(false);
+            }
+          }}
+        >
+          <div className="modal-container" role="dialog" aria-modal="true" aria-labelledby="return-modal-title">
+            <div className="modal-header">
+              <h3 id="return-modal-title" className="modal-title">
+                Request Return
+              </h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => {
+                  if (!returnLoading) {
+                    setShowReturnModal(false);
+                    setReturnError(null);
+                    setReturnReason("");
+                    setReturnSuccess(false);
+                  }
+                }}
+                aria-label="Close"
+                disabled={returnLoading}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {returnSuccess ? (
+                <div className="alert-banner alert-success" style={{ marginBottom: 0 }}>
+                  <span>✓</span>
+                  <div>
+                    <strong>Return request submitted successfully.</strong>
+                    <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                      Our support team will review your request. Redirecting...
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="alert-banner alert-warning" style={{ marginBottom: "20px" }}>
+                    <span>⚠</span>
+                    <div>
+                      <strong>Are you sure you want to request a return?</strong>
+                      <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                        Please enter a detailed reason for returning the items. Requests must be within {returnWindowDays} days of delivery.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="input-group" style={{ marginBottom: 0 }}>
+                    <label htmlFor="return-reason" className="input-label input-required">
+                      Reason for return
+                    </label>
+                    <textarea
+                      id="return-reason"
+                      className={`input-field ${returnError ? "input-error" : ""}`}
+                      placeholder="Please describe why you are requesting a return..."
+                      value={returnReason}
+                      onChange={(e) => {
+                        setReturnReason(e.target.value);
+                        if (returnError) setReturnError(null);
+                      }}
+                      rows={3}
+                      maxLength={500}
+                      disabled={returnLoading}
+                      autoFocus
+                    />
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      {returnError ? (
+                        <span className="input-error-msg">⚠ {returnError}</span>
+                      ) : (
+                        <span />
+                      )}
+                      <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+                        {returnReason.length}/500
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {!returnSuccess && (
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowReturnModal(false);
+                    setReturnError(null);
+                    setReturnReason("");
+                  }}
+                  disabled={returnLoading}
+                >
+                  Keep Items
+                </button>
+                <button
+                  className={`btn btn-secondary ${returnLoading ? "btn-loading" : ""}`}
+                  style={{
+                    backgroundColor: "var(--color-accent)",
+                    color: "var(--color-bg)",
+                    border: "none",
+                  }}
+                  onClick={handleReturnOrder}
+                  disabled={returnLoading || !returnReason.trim()}
+                  id="confirm-return-btn"
+                >
+                  Submit Request
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
