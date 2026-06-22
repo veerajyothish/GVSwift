@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 };
 
 import { ToastProvider } from "@/components/ui/Toast";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 export default function RootLayout({
   children,
@@ -39,7 +40,10 @@ export default function RootLayout({
       className={`${inter.variable} ${fraunces.variable}`}
     >
       <body className="antialiased">
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          {children}
+          <CookieConsentBanner />
+        </ToastProvider>
       </body>
     </html>
   );

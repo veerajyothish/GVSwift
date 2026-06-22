@@ -36,6 +36,7 @@ import {
   lookupUser,
 } from "@/features/risk/service";
 import { getCodLimitPaise } from "@/features/settings/service";
+import { sendOrderPlacedEmail } from "@/features/notifications/service";
 import { RiskLevel, PaymentMethod } from "@prisma/client";
 
 /* ── helpers ──────────────────────────────────────────────────────────── */
@@ -353,8 +354,17 @@ export async function createOrder(
   // ── 10. Fetch the final order with items for the response ──────────────
   const finalOrder = await prisma.order.findUniqueOrThrow({
     where: { id: orderId },
-    include: { items: true },
+    include: {
+      user: { select: { email: true } },
+      items: {
+        include: {
+          product: { select: { name: true } },
+        },
+      },
+    },
   });
+
+  sendOrderPlacedEmail(finalOrder);
 
   return {
     order: finalOrder,

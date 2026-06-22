@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { AppError } from "@/lib/errors";
 import { OrderStatus, Role, Prisma } from "@prisma/client";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { sendOrderStatusChangeEmail } from "@/features/notifications/service";
 
 /* ── Transition Configuration ────────────────────────────────────────── */
 
@@ -312,6 +313,24 @@ export async function transitionOrderStatus(
         reason,
       },
     });
+  }
+
+  if (fromStatus !== actualToStatus) {
+    const orderForEmail = await prisma.order.findUnique({
+      where: { id: result.order.id },
+      include: {
+        user: { select: { email: true } },
+        items: {
+          include: {
+            product: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    if (orderForEmail) {
+      sendOrderStatusChangeEmail(orderForEmail);
+    }
   }
 
   return result.order;

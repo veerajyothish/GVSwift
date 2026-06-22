@@ -7,6 +7,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { AppError } from "@/lib/errors";
+import { sendSupportReplyEmail } from "@/features/notifications/service";
 import { TicketStatus, SupportTicket, TicketMessage } from "@prisma/client";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -123,6 +124,13 @@ export async function addAdminReply(
   // 1. Fetch ticket to verify existence
   const ticket = await prisma.supportTicket.findUnique({
     where: { id: ticketId },
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
   });
 
   if (!ticket) {
@@ -144,6 +152,10 @@ export async function addAdminReply(
       data: { updatedAt: new Date() },
     }),
   ]);
+
+  if (!isInternal) {
+    sendSupportReplyEmail(ticket, message);
+  }
 
   return createdMessage;
 }
