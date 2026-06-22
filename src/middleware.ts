@@ -13,8 +13,30 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function middleware(request: NextRequest) {
+  const isApiV1Route = request.nextUrl.pathname.startsWith("/api/v1/");
+
+  if (isApiV1Route && process.env.NODE_ENV !== "test") {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const ip =
+      forwardedFor?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "unknown";
+    const rateLimit = await checkRateLimit(`api:${ip}`, {
+      limit: 60,
+      windowSeconds: 60,
+    });
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 }
+      );
+    }
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -65,10 +87,6 @@ export async function middleware(request: NextRequest) {
     "Referrer-Policy",
     "strict-origin-when-cross-origin"
   );
-
-  // ── 4. Rate limiting hook (TICKET-901 implements) ─────────────────────
-  // Placeholder: import { checkRateLimit } from '@/lib/rate-limit' and
-  // return a 429 response for flagged routes once TICKET-901 is complete.
 
   return response;
 }

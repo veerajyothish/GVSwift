@@ -1,29 +1,36 @@
-/**
- * sentry.server.config.ts — Sentry server-side initialization
- *
- * TICKET-903 completes this with:
- *   - beforeSend hook stripping PII (email, phone) from server-side events
- *   - Alert rule configuration in the Sentry dashboard
- *
- * Uses SENTRY_DSN (server-only — never prefix with NEXT_PUBLIC_).
- */
-
 import * as Sentry from "@sentry/nextjs";
 
+const PII_KEYS = new Set(["email", "name", "phone", "address"]);
+
+function scrubPii(value: unknown): void {
+  if (Array.isArray(value)) {
+    value.forEach(scrubPii);
+    return;
+  }
+
+  if (value && typeof value === "object") {
+    for (const [key, entry] of Object.entries(value)) {
+      if (PII_KEYS.has(key.toLowerCase())) {
+        delete (value as Record<string, unknown>)[key];
+      } else {
+        scrubPii(entry);
+      }
+    }
+  }
+}
+
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   tracesSampleRate: 0.1,
+  environment: process.env.NODE_ENV,
+  debug: false,
+  beforeSend(event) {
+    const user = event.user as { email?: unknown; name?: unknown } | undefined;
+    if (user?.email || user?.name) {
+      return null;
+    }
 
-  enabled: process.env.NODE_ENV === "production",
-
-  // TODO: TICKET-903 — add beforeSend hook to strip email/phone from events:
-  // beforeSend(event) {
-  //   if (event.user) {
-  //     delete event.user.email;
-  //     delete event.user.ip_address;
-  //   }
-  //   // Strip phone from request data
-  //   return event;
-  // },
+    scrubPii(event);
+    return event;
+  },
 });

@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 
-function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app").replace(/\/$/, "");
-}
+const BASE_URL = "https://gvswift.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -11,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin", "/account", "/api", "/checkout"],
     },
-    sitemap: `${siteUrl()}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

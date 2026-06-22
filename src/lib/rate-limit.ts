@@ -1,5 +1,5 @@
 /**
- * lib/rate-limit.ts — Upstash Redis-backed rate limiting
+ * lib/rate-limit.ts — reusable rate limiting
  *
  * Provides a reusable rateLimiter factory. The actual rate limit values for
  * each endpoint are defined in Security & Access Document §5:
@@ -11,9 +11,9 @@
  * implementation; do not apply limits directly from here — always go
  * through the middleware or a server action helper.
  *
- * Implementation note: uses a simple sliding window via Upstash REST API.
- * No @upstash/ratelimit package added yet — TICKET-901 installs it and
- * implements the full rate limiting middleware.
+ * Implementation note: uses a lightweight in-memory sliding window. This is
+ * suitable for MVP/local deployments; a shared Redis-backed implementation can
+ * replace the storage internals later without changing call sites.
  */
 
 export interface RateLimitConfig {
@@ -36,26 +36,45 @@ export interface RateLimitResult {
  * Returns { success: true } if the request should proceed.
  * Returns { success: false } if the limit has been exceeded.
  *
- * NOTE: Full implementation in TICKET-901 using @upstash/ratelimit.
- * This stub passes through all requests so that dependent tickets can
- * be built without the rate limiting fully wired up.
  */
 export async function checkRateLimit(
   identifier: string,
   config: RateLimitConfig
 ): Promise<RateLimitResult> {
-  const globalMock = global as unknown as { __mockRateLimit?: RateLimitResult };
+  const globalMock = global as unknown as {
+    __mockRateLimit?: RateLimitResult;
+    __rateLimitStore?: Map<string, number[]>;
+  };
   if (process.env.NODE_ENV === "test" && globalMock.__mockRateLimit !== undefined) {
     return globalMock.__mockRateLimit;
   }
 
-  // TODO: TICKET-901 — replace with @upstash/ratelimit sliding window check
-  // using UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN from env.
-  void identifier;
-  void config;
+  const now = Date.now();
+  const windowMs = config.windowSeconds * 1000;
+  const key = `${identifier}:${config.limit}:${config.windowSeconds}`;
+  const store = globalMock.__rateLimitStore ?? new Map<string, number[]>();
+  globalMock.__rateLimitStore = store;
+
+  const recentHits = (store.get(key) ?? []).filter(
+    (timestamp) => now - timestamp < windowMs
+  );
+  const success = recentHits.length < config.limit;
+
+  if (success) {
+    recentHits.push(now);
+  }
+
+  if (recentHits.length > 0) {
+    store.set(key, recentHits);
+  } else {
+    store.delete(key);
+  }
+
+  const oldestHit = recentHits[0] ?? now;
+
   return {
-    success: true,
-    remaining: 999,
-    resetAt: new Date(Date.now() + 60_000),
+    success,
+    remaining: Math.max(config.limit - recentHits.length, 0),
+    resetAt: new Date(oldestHit + windowMs),
   };
 }

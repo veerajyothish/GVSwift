@@ -2,6 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 
+const SITE_URL = "https://gvswift.vercel.app";
+const SITE_TITLE = "GVSwift";
+const SITE_DESCRIPTION =
+  "Shop GVSwift for fast fashion essentials with Cash on Delivery availability across India.";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
@@ -15,22 +20,18 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app"
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "GVSwift — Fast Fashion, COD Available",
+    default: SITE_TITLE,
     template: "%s | GVSwift",
   },
-  description:
-    "Shop GVSwift for fast fashion essentials with Cash on Delivery availability across India.",
+  description: SITE_DESCRIPTION,
   openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     type: "website",
+    url: SITE_URL,
     siteName: "GVSwift",
-    title: "GVSwift — Fast Fashion, COD Available",
-    description:
-      "Shop GVSwift for fast fashion essentials with Cash on Delivery availability across India.",
-    url: "/",
   },
 };
 

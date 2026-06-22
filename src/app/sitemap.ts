@@ -1,31 +1,26 @@
 import type { MetadataRoute } from "next";
 
-const staticRoutes = [
-  "",
-  "/products",
-  "/support",
-  "/privacy",
-  "/terms",
-  "/returns",
-  "/shipping",
-  "/cookies",
-  "/disclaimer",
-  "/faq",
-  "/grievance",
-];
+const BASE_URL = "https://gvswift.vercel.app";
 
-function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app").replace(/\/$/, "");
-}
+const staticRoutes = [
+  "/",
+  "/products",
+  "/about",
+  "/contact",
+  "/terms",
+  "/privacy",
+  "/shipping",
+  "/returns",
+  "/support",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const baseUrl = siteUrl();
 
   return staticRoutes.map((route) => ({
-    url: `${baseUrl}${route}`,
+    url: `${BASE_URL}${route === "/" ? "" : route}`,
     lastModified: now,
-    changeFrequency: route === "" || route === "/products" ? "daily" : "monthly",
-    priority: route === "" ? 1 : route === "/products" ? 0.9 : 0.6,
+    changeFrequency: "weekly",
+    priority: 0.8,
   }));
 }

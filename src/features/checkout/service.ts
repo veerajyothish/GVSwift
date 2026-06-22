@@ -34,10 +34,12 @@ import {
   lookupPhone,
   lookupAddress,
   lookupUser,
+  createRiskFlag,
+  getRiskFlagByEntity,
 } from "@/features/risk/service";
 import { getCodLimitPaise } from "@/features/settings/service";
 import { sendOrderPlacedEmail } from "@/features/notifications/service";
-import { RiskLevel, PaymentMethod } from "@prisma/client";
+import { RiskEntityType, RiskLevel, PaymentMethod } from "@prisma/client";
 
 /* ── helpers ──────────────────────────────────────────────────────────── */
 
@@ -351,7 +353,30 @@ export async function createOrder(
     console.warn("[Checkout] Cart clear failed after order creation:", err);
   }
 
-  // ── 10. Fetch the final order with items for the response ──────────────
+  // ── 10. Best-effort risk flag seeding ─────────────────────────────────
+  // Missing pincode/phone/user flags are created as LOW after successful
+  // checkout. Existing MEDIUM/HIGH/BLOCKED flags are intentionally preserved.
+  try {
+    const lowRiskEntities = [
+      { entityType: RiskEntityType.PINCODE, entityValue: address.pincode },
+      { entityType: RiskEntityType.PHONE, entityValue: address.phone },
+      { entityType: RiskEntityType.USER, entityValue: userId },
+    ];
+
+    for (const entity of lowRiskEntities) {
+      const existing = await getRiskFlagByEntity(entity.entityType, entity.entityValue);
+      if (!existing) {
+        await createRiskFlag({
+          ...entity,
+          riskLevel: RiskLevel.LOW,
+        });
+      }
+    }
+  } catch (err) {
+    console.error("[Checkout] Failed to seed LOW risk flags after order placement:", err);
+  }
+
+  // ── 11. Fetch the final order with items for the response ──────────────
   const finalOrder = await prisma.order.findUniqueOrThrow({
     where: { id: orderId },
     include: {
