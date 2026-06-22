@@ -30,6 +30,9 @@ export default async function AdminLayout({
               <Link href="/admin/risk" className="site-navbar-link">
                 Risk Rules
               </Link>
+              <Link href="/admin/complaints" className="site-navbar-link">
+                Complaints
+              </Link>
               <Link href="/admin/settings" className="site-navbar-link">
                 Settings
               </Link>

@@ -1,3 +1,4 @@
+
 /**
  * scratch/verify-support-service.ts — TICKET-401 Support Tickets Verification Tests
  *
