@@ -5,7 +5,10 @@
  *  1. Refresh Supabase auth tokens so sessions don't expire mid-request
  *  2. HTTPS redirect (only in production)
  *  3. Security headers (base set — TICKET-902 will add the full CSP)
- *  4. Rate limiting hook point — TICKET-901 implements the real limiting
+ *
+ * NOTE: Rate limiting (TICKET-901) was removed from here because the
+ * in-memory `global`-based store is incompatible with Next.js edge runtime.
+ * Rate limiting must be implemented using an edge-compatible store (e.g. Upstash Redis).
  *
  * Middleware runs on every matched route (see `config.matcher` below).
  * Keep it lean — no DB queries, no heavy computation here.
@@ -13,30 +16,8 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function middleware(request: NextRequest) {
-  const isApiV1Route = request.nextUrl.pathname.startsWith("/api/v1/");
-
-  if (isApiV1Route && process.env.NODE_ENV !== "test") {
-    const forwardedFor = request.headers.get("x-forwarded-for");
-    const ip =
-      forwardedFor?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "unknown";
-    const rateLimit = await checkRateLimit(`api:${ip}`, {
-      limit: 60,
-      windowSeconds: 60,
-    });
-
-    if (!rateLimit.success) {
-      return NextResponse.json(
-        { error: "Too many requests" },
-        { status: 429 }
-      );
-    }
-  }
-
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -44,9 +25,6 @@ export async function middleware(request: NextRequest) {
   });
 
   // ── 1. Supabase auth token refresh ────────────────────────────────────
-  // createServerClient here refreshes the token and writes updated cookies
-  // back to the response. This is required for @supabase/ssr to work
-  // correctly with Next.js App Router.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
