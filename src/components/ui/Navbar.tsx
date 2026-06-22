@@ -38,6 +38,9 @@ export function Navbar() {
           <Link href="/account/addresses" className="site-navbar-link">
             Addresses
           </Link>
+          <Link href="/support" className="site-navbar-link">
+            Support
+          </Link>
         </div>
       </div>
     </nav>

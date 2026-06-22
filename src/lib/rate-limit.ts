@@ -44,6 +44,10 @@ export async function checkRateLimit(
   identifier: string,
   config: RateLimitConfig
 ): Promise<RateLimitResult> {
+  if (process.env.NODE_ENV === "test" && (global as any).__mockRateLimit !== undefined) {
+    return (global as any).__mockRateLimit;
+  }
+
   // TODO: TICKET-901 — replace with @upstash/ratelimit sliding window check
   // using UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN from env.
   void identifier;
