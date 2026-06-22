@@ -56,7 +56,6 @@ export async function listUserOrders(
       take: safePageSize,
       include: {
         items: {
-          take: 1,
           include: {
             product: {
               include: {
@@ -68,7 +67,6 @@ export async function listUserOrders(
             },
           },
         },
-        _count: { select: { items: true } },
       },
     }),
     prisma.order.count({ where: { userId } }),
@@ -79,7 +77,7 @@ export async function listUserOrders(
     status: o.status,
     totalPaise: o.totalPaise,
     createdAt: o.createdAt,
-    itemCount: o._count.items,
+    itemCount: o.items.length,
     firstItemName: o.items[0]?.product?.name ?? "Unknown Product",
     firstItemImage: o.items[0]?.product?.images?.[0]?.url ?? null,
   }));
