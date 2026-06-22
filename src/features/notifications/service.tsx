@@ -5,9 +5,13 @@ import { OrderPlacedEmail } from "@/emails/order-placed";
 import { OrderStatusChangeEmail } from "@/emails/order-status-change";
 import { SupportReplyEmail } from "@/emails/support-reply";
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+let resend: Resend | null = null;
+
+function getResend() {
+  if (!process.env.RESEND_API_KEY) return null;
+  resend ??= new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 const notificationStatuses = new Set<OrderStatus>([
   OrderStatus.SHIPPED,
@@ -55,9 +59,10 @@ function sendEmail(params: {
   react: React.ReactNode;
   idempotencyKey: string;
 }) {
-  if (!params.to || !resend) return;
+  const resendClient = getResend();
+  if (!params.to || !resendClient) return;
 
-  resend.emails
+  resendClient.emails
     .send(
       {
         from: senderAddress(),
