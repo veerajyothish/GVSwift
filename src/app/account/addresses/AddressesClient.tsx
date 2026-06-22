@@ -162,8 +162,9 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
       toast.success(isEdit ? "Address updated successfully" : "Address created successfully");
       setIsModalOpen(false);
       await refreshAddresses();
-    } catch (err: any) {
-      toast.error(err.message || "An error occurred while saving the address", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "An error occurred while saving the address", "Error");
     } finally {
       setSubmitting(false);
     }
@@ -186,8 +187,9 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
 
       toast.success("Default address updated");
       await refreshAddresses();
-    } catch (err: any) {
-      toast.error(err.message || "Could not set default address", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not set default address", "Error");
     } finally {
       setSettingDefaultId(null);
     }
@@ -210,8 +212,9 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
 
       toast.success("Address deleted successfully");
       await refreshAddresses();
-    } catch (err: any) {
-      toast.error(err.message || "Could not delete address", "Delete Failed");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not delete address", "Delete Failed");
     } finally {
       setDeletingId(null);
     }

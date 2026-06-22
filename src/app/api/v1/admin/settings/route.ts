@@ -10,8 +10,10 @@ import { requireAdminForApi } from "@/lib/auth/guards";
 import { getAllSettings, updateSetting, getSetting } from "@/features/settings/service";
 import { logAuditEvent } from "@/features/admin/audit-log";
 import { toSafeError } from "@/lib/errors";
+import { SETTINGS_DEFAULTS } from "@/features/settings/types";
+import type { SettingKey } from "@/features/settings/types";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
@@ -40,7 +42,13 @@ export async function PUT(request: NextRequest) {
     // Support both single update { key, value } and batch update { settings: { ... } }
     if ("key" in body && "value" in body) {
       const { key, value } = body;
-      const prevValue = await getSetting(key as any);
+      if (typeof key !== "string" || !(key in SETTINGS_DEFAULTS)) {
+        return NextResponse.json(
+          { error: `Unknown setting key: "${key}"`, code: "VALIDATION_ERROR" },
+          { status: 400 }
+        );
+      }
+      const prevValue = await getSetting(key as SettingKey);
       await updateSetting(key, value);
 
       await logAuditEvent({
@@ -59,7 +67,13 @@ export async function PUT(request: NextRequest) {
       const auditDetails: Record<string, { previous: unknown; new: unknown }> = {};
 
       for (const [key, value] of Object.entries(updates)) {
-        const prevValue = await getSetting(key as any);
+        if (!(key in SETTINGS_DEFAULTS)) {
+          return NextResponse.json(
+            { error: `Unknown setting key: "${key}"`, code: "VALIDATION_ERROR" },
+            { status: 400 }
+          );
+        }
+        const prevValue = await getSetting(key as SettingKey);
         await updateSetting(key, value);
         auditDetails[key] = { previous: prevValue, new: value };
       }

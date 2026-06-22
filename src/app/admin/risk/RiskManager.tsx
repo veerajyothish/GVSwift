@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import type { PaginatedRiskFlagsResult, RiskFlag } from "@/features/risk/types";
@@ -53,8 +53,9 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
       setTotalCount(data.totalCount);
       setPage(data.page);
       setTotalPages(data.totalPages);
-    } catch (err: any) {
-      toast.error(err.message || "Could not retrieve risk flags", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not retrieve risk flags", "Error");
     } finally {
       setLoading(false);
     }
@@ -114,8 +115,9 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
       
       // Refresh list
       fetchFlags(1);
-    } catch (err: any) {
-      toast.error(err.message || "Could not create risk flag", "Save Failed");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not create risk flag", "Save Failed");
     } finally {
       setCreateLoading(false);
     }
@@ -147,8 +149,9 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
       toast.success("Risk flag removed successfully", "Flag Deleted");
       // Refresh current page
       fetchFlags(page);
-    } catch (err: any) {
-      toast.error(err.message || "Could not delete risk flag", "Delete Failed");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not delete risk flag", "Delete Failed");
     }
   };
 

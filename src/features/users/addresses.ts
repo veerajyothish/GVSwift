@@ -244,9 +244,9 @@ export async function deleteAddress(userId: string, addressId: string) {
       await tx.address.delete({
         where: { id: addressId },
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Handle db constraints if any race condition occurred
-      if (err.code === "P2003") {
+      if (err && typeof err === "object" && "code" in err && (err as { code: unknown }).code === "P2003") {
         throw new AppError(
           "VALIDATION_ERROR",
           "This address is used in a past order and can't be deleted",

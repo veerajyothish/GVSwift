@@ -10,7 +10,7 @@ import { requireUserForApi } from "@/lib/auth/guards";
 import { listAddresses, createAddress } from "@/features/users/addresses";
 import { toSafeError } from "@/lib/errors";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { user, errorResponse } = await requireUserForApi();
     if (errorResponse) return errorResponse;

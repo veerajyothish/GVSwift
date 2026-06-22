@@ -65,22 +65,20 @@ export async function PUT(
       internalNotes?: string;
     };
 
-    let updatedOrder = order;
-
     // 1. Handle Status Transition (if provided)
-    if (status) {
-      updatedOrder = await transitionOrderStatus(
+    const statusOrder = status
+      ? await transitionOrderStatus(
         orderId,
         status,
         user.id,
         Role.ADMIN,
         reason || null
-      );
-    }
+      )
+      : order;
 
     // 2. Handle fields updates (trackingReference, internalNotes)
-    const updateData: any = {};
-    const auditDetails: Record<string, any> = {};
+    const updateData: { trackingReference?: string | null; internalNotes?: string | null } = {};
+    const auditDetails: Record<string, { previous: string | null; new: string | null }> = {};
 
     if (trackingReference !== undefined) {
       const trimmedRef = (trackingReference ?? "").trim() || null;
@@ -109,7 +107,7 @@ export async function PUT(
     }
 
     if (Object.keys(updateData).length > 0) {
-      updatedOrder = await prisma.order.update({
+      const updatedOrder = await prisma.order.update({
         where: { id: orderId },
         data: updateData,
       });
@@ -121,9 +119,10 @@ export async function PUT(
         orderId: order.id,
         details: auditDetails,
       });
+      return NextResponse.json({ success: true, order: updatedOrder });
     }
 
-    return NextResponse.json({ success: true, order: updatedOrder });
+    return NextResponse.json({ success: true, order: statusOrder });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);
     return NextResponse.json({ error, code }, { status: statusCode });

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 
@@ -39,7 +38,6 @@ interface CartPageClientProps {
 }
 
 export default function CartPageClient({ initialCart }: CartPageClientProps) {
-  const router = useRouter();
   const { toast } = useToast();
   const [cart, setCart] = useState<Cart | null>(initialCart);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
@@ -98,8 +96,9 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
           ),
         };
       });
-    } catch (err: any) {
-      toast.error(err.message || "Could not update item quantity", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not update item quantity", "Error");
     } finally {
       setUpdatingItemId(null);
     }
@@ -130,8 +129,9 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
           items: prev.items.filter((item) => item.id !== itemId),
         };
       });
-    } catch (err: any) {
-      toast.error(err.message || "Could not remove item", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not remove item", "Error");
     } finally {
       setUpdatingItemId(null);
     }

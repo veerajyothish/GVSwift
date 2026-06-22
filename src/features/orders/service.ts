@@ -11,7 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { AppError } from "@/lib/errors";
 import { getReturnWindowDays } from "@/features/settings/service";
 import { transitionOrderStatus } from "@/features/orders/state-machine";
-import { OrderStatus, Role } from "@prisma/client";
+import { OrderStatus, Role, Prisma } from "@prisma/client";
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 
@@ -323,7 +323,7 @@ export async function listAdminOrders(params: {
   const pageSize = params.pageSize ? Math.min(100, Math.max(1, Math.floor(params.pageSize))) : 20;
   const skip = (page - 1) * pageSize;
 
-  const where: any = {};
+  const where: Prisma.OrderWhereInput = {};
 
   if (params.status && params.status !== "ALL") {
     where.status = params.status as OrderStatus;

@@ -81,8 +81,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       }
 
       toast.success("System configurations updated successfully", "Settings Saved");
-    } catch (err: any) {
-      toast.error(err.message || "An unexpected error occurred", "Save Failed");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+      toast.error(errorMessage, "Save Failed");
     } finally {
       setLoading(false);
     }

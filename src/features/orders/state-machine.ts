@@ -10,7 +10,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { AppError } from "@/lib/errors";
-import { OrderStatus, Role } from "@prisma/client";
+import { OrderStatus, Role, Prisma } from "@prisma/client";
 import { logAuditEvent } from "@/features/admin/audit-log";
 
 /* ── Transition Configuration ────────────────────────────────────────── */
@@ -81,7 +81,7 @@ function isTransitionAllowed(
 /**
  * Safe transaction-scoped getter for configuration settings.
  */
-async function getSettingForTx(tx: any, key: string, fallback: number): Promise<number> {
+async function getSettingForTx(tx: Prisma.TransactionClient, key: string, fallback: number): Promise<number> {
   try {
     const row = await tx.setting.findUnique({ where: { key } });
     if (row) {
@@ -112,9 +112,6 @@ export async function transitionOrderStatus(
   actorRole: Role | null,
   reason: string | null = null
 ) {
-  let fromStatus: OrderStatus | null = null;
-  let actualToStatus: OrderStatus | null = null;
-
   const result = await prisma.$transaction(async (tx) => {
     // 1. Fetch order with items
     const order = await tx.order.findUnique({
@@ -126,12 +123,13 @@ export async function transitionOrderStatus(
       throw new AppError("NOT_FOUND", "Order not found", 404);
     }
 
-    fromStatus = order.status;
-
     // No-op if status matches target status
     if (order.status === toStatus) {
-      actualToStatus = order.status;
-      return order;
+      return {
+        order,
+        fromStatus: order.status,
+        actualToStatus: order.status,
+      };
     }
 
     const isSystem = actorId === null;
@@ -206,7 +204,7 @@ export async function transitionOrderStatus(
 
     // 5. Special PLACED -> CONFIRMED stock re-check
     if (order.status === OrderStatus.PLACED && toStatus === OrderStatus.CONFIRMED) {
-      let hasInsufficientStock = false;
+      const insufficientStockChecks: boolean[] = [];
       const variantDeductions: Array<{ variantId: string; quantity: number }> = [];
 
       for (const item of order.items) {
@@ -218,13 +216,12 @@ export async function transitionOrderStatus(
           const stock = variants[0]?.stock ?? 0;
           // Since stock was already deducted at order placement,
           // if stock is negative, it means it was manually corrected or oversold
-          if (stock < 0) {
-            hasInsufficientStock = true;
-          }
+          insufficientStockChecks.push(stock < 0);
           variantDeductions.push({ variantId: item.variantId, quantity: item.quantity });
         }
       }
 
+      const hasInsufficientStock = insufficientStockChecks.some(Boolean);
       if (hasInsufficientStock) {
         // Auto-cancel full order
         const updated = await tx.order.update({
@@ -251,8 +248,11 @@ export async function transitionOrderStatus(
           `;
         }
 
-        actualToStatus = OrderStatus.CANCELLED;
-        return updated;
+        return {
+          order: updated,
+          fromStatus: order.status,
+          actualToStatus: OrderStatus.CANCELLED,
+        };
       }
     }
 
@@ -289,14 +289,18 @@ export async function transitionOrderStatus(
       }
     }
 
-    actualToStatus = toStatus;
-    return updated;
+    return {
+      order: updated,
+      fromStatus: order.status,
+      actualToStatus: toStatus,
+    };
   }, {
     maxWait: 15000,
     timeout: 30000,
   });
 
   // 9. Admin audit log integration (if actor is admin, run outside transaction to avoid connection starvation)
+  const { fromStatus, actualToStatus } = result;
   if (actorRole === Role.ADMIN && actorId && fromStatus && actualToStatus && fromStatus !== actualToStatus) {
     await logAuditEvent({
       actorId,
@@ -310,5 +314,5 @@ export async function transitionOrderStatus(
     });
   }
 
-  return result;
+  return result.order;
 }

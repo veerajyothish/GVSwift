@@ -58,7 +58,7 @@ function getStatusBadgeStyle(status: TicketStatus) {
 
 export default function ComplaintDetailManager({ initialTicket }: ComplaintDetailManagerProps) {
   const router = useRouter();
-  const [_isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const [ticket, setTicket] = useState<TicketDetail>(initialTicket);
   const [statusVal, setStatusVal] = useState<TicketStatus>(initialTicket.status);
@@ -233,41 +233,50 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                 const isCustomer = msg.authorId === ticket.userId;
                 const isInternalNote = msg.isInternal;
 
-                // Set card styling based on message type
-                let cardStyle: React.CSSProperties = {
+                const baseCardStyle: React.CSSProperties = {
                   padding: "16px",
                   borderRadius: "var(--radius-md)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "8px",
                 };
-                let headerLabel = "";
-                let headerColor = "var(--color-text-primary)";
-
-                if (isInternalNote) {
-                  cardStyle = {
-                    ...cardStyle,
-                    backgroundColor: "rgba(212, 169, 67, 0.08)",
-                    border: "1px solid var(--color-accent)",
-                  };
-                  headerLabel = "Internal Note";
-                  headerColor = "var(--color-accent)";
-                } else if (isCustomer) {
-                  cardStyle = {
-                    ...cardStyle,
-                    backgroundColor: "var(--color-surface)",
-                    border: "1px solid var(--color-border)",
-                  };
-                  headerLabel = `Customer (${ticket.user?.email || "Guest"})`;
-                } else {
-                  cardStyle = {
-                    ...cardStyle,
-                    backgroundColor: "var(--color-surface)",
-                    border: "1px solid rgba(212, 169, 67, 0.3)",
-                  };
-                  headerLabel = "Admin Reply";
-                  headerColor = "var(--color-accent)";
-                }
+                const {
+                  cardStyle,
+                  headerLabel,
+                  headerColor,
+                }: {
+                  cardStyle: React.CSSProperties;
+                  headerLabel: string;
+                  headerColor: string;
+                } = isInternalNote
+                  ? {
+                    cardStyle: {
+                      ...baseCardStyle,
+                      backgroundColor: "rgba(212, 169, 67, 0.08)",
+                      border: "1px solid var(--color-accent)",
+                    },
+                    headerLabel: "Internal Note",
+                    headerColor: "var(--color-accent)",
+                  }
+                  : isCustomer
+                    ? {
+                      cardStyle: {
+                        ...baseCardStyle,
+                      backgroundColor: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      },
+                      headerLabel: `Customer (${ticket.user?.email || "Guest"})`,
+                      headerColor: "var(--color-text-primary)",
+                    }
+                    : {
+                      cardStyle: {
+                        ...baseCardStyle,
+                        backgroundColor: "var(--color-surface)",
+                        border: "1px solid rgba(212, 169, 67, 0.3)",
+                      },
+                      headerLabel: "Admin Reply",
+                      headerColor: "var(--color-accent)",
+                    };
 
                 return (
                   <div key={msg.id} style={cardStyle}>

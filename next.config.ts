@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   // Security headers — see docs/03-Security-Access.md §7 (TICKET-902 will expand this)
   async headers() {
     return [

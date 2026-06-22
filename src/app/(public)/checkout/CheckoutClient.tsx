@@ -109,7 +109,7 @@ export default function CheckoutClient({
         setSelectedAddressId(initialAddresses[0].id);
       }
     }
-  }, [initialAddresses]);
+  }, [initialAddresses, selectedAddressId]);
 
   const formatRupees = (paise: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -219,8 +219,9 @@ export default function CheckoutClient({
       
       // Refresh server component so risk levels are resolved
       router.refresh();
-    } catch (err: any) {
-      toast.error(err.message || "Could not add address", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not add address", "Error");
     } finally {
       setSubmittingAddress(false);
     }
@@ -277,9 +278,10 @@ export default function CheckoutClient({
       
       // Redirect to the order details page as part of TICKET-302 implementation
       router.push(`/orders/${data.order.id}`);
-    } catch (err: any) {
-      setServerError(err.message || "Failed to place order. Please try again.");
-      toast.error(err.message || "Checkout failed", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setServerError(error.message || "Failed to place order. Please try again.");
+      toast.error(error.message || "Checkout failed", "Error");
     } finally {
       setSubmittingOrder(false);
     }
@@ -329,7 +331,6 @@ export default function CheckoutClient({
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {addresses.map((addr) => {
                 const isSelected = addr.id === selectedAddressId;
-                const isAddressDisabled = addr.isCodBlocked || !addr.isServiceable;
 
                 return (
                   <div
