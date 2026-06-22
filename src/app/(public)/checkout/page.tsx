@@ -57,7 +57,7 @@ export default async function CheckoutPage() {
       ];
 
       let isCodBlocked = false;
-      let isServiceable = pincodeRisk.serviceable;
+      const isServiceable = pincodeRisk.serviceable;
       let requiresApproval = false;
 
       for (const { result } of riskChecks) {

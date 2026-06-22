@@ -57,4 +57,4 @@ export interface ResolvedCart {
 }
 
 /** A resolved address with owner */
-export interface ResolvedAddress extends Address {}
+export type ResolvedAddress = Address;

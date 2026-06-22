@@ -58,7 +58,7 @@ function getStatusBadgeStyle(status: TicketStatus) {
 
 export default function ComplaintDetailManager({ initialTicket }: ComplaintDetailManagerProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const [ticket, setTicket] = useState<TicketDetail>(initialTicket);
   const [statusVal, setStatusVal] = useState<TicketStatus>(initialTicket.status);
@@ -97,8 +97,9 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
       startTransition(() => {
         router.refresh();
       });
-    } catch (err: any) {
-      setStatusError(err.message || "An error occurred while updating status");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setStatusError(error.message || "An error occurred while updating status");
       // Revert select input to current ticket status
       setStatusVal(ticket.status);
     } finally {
@@ -130,8 +131,9 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
       startTransition(() => {
         router.refresh();
       });
-    } catch (err: any) {
-      setReplyError(err.message || "An error occurred while sending message");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setReplyError(error.message || "An error occurred while sending message");
     } finally {
       setSendingReply(false);
     }

@@ -28,7 +28,7 @@ export default async function AdminComplaintDetailPage({ params }: PageProps) {
   let ticket;
   try {
     ticket = await getTicketDetail(id);
-  } catch (err) {
+  } catch {
     notFound();
   }
 

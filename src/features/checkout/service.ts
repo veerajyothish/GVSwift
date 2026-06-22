@@ -228,7 +228,7 @@ export async function createOrder(
   // GVSwift's expected low concurrency than optimistic versioning + retries).
 
   let orderId: string;
-  let _requiresApproval = requiresApproval; // captured for post-transaction return
+  const _requiresApproval = requiresApproval; // captured for post-transaction return
 
   try {
     orderId = await prisma.$transaction(async (tx) => {

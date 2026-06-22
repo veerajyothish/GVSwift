@@ -26,7 +26,7 @@ export interface TicketListFilters {
  * Includes associated customer User and linked Order details.
  */
 export async function listAllTickets(filters?: TicketListFilters) {
-  const where: any = {};
+  const where: { status?: TicketStatus } = {};
   
   if (filters?.status) {
     where.status = filters.status;
