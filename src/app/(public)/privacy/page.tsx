@@ -23,7 +23,7 @@ export default function PrivacyPage() {
             1. Overview
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            GVSwift ("we", "our", or "us") operates the GVSwift platform. This Privacy Policy details how we collect, use, disclose, and protect personal information of visitors, users, and customers.
+            GVSwift (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates the GVSwift platform. This Privacy Policy details how we collect, use, disclose, and protect personal information of visitors, users, and customers.
           </p>
         </section>
 

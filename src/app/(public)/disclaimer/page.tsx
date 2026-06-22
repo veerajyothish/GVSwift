@@ -23,7 +23,7 @@ export default function DisclaimerPage() {
             1. Product Representation
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            All product images and colors shown on GVSwift are for illustrative and representative purposes only. We attempt to display colors and textures as accurately as possible. However, the actual visual representation depends on your device's screen calibration, and we cannot guarantee that your monitor's display will perfectly match the physical product.
+            All product images and colors shown on GVSwift are for illustrative and representative purposes only. We attempt to display colors and textures as accurately as possible. However, the actual visual representation depends on your device&apos;s screen calibration, and we cannot guarantee that your monitor&apos;s display will perfectly match the physical product.
           </p>
         </section>
 
@@ -32,7 +32,7 @@ export default function DisclaimerPage() {
             2. Limitations of Liability
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            To the maximum extent permitted by applicable Indian consumer protection laws, GVSwift provides its platform, services, and products on an "as-is" basis without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages resulting from platform downtime, delivery delays, or product usage `[TO BE FILLED BY LEGAL]`.
+            To the maximum extent permitted by applicable Indian consumer protection laws, GVSwift provides its platform, services, and products on an &quot;as-is&quot; basis without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages resulting from platform downtime, delivery delays, or product usage `[TO BE FILLED BY LEGAL]`.
           </p>
         </section>
 

@@ -23,7 +23,7 @@ export default function ShippingPage() {
             1. Geographic Serviceability
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            At launch, GVSwift operates exclusively within **Andhra Pradesh (AP), India**. Delivery is limited to pincodes that are registered as active and serviceable in our database. You can verify your address's serviceability at checkout. Orders with pincodes outside our service zone will be rejected.
+            At launch, GVSwift operates exclusively within **Andhra Pradesh (AP), India**. Delivery is limited to pincodes that are registered as active and serviceable in our database. You can verify your address&apos;s serviceability at checkout. Orders with pincodes outside our service zone will be rejected.
           </p>
         </section>
 

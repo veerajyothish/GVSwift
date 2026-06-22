@@ -1,6 +1,8 @@
 import React from "react";
 import { Navbar } from "@/components/ui/Navbar";
 
+import Link from "next/link";
+
 export const metadata = {
   title: "Returns & Refunds Policy | GVSwift",
   description: "Learn about the return windows, eligible items, and refund process at GVSwift.",
@@ -78,7 +80,7 @@ export default function ReturnsPage() {
             6. Contact Support
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            For help with returns, please open a ticket on our <a href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</a> or email:
+            For help with returns, please open a ticket on our <Link href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</Link> or email:
             <br />
             <strong>Email</strong>: <a href="mailto:gvswift.help@gmail.com" style={{ color: "var(--color-accent)" }}>gvswift.help@gmail.com</a>
           </p>

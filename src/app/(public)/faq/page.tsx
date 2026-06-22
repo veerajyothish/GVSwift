@@ -1,6 +1,8 @@
 import React from "react";
 import { Navbar } from "@/components/ui/Navbar";
 
+import Link from "next/link";
+
 export const metadata = {
   title: "Frequently Asked Questions (FAQ) | GVSwift",
   description: "Find answers to common questions about GVSwift shipping, payments, and returns.",
@@ -70,7 +72,7 @@ export default function FaqPage() {
               Q: How can I contact customer support?
             </h3>
             <p style={{ fontSize: "14px", lineHeight: "1.6", color: "var(--color-text-primary)", margin: 0 }}>
-              A: You can open a ticket in our <a href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</a>. Alternatively, you can email us at <a href="mailto:gvswift.help@gmail.com" style={{ color: "var(--color-accent)" }}>gvswift.help@gmail.com</a>.
+              A: You can open a ticket in our <Link href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</Link>. Alternatively, you can email us at <a href="mailto:gvswift.help@gmail.com" style={{ color: "var(--color-accent)" }}>gvswift.help@gmail.com</a>.
             </p>
           </div>
 

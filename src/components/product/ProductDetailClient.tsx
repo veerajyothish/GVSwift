@@ -63,8 +63,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         `Added 1x ${product.name} (${parseVariantSku(selectedVariant.sku).size}) to your cart!`,
         "Added to Cart"
       );
-    } catch (err: any) {
-      toast.error(err.message || "Could not add item to cart", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not add item to cart", "Error");
     } finally {
       setIsAddingToCart(false);
     }
@@ -96,8 +97,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       );
       
       router.push("/checkout");
-    } catch (err: any) {
-      toast.error(err.message || "Could not process Buy Now request", "Error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || "Could not process Buy Now request", "Error");
     } finally {
       setIsBuyingNow(false);
     }

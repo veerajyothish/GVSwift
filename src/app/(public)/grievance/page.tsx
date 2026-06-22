@@ -1,6 +1,8 @@
 import React from "react";
 import { Navbar } from "@/components/ui/Navbar";
 
+import Link from "next/link";
+
 export const metadata = {
   title: "Grievance Officer | GVSwift",
   description: "Contact the GVSwift Grievance Officer for grievance redressal and customer complaints.",
@@ -66,7 +68,7 @@ export default function GrievancePage() {
             Standard Complaints
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            For standard support queries, order tracking, and general issues, please open a support ticket on our <a href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</a> first. Standard tickets are handled directly by our helpdesk team. You should escalate to the Grievance Officer only if your ticket remains unresolved after 15 days, or you are unsatisfied with the support resolution.
+            For standard support queries, order tracking, and general issues, please open a support ticket on our <Link href="/support" style={{ color: "var(--color-accent)", fontWeight: 500 }}>Support Portal</Link> first. Standard tickets are handled directly by our helpdesk team. You should escalate to the Grievance Officer only if your ticket remains unresolved after 15 days, or you are unsatisfied with the support resolution.
           </p>
         </section>
       </main>

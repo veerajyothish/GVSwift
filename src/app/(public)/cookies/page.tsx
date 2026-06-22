@@ -45,7 +45,7 @@ export default function CookiesPage() {
             3. Analytics Tracking (GA4)
           </h2>
           <p style={{ lineHeight: "1.6" }}>
-            In compliance with privacy standards, Google Analytics 4 tracking scripts are prevented from loading or making network requests until you explicitly click "Accept" on our cookie consent banner. If you choose to decline, no performance/analytics cookies are placed, and your experience is unaffected.
+            In compliance with privacy standards, Google Analytics 4 tracking scripts are prevented from loading or making network requests until you explicitly click &quot;Accept&quot; on our cookie consent banner. If you choose to decline, no performance/analytics cookies are placed, and your experience is unaffected.
           </p>
         </section>
 
