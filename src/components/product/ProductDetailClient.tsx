@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ProductWithVariantsAndImages } from "@/features/catalog/types";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailClientProps {
   product: ProductWithVariantsAndImages;
@@ -13,10 +14,12 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { toast } = useToast();
+  const router = useRouter();
   const [selectedVariantId, setSelectedVariantId] = useState(
     product.variants[0]?.id || ""
   );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ||
@@ -67,6 +70,39 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     }
   };
 
+  const handleBuyNow = async () => {
+    if (isOutOfStock) return;
+    
+    setIsBuyingNow(true);
+    try {
+      const res = await fetch("/api/v1/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: selectedVariant.id,
+          quantity: 1,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to add item to cart");
+      }
+
+      toast.success(
+        `Added 1x ${product.name} (${parseVariantSku(selectedVariant.sku).size}) to your cart!`,
+        "Buy Now"
+      );
+      
+      router.push("/checkout");
+    } catch (err: any) {
+      toast.error(err.message || "Could not process Buy Now request", "Error");
+    } finally {
+      setIsBuyingNow(false);
+    }
+  };
+
   const primaryImage =
     product.images.find((img) => img.isPrimary) || product.images[0];
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
@@ -88,6 +124,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         }
         .desktop-image-column {
           display: block;
+        }
+        .cta-container {
+          display: flex;
+          gap: 12px;
+          flex-direction: column;
         }
 
         @media (max-width: 767px) {
@@ -116,6 +157,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           .detail-grid {
             grid-template-columns: 1fr 1fr !important;
             gap: 30px !important;
+          }
+          .cta-container {
+            flex-direction: row !important;
           }
         }
       `}} />
@@ -329,16 +373,27 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </span>
           </div>
 
-          {/* Add to Cart CTA */}
-          <Button
-            variant={isOutOfStock ? "secondary" : "primary"}
-            style={{ width: "100%", minHeight: "38px" }}
-            disabled={isOutOfStock}
-            loading={isAddingToCart}
-            onClick={handleAddToCart}
-          >
-            {isOutOfStock ? "Sold Out" : "Add to Cart"}
-          </Button>
+          {/* CTA Actions: Buy Now & Add to Cart */}
+          <div className="cta-container">
+            <Button
+              variant={isOutOfStock ? "secondary" : "primary"}
+              style={{ flex: 1, minHeight: "44px" }}
+              disabled={isOutOfStock}
+              loading={isBuyingNow}
+              onClick={handleBuyNow}
+            >
+              {isOutOfStock ? "Sold Out" : "Buy Now"}
+            </Button>
+            <Button
+              variant="secondary"
+              style={{ flex: 1, minHeight: "44px" }}
+              disabled={isOutOfStock}
+              loading={isAddingToCart}
+              onClick={handleAddToCart}
+            >
+              {isOutOfStock ? "Sold Out" : "Add to Cart"}
+            </Button>
+          </div>
 
           {/* COD & Shipping above-the-fold compact boxes */}
           <div
