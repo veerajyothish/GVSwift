@@ -156,6 +156,29 @@ export async function requireUserForApi(): Promise<ApiGuardResult> {
  *   // user is guaranteed ADMIN here
  */
 export async function requireAdminForApi(): Promise<ApiGuardResult> {
+  if (process.env.NODE_ENV === "test" && (global as any).__mockAdminSession !== undefined) {
+    const mockUser = (global as any).__mockAdminSession;
+    if (mockUser === null) {
+      return {
+        user: null,
+        errorResponse: NextResponse.json(
+          { error: "Authentication required", code: "UNAUTHORIZED" },
+          { status: 401 }
+        ),
+      };
+    }
+    if (mockUser.role !== "ADMIN") {
+      return {
+        user: null,
+        errorResponse: NextResponse.json(
+          { error: "Admin access required", code: "FORBIDDEN" },
+          { status: 403 }
+        ),
+      };
+    }
+    return { user: mockUser, errorResponse: null };
+  }
+
   const session = await getServerSession();
 
   if (!session) {

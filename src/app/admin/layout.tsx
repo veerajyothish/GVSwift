@@ -24,6 +24,9 @@ export default async function AdminLayout({
               <Link href="/admin/products" className="site-navbar-link">
                 Products
               </Link>
+              <Link href="/admin/orders" className="site-navbar-link">
+                Orders
+              </Link>
               <Link href="/admin/risk" className="site-navbar-link">
                 Risk Rules
               </Link>

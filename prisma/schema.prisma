@@ -258,6 +258,7 @@ model Order {
   trackingReference String?
 
   deliveryAttempts Int @default(0)
+  internalNotes    String?
 
   items         OrderItem[]
   statusHistory OrderStatusHistory[]

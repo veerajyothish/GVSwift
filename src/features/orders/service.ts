@@ -291,4 +291,164 @@ export async function requestReturn(
   );
 }
 
+/* ── Admin Order Management (TICKET-305) ────────────────────────────────── */
+
+export interface AdminOrderListItem {
+  id: string;
+  status: OrderStatus;
+  totalPaise: number;
+  createdAt: Date;
+  deliveryAttempts: number;
+  customerEmail: string;
+  customerPhone: string | null;
+  isAutoCancelled: boolean;
+  cancelReason: string | null;
+}
+
+export interface AdminOrderListResult {
+  orders: AdminOrderListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export async function listAdminOrders(params: {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  userSearch?: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<AdminOrderListResult> {
+  const page = params.page ? Math.max(1, Math.floor(params.page)) : 1;
+  const pageSize = params.pageSize ? Math.min(100, Math.max(1, Math.floor(params.pageSize))) : 20;
+  const skip = (page - 1) * pageSize;
+
+  const where: any = {};
+
+  if (params.status && params.status !== "ALL") {
+    where.status = params.status as OrderStatus;
+  }
+
+  if (params.userSearch && params.userSearch.trim()) {
+    const search = params.userSearch.trim();
+    const matchingUsers = await prisma.user.findMany({
+      where: {
+        OR: [
+          { email: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true },
+    });
+    const userIds = matchingUsers.map((u) => u.id);
+    where.userId = { in: userIds };
+  }
+
+  if (params.startDate || params.endDate) {
+    where.createdAt = {};
+    if (params.startDate) {
+      where.createdAt.gte = new Date(params.startDate + "T00:00:00.000Z");
+    }
+    if (params.endDate) {
+      where.createdAt.lte = new Date(params.endDate + "T23:59:59.999Z");
+    }
+  }
+
+  const [orders, total] = await Promise.all([
+    prisma.order.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+      include: {
+        user: { select: { email: true, phone: true } },
+        statusHistory: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    }),
+    prisma.order.count({ where }),
+  ]);
+
+  const mapped: AdminOrderListItem[] = orders.map((o) => {
+    const cancelHistory = o.statusHistory.find((h) => h.toStatus === OrderStatus.CANCELLED);
+    const isAutoCancelled =
+      o.status === OrderStatus.CANCELLED &&
+      cancelHistory !== undefined &&
+      (cancelHistory.changedById === null || (cancelHistory.reason ?? "").includes("Auto-cancelled"));
+
+    return {
+      id: o.id,
+      status: o.status,
+      totalPaise: o.totalPaise,
+      createdAt: o.createdAt,
+      deliveryAttempts: o.deliveryAttempts,
+      customerEmail: o.user.email,
+      customerPhone: o.user.phone,
+      isAutoCancelled,
+      cancelReason: cancelHistory?.reason ?? null,
+    };
+  });
+
+  return {
+    orders: mapped,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
+export async function getAdminOrderDetail(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      user: true,
+      items: {
+        include: {
+          product: {
+            include: {
+              images: {
+                where: { isPrimary: true },
+                take: 1,
+              },
+            },
+          },
+          variant: true,
+        },
+      },
+      statusHistory: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          changedBy: { select: { email: true, role: true } },
+        },
+      },
+      address: true,
+    },
+  });
+
+  if (!order) {
+    throw new AppError("NOT_FOUND", "Order not found", 404);
+  }
+
+  const riskFlags = await prisma.riskFlag.findMany({
+    where: {
+      OR: [
+        { entityType: "USER", entityValue: order.userId },
+        { entityType: "PHONE", entityValue: order.address.phone },
+        { entityType: "PINCODE", entityValue: order.address.pincode },
+        ...(order.user.phone ? [{ entityType: "PHONE" as const, entityValue: order.user.phone }] : []),
+      ],
+    },
+  });
+
+  return {
+    ...order,
+    riskFlags,
+  };
+}
+
+
 
