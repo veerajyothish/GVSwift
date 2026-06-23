@@ -3,10 +3,6 @@
  *
  * Handles signup (creates Prisma User row after Supabase account creation),
  * login, logout, and password reset.
- *
- * WHY a separate service: route handlers call here; the service holds
- * all logic so it's testable without spinning up Next.js routing.
- * See CONTEXT.md §3 (business logic out of route files).
  */
 
 import { prisma } from "@/lib/prisma";
@@ -22,7 +18,7 @@ export const SignupSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
-    .max(72, "Password too long"), // bcrypt limit
+    .max(72, "Password too long"),
 });
 
 export const LoginSchema = z.object({
@@ -36,13 +32,8 @@ export type LoginInput = z.infer<typeof LoginSchema>;
 // ─── Service functions ────────────────────────────────────────────────────────
 
 /**
- * Creates a Supabase auth account and the corresponding Prisma User row.
- *
- * Supabase sends a verification email; the user must confirm before checking
- * out (docs/03-Security-Access.md §1). Browsing and cart access are open
- * to unverified accounts.
- *
- * Returns the Prisma User record on success.
+ * Creates a Supabase auth account, the corresponding Prisma User row,
+ * and immediately signs the user in so a session cookie is set.
  */
 export async function signupUser(input: SignupInput) {
   const parsed = SignupSchema.safeParse(input);
@@ -63,7 +54,6 @@ export async function signupUser(input: SignupInput) {
 
   if (error) {
     logger.warn("Signup failed", { code: error.code });
-    // Map Supabase error codes to user-safe messages — never forward raw errors
     if (error.code === "user_already_exists") {
       throw new AppError("CONFLICT", "An account with this email already exists.", 409);
     }
@@ -74,8 +64,7 @@ export async function signupUser(input: SignupInput) {
     throw new AppError("INTERNAL_ERROR", "Signup failed. Please try again.", 500);
   }
 
-  // Create the Prisma User row — this is GVSwift's application-level user record.
-  // The Supabase auth user (data.user) is the auth identity only.
+  // Upsert Prisma User row
   let prismaUser = await prisma.user.findUnique({
     where: { supabaseId: data.user.id },
   });
@@ -88,6 +77,18 @@ export async function signupUser(input: SignupInput) {
         role: "USER",
       },
     });
+  }
+
+  // Auto-login: immediately sign in so the session cookie is set,
+  // regardless of whether email confirmation is enabled in Supabase.
+  const { error: loginError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+
+  if (loginError) {
+    // Account was created successfully — login will just be manual.
+    logger.warn("Auto-login after signup failed", { code: loginError.code });
   }
 
   return prismaUser;
@@ -115,8 +116,6 @@ export async function loginUser(input: LoginInput) {
 
   if (error || !data.user) {
     logger.warn("Login failed", { code: error?.code });
-    // Return same message for wrong-email and wrong-password — prevent
-    // user enumeration (attacker can't distinguish "no account" from "wrong password")
     throw new AppError(
       "UNAUTHORIZED",
       "Invalid email or password.",
@@ -124,7 +123,7 @@ export async function loginUser(input: LoginInput) {
     );
   }
 
-  // Ensure Prisma User row exists (handles edge case where auth exists but DB row doesn't)
+  // Ensure Prisma User row exists
   let prismaUser = await prisma.user.findUnique({
     where: { supabaseId: data.user.id },
   });
