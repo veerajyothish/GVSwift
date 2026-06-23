@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
 import { getProducts, getCategories } from "@/features/catalog/service";
+import { getServerSession } from "@/lib/auth/session";
+import { prisma } from "@/lib/prisma";
 
 export const metadata = {
   title: "GVSwift — Shop with Confidence",
@@ -24,7 +26,22 @@ function StatBadge({ icon, label, sub }: { icon: string; label: string; sub: str
 }
 
 export default async function HomePage() {
-  // Fetch up to 8 featured products and all categories in parallel
+  // Fetch session, products, and categories
+  const session = await getServerSession();
+  
+  let isAdmin = false;
+  if (session) {
+    try {
+      const dbUser = await prisma.user.findUnique({
+        where: { supabaseId: session.id },
+        select: { role: true },
+      });
+      isAdmin = dbUser?.role === "ADMIN";
+    } catch (e) {
+      console.error("Failed to check admin status:", e);
+    }
+  }
+
   const [productsResult, categories] = await Promise.all([
     getProducts({ limit: "8" }),
     getCategories(),
@@ -64,9 +81,21 @@ export default async function HomePage() {
               <Link href="/products" className="btn btn-primary btn-lg">
                 Shop Collection →
               </Link>
-              <Link href="/signup" className="btn btn-secondary btn-lg">
-                Create Account
-              </Link>
+              {session ? (
+                isAdmin ? (
+                  <Link href="/admin" className="btn btn-secondary btn-lg">
+                    Admin Dashboard
+                  </Link>
+                ) : (
+                  <Link href="/account" className="btn btn-secondary btn-lg">
+                    My Account
+                  </Link>
+                )
+              ) : (
+                <Link href="/signup" className="btn btn-secondary btn-lg">
+                  Create Account
+                </Link>
+              )}
             </div>
           </div>
 
@@ -270,13 +299,26 @@ export default async function HomePage() {
           Ready to Shop?
         </h2>
         <p className="bottom-cta-desc">
-          Create a free account and start shopping the Stitch collection today.
-          Cash on Delivery available across India.
+          {session
+            ? "Explore the full collection and manage your orders instantly from your dashboard."
+            : "Create a free account and start shopping the Stitch collection today. Cash on Delivery available across India."}
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <Link href="/signup" className="btn btn-primary btn-xl">
-            Create Free Account
-          </Link>
+          {session ? (
+            isAdmin ? (
+              <Link href="/admin" className="btn btn-primary btn-xl">
+                Admin Dashboard
+              </Link>
+            ) : (
+              <Link href="/account" className="btn btn-primary btn-xl">
+                My Account
+              </Link>
+            )
+          ) : (
+            <Link href="/signup" className="btn btn-primary btn-xl">
+              Create Free Account
+            </Link>
+          )}
           <Link href="/products" className="btn btn-secondary btn-xl">
             Browse Products
           </Link>
