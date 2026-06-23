@@ -55,7 +55,6 @@ export default function LoginClient() {
         padding: "20px",
       }}
     >
-      {/* Brand */}
       <Link
         href="/"
         style={{
@@ -90,7 +89,6 @@ export default function LoginClient() {
         </span>
       </Link>
 
-      {/* Card */}
       <div
         style={{
           width: "100%",
@@ -104,7 +102,11 @@ export default function LoginClient() {
       >
         <h1
           className="text-xl font-semibold"
-          style={{ color: "var(--color-text-primary)", marginBottom: "8px", textAlign: "center" }}
+          style={{
+            color: "var(--color-text-primary)",
+            marginBottom: "8px",
+            textAlign: "center",
+          }}
         >
           Welcome back
         </h1>
@@ -120,7 +122,10 @@ export default function LoginClient() {
         </p>
 
         {error && (
-          <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
+          <div
+            className="alert-banner alert-error"
+            style={{ marginBottom: "20px" }}
+          >
             <span>⚠</span>
             <div>{error}</div>
           </div>
@@ -183,7 +188,11 @@ export default function LoginClient() {
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              style={{ color: "var(--color-accent)", fontWeight: 600, textDecoration: "none" }}
+              style={{
+                color: "var(--color-accent)",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
             >
               Create one
             </Link>
@@ -200,11 +209,17 @@ export default function LoginClient() {
         }}
       >
         By signing in you agree to our{" "}
-        <Link href="/terms" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+        <Link
+          href="/terms"
+          style={{ color: "var(--color-accent)", textDecoration: "underline" }}
+        >
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link href="/privacy" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+        <Link
+          href="/privacy"
+          style={{ color: "var(--color-accent)", textDecoration: "underline" }}
+        >
           Privacy Policy
         </Link>
         .
