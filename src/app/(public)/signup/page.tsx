@@ -12,7 +12,6 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const validate = (): string | null => {
@@ -51,11 +50,9 @@ export default function SignupPage() {
         return;
       }
 
-      // Show success message then redirect to login
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/login");
-      }, 2500);
+      // Redirect directly to homepage — user is already logged in
+      router.push("/");
+      router.refresh();
     } catch {
       setError("Network error. Please check your connection and try again.");
       setLoading(false);
@@ -79,88 +76,74 @@ export default function SignupPage() {
           Shop with confidence across India
         </p>
 
-        {success ? (
-          <div className="alert-banner alert-success mb-0">
-            <span>✓</span>
-            <div>
-              <strong>Account created!</strong>
-              <p className="mt-4 text-13">
-                Check your email to verify your account, then sign in. Redirecting you to login…
-              </p>
-            </div>
+        {error && (
+          <div className="alert-banner alert-error mb-20">
+            <span>⚠</span>
+            <div>{error}</div>
           </div>
-        ) : (
-          <>
-            {error && (
-              <div className="alert-banner alert-error mb-20">
-                <span>⚠</span>
-                <div>{error}</div>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="input-group margin-0">
-                <label htmlFor="email" className="input-label input-required">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  className="input-field"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="input-group margin-0">
-                <label htmlFor="password" className="input-label input-required">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  className="input-field"
-                  placeholder="At least 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="input-group margin-0">
-                <label htmlFor="confirm-password" className="input-label input-required">
-                  Confirm password
-                </label>
-                <input
-                  id="confirm-password"
-                  type="password"
-                  className="input-field"
-                  placeholder="Re-enter your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  disabled={loading}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                loading={loading}
-                className="w-full mt-8"
-              >
-                Create Account
-              </Button>
-            </form>
-          </>
         )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="input-group margin-0">
+            <label htmlFor="email" className="input-label input-required">
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="input-field"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="input-group margin-0">
+            <label htmlFor="password" className="input-label input-required">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              className="input-field"
+              placeholder="At least 8 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="input-group margin-0">
+            <label htmlFor="confirm-password" className="input-label input-required">
+              Confirm password
+            </label>
+            <input
+              id="confirm-password"
+              type="password"
+              className="input-field"
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+              disabled={loading}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            variant="primary"
+            loading={loading}
+            className="w-full mt-8"
+          >
+            Create Account
+          </Button>
+        </form>
 
         <div className="auth-footer-divider">
           <p className="text-sm footer-text-muted">
