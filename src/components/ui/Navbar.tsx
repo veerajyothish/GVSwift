@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { SearchBar } from "@/components/ui/SearchBar";
+import { NavbarAuthLinks } from "@/components/ui/NavbarAuthLinks";
 
 /**
- * Shared public navigation bar with brand, search, and links.
- * Rendered at the top of every public page via a layout or
- * included directly in pages.
+ * Shared public navigation bar with brand, search, and auth-aware links.
+ * This is a Server Component — NavbarAuthLinks handles the async auth check.
  */
 export function Navbar() {
   return (
@@ -24,24 +24,16 @@ export function Navbar() {
           </Suspense>
         </div>
 
-        {/* Navigation links */}
-        <div className="site-navbar-links">
-          <Link href="/products" className="site-navbar-link">
-            Shop
-          </Link>
-          <Link href="/cart" className="site-navbar-link">
-            Cart
-          </Link>
-          <Link href="/orders" className="site-navbar-link">
-            Orders
-          </Link>
-          <Link href="/account/addresses" className="site-navbar-link">
-            Addresses
-          </Link>
-          <Link href="/support" className="site-navbar-link">
-            Support
-          </Link>
-        </div>
+        {/* Auth-aware navigation links */}
+        <Suspense
+          fallback={
+            <div className="site-navbar-links">
+              <Link href="/products" className="site-navbar-link">Shop</Link>
+            </div>
+          }
+        >
+          <NavbarAuthLinks />
+        </Suspense>
       </div>
     </nav>
   );

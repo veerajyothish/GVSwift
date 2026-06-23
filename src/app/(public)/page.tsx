@@ -1,330 +1,610 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
-import { Input, Textarea, Select } from "@/components/ui/Input";
-import { Card, CardHeader } from "@/components/ui/Card";
-import { Modal } from "@/components/ui/Modal";
-import { useToast } from "@/components/ui/Toast";
+import { Navbar } from "@/components/ui/Navbar";
+import { getProducts, getCategories } from "@/features/catalog/service";
 
-export default function HomePage() {
-  const { toast } = useToast();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isButtonLoading, setIsButtonLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    pincode: "",
-    service: "standard",
-    notes: "",
-  });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+export const metadata = {
+  title: "GVSwift — Shop with Confidence",
+  description:
+    "Premium fashion with Cash on Delivery across Andhra Pradesh. Free shipping. 7-day returns.",
+};
 
-  const handleTriggerLoading = () => {
-    setIsButtonLoading(true);
-    toast.info("Loading simulated action...", "Processing");
-    setTimeout(() => {
-      setIsButtonLoading(false);
-      toast.success("Simulated action completed successfully!", "Success");
-    }, 2000);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const errors: Record<string, string> = {};
-
-    if (!formData.name) errors.name = "Full name is required";
-    if (!formData.email) {
-      errors.email = "Email address is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Enter a valid email address";
-    }
-    if (!formData.pincode) {
-      errors.pincode = "Pincode is required";
-    } else if (!/^\d{6}$/.test(formData.pincode)) {
-      errors.pincode = "Pincode must be exactly 6 digits";
-    }
-
-    setFormErrors(errors);
-
-    if (Object.keys(errors).length === 0) {
-      toast.success(
-        `Details submitted for ${formData.name}! Check console.`,
-        "Form Submitted"
-      );
-      console.log("Form Data submitted:", formData);
-    } else {
-      toast.error("Please correct the errors in the form.", "Validation Failed");
-    }
-  };
-
+// ── Reusable stat badge ──────────────────────────────────────────────────────
+function StatBadge({ icon, label, sub }: { icon: string; label: string; sub: string }) {
   return (
-    <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
-      {/* ── Brand Header ────────────────────────────────────────────────────── */}
-      <header
-        style={{
-          textAlign: "center",
-          marginBottom: "60px",
-          borderBottom: "1px solid var(--color-border)",
-          paddingBottom: "30px",
-        }}
-      >
-        <span
-          className="text-xs font-semibold"
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        padding: "16px 20px",
+        backgroundColor: "var(--color-surface)",
+        border: "1px solid var(--color-border)",
+        borderRadius: "var(--radius-md)",
+        flex: "1 1 180px",
+      }}
+    >
+      <span style={{ fontSize: "28px", lineHeight: 1 }}>{icon}</span>
+      <div>
+        <div
           style={{
-            color: "var(--color-accent)",
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
-            display: "inline-block",
-            marginBottom: "8px",
+            fontSize: "15px",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
           }}
         >
-          Stitch Design System Showcase
-        </span>
-        <h1 className="text-3xl" style={{ marginBottom: "12px" }}>
-          GVSwift Storefront
-        </h1>
-        <p
-          className="text-base"
-          style={{ color: "var(--color-text-secondary)", maxWidth: "600px", margin: "0 auto" }}
+          {label}
+        </div>
+        <div
+          style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}
         >
-          Shop with confidence. Premium quality, 4-tier risk-assessed Cash on Delivery (COD) services, and responsive customer support.
-        </p>
-      </header>
-
-      {/* ── Component Showcase Sections ────────────────────────────────────── */}
-      <div style={{ display: "grid", gap: "50px" }}>
-        
-        {/* SECTION 1: Buttons */}
-        <section>
-          <h2 className="text-xl" style={{ marginBottom: "20px", borderLeft: "4px solid var(--color-accent)", paddingLeft: "12px" }}>
-            Buttons
-          </h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" }}>
-            <Button variant="primary">Primary Gold Button</Button>
-            <Button variant="secondary">Secondary Dark Outline</Button>
-            <Button variant="danger">Danger Outline</Button>
-            <Button variant="primary" disabled>Disabled Button</Button>
-            <Button
-              variant="primary"
-              loading={isButtonLoading}
-              onClick={handleTriggerLoading}
-            >
-              Click to Load Spinner
-            </Button>
-          </div>
-        </section>
-
-        {/* SECTION 2: Toasts */}
-        <section>
-          <h2 className="text-xl" style={{ marginBottom: "20px", borderLeft: "4px solid var(--color-accent)", paddingLeft: "12px" }}>
-            Toast Notifications
-          </h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
-            <Button variant="secondary" onClick={() => toast.success("Your changes have been saved successfully.", "Saved")}>
-              Trigger Success Toast
-            </Button>
-            <Button variant="secondary" onClick={() => toast.error("Could not establish a database connection.", "Database Error")}>
-              Trigger Error Toast
-            </Button>
-            <Button variant="secondary" onClick={() => toast.info("Your order is scheduled for dispatch today.", "Information Update")}>
-              Trigger Info Toast
-            </Button>
-          </div>
-        </section>
-
-        {/* SECTION 3: Cards & Products */}
-        <section>
-          <h2 className="text-xl" style={{ marginBottom: "20px", borderLeft: "4px solid var(--color-accent)", paddingLeft: "12px" }}>
-            Cards & Product Layout
-          </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "30px" }}>
-            
-            {/* Product Card */}
-            <Card interactive className="card-product">
-              <div className="card-product-image-container">
-                <Image
-                  src="/fashion_product_mockup.png"
-                  alt="Premium Black Jacket with Gold Zippers"
-                  className="card-product-image"
-                  width={300}
-                  height={300}
-                  style={{ objectFit: "cover" }}
-                />
-                <span
-                  className="text-xs font-semibold"
-                  style={{
-                    position: "absolute",
-                    top: "12px",
-                    left: "12px",
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-text-on-dark)",
-                    padding: "4px 8px",
-                    borderRadius: "var(--radius-sm)",
-                  }}
-                >
-                  NEW RELEASE
-                </span>
-              </div>
-              <div className="card-product-content">
-                <h3 className="card-product-title">Stitch Gold-Trimmed Premium Jacket</h3>
-                <span className="card-product-price" style={{ color: "var(--color-accent-dark)", marginBottom: "16px", display: "block" }}>
-                  ₹4,999.00
-                </span>
-                <div style={{ marginTop: "auto" }}>
-                  <Button variant="primary" style={{ width: "100%" }} onClick={() => toast.success("Added Premium Jacket to your cart!", "Cart Updated")}>
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            </Card>
-
-            {/* Info / Policy Card */}
-            <Card className="card-info" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <div>
-                <CardHeader>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    style={{ width: "20px", height: "20px", color: "var(--color-accent)" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.09-2.543a1.125 1.125 0 00-.735-1.012l-3.325-1.109m0-6h1.5A2.25 2.25 0 0121 8.25v5.25m-18 0A2.25 2.25 0 015.25 11.25h11.25m-11.25 3v1.5m2.25 0h7.5"
-                    />
-                  </svg>
-                  <span>Shipping & Returns Policy</span>
-                </CardHeader>
-                <p className="text-sm" style={{ color: "var(--color-text-secondary)", lineHeight: "1.6" }}>
-                  Standard shipping: 3-5 business days across India. Return windows are strictly 7 days from the timestamp of delivery. COD is available for serviceable locations only.
-                </p>
-                
-                <div className="alert-banner alert-warning" style={{ marginTop: "16px" }}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    style={{ width: "18px", height: "18px", flexShrink: 0, marginTop: "2px" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                    />
-                  </svg>
-                  <div>
-                    <strong style={{ display: "block", marginBottom: "2px" }}>COD Limit Active</strong>
-                    Orders exceeding ₹10,000 are restricted to prepaid payment methods only.
-                  </div>
-                </div>
-              </div>
-              <Button variant="secondary" style={{ marginTop: "20px" }} onClick={() => setIsModalOpen(true)}>
-                Open Full Terms Modal
-              </Button>
-            </Card>
-
-          </div>
-        </section>
-
-        {/* SECTION 4: Interactive Forms */}
-        <section>
-          <h2 className="text-xl" style={{ marginBottom: "20px", borderLeft: "4px solid var(--color-accent)", paddingLeft: "12px" }}>
-            Interactive Form Controls
-          </h2>
-          <Card style={{ padding: "30px", maxWidth: "600px" }}>
-            <form onSubmit={handleFormSubmit}>
-              <Input
-                label="Full Name"
-                placeholder="Enter your name"
-                required
-                value={formData.name}
-                error={formErrors.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <Input
-                label="Email Address"
-                placeholder="you@example.com"
-                type="email"
-                required
-                value={formData.email}
-                error={formErrors.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-              <Input
-                label="Pincode"
-                placeholder="e.g. 530001"
-                required
-                maxLength={6}
-                value={formData.pincode}
-                error={formErrors.pincode}
-                onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
-              />
-              <Select
-                label="Shipping Service Level"
-                value={formData.service}
-                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                options={[
-                  { value: "standard", label: "Standard Shipping (3-5 Days)" },
-                  { value: "express", label: "Express Shipping (1-2 Days)" },
-                  { value: "same-day", label: "Vizag Direct Same-Day (Selected areas)" },
-                ]}
-              />
-              <Textarea
-                label="Additional Delivery Instructions"
-                placeholder="e.g. Leave with security guard"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              />
-              <Button variant="primary" type="submit" style={{ width: "100%", marginTop: "10px" }}>
-                Submit Information
-              </Button>
-            </form>
-          </Card>
-        </section>
-
+          {sub}
+        </div>
       </div>
+    </div>
+  );
+}
 
-      {/* ── Modal Component ───────────────────────────────────────────────── */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="GVSwift Policies & Terms"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-              Decline
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setIsModalOpen(false);
-                toast.success("You accepted the terms and conditions.", "Terms Accepted");
+export default async function HomePage() {
+  // Fetch up to 8 featured products and all categories in parallel
+  const [productsResult, categories] = await Promise.all([
+    getProducts({ limit: "8" }),
+    getCategories(),
+  ]);
+
+  const { products } = productsResult;
+
+  return (
+    <div
+      style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh", color: "var(--color-text-primary)" }}
+    >
+      <Navbar />
+
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section
+        style={{
+          position: "relative",
+          minHeight: "520px",
+          display: "flex",
+          alignItems: "center",
+          overflow: "hidden",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        {/* Gold gradient background */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 80% 60% at 60% 50%, rgba(212,169,67,0.10) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "80px 20px",
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "48px",
+            alignItems: "center",
+          }}
+          className="hero-grid"
+        >
+          {/* Left — copy */}
+          <div style={{ maxWidth: "560px" }}>
+            <span
+              style={{
+                display: "inline-block",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "var(--color-accent)",
+                marginBottom: "16px",
+                padding: "4px 10px",
+                border: "1px solid rgba(212,169,67,0.35)",
+                borderRadius: "100px",
               }}
             >
-              Accept Terms
-            </Button>
-          </>
-        }
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", color: "var(--color-text-secondary)" }}>
-          <p>
-            Welcome to GVSwift. Please read our operational policies carefully. Our Cash on Delivery (COD) services are subject to verification and local serviceability filters.
-          </p>
-          <p>
-            Any account flagged with a <strong>BLACKLISTED</strong> or <strong>HIGH_RISK</strong> status in our database will be restricted from placing COD orders. Orders exceeding the transaction value of ₹10,000 will be auto-rejected at checkout.
-          </p>
-          <p>
-            Return requests are only valid within 7 days of package delivery. Returned packages must remain unworn, with all tags and original packaging intact.
-          </p>
+              Shop with Confidence
+            </span>
+
+            <h1
+              style={{
+                fontFamily: "var(--font-heading), serif",
+                fontSize: "clamp(36px, 6vw, 64px)",
+                fontWeight: 700,
+                lineHeight: 1.1,
+                color: "var(--color-text-primary)",
+                marginBottom: "20px",
+              }}
+            >
+              Premium Fashion,{" "}
+              <span style={{ color: "var(--color-accent)" }}>
+                Delivered to Your Door
+              </span>
+            </h1>
+
+            <p
+              style={{
+                fontSize: "17px",
+                lineHeight: 1.65,
+                color: "var(--color-text-secondary)",
+                marginBottom: "36px",
+                maxWidth: "480px",
+              }}
+            >
+              Exclusive styles with Cash on Delivery across Andhra Pradesh. No
+              prepayment required — pay when you receive your order.
+            </p>
+
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              <Link href="/products" className="btn btn-primary" style={{ fontSize: "15px", padding: "12px 28px" }}>
+                Shop Collection →
+              </Link>
+              <Link href="/signup" className="btn btn-secondary" style={{ fontSize: "15px", padding: "12px 28px" }}>
+                Create Account
+              </Link>
+            </div>
+          </div>
+
+          {/* Right — hero image / showcase card */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+            className="hero-image-col"
+          >
+            <div
+              style={{
+                width: "320px",
+                height: "380px",
+                borderRadius: "var(--radius-lg)",
+                overflow: "hidden",
+                border: "1px solid var(--color-border)",
+                backgroundColor: "var(--color-surface)",
+                position: "relative",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
+              }}
+            >
+              <Image
+                src="/fashion_product_mockup.png"
+                alt="GVSwift Premium Fashion"
+                fill
+                style={{ objectFit: "cover" }}
+                priority
+              />
+              {/* Gold shimmer overlay */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "40%",
+                  background: "linear-gradient(0deg, rgba(11,11,12,0.7) 0%, transparent 100%)",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "20px",
+                  left: "20px",
+                  right: "20px",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--color-accent)",
+                    marginBottom: "4px",
+                  }}
+                >
+                  New Arrival
+                </div>
+                <div
+                  style={{ fontSize: "15px", fontWeight: 600, color: "#fff" }}
+                >
+                  Stitch Gold Collection
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </Modal>
-    </main>
+
+        <style>{`
+          @media (min-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr 1fr !important; }
+          }
+          @media (max-width: 767px) {
+            .hero-image-col { display: none !important; }
+          }
+        `}</style>
+      </section>
+
+      {/* ── TRUST BADGES ──────────────────────────────────────────────────── */}
+      <section
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "40px 20px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            flexWrap: "wrap",
+          }}
+        >
+          <StatBadge icon="💵" label="Cash on Delivery" sub="No prepayment required" />
+          <StatBadge icon="🚚" label="Free Shipping" sub="On all orders" />
+          <StatBadge icon="↩️" label="7-Day Returns" sub="Hassle-free returns" />
+          <StatBadge icon="🛡️" label="Secure Orders" sub="4-tier risk protection" />
+        </div>
+      </section>
+
+      {/* ── CATEGORY SHORTCUTS ────────────────────────────────────────────── */}
+      {categories.length > 0 && (
+        <section
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "0 20px 40px",
+          }}
+        >
+          <h2
+            className="text-xl font-semibold"
+            style={{ color: "var(--color-text-primary)", marginBottom: "20px" }}
+          >
+            Shop by Category
+          </h2>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            <Link
+              href="/products"
+              style={{
+                padding: "10px 20px",
+                borderRadius: "var(--radius-md)",
+                fontSize: "14px",
+                fontWeight: 500,
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-accent-text)",
+                border: "1px solid var(--color-accent)",
+                textDecoration: "none",
+                transition: "opacity 0.2s ease",
+              }}
+            >
+              All Products
+            </Link>
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/products?categoryId=${cat.id}`}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "var(--radius-md)",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text-primary)",
+                  border: "1px solid var(--color-border)",
+                  textDecoration: "none",
+                  transition: "border-color 0.2s ease, color 0.2s ease",
+                }}
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── FEATURED PRODUCTS ─────────────────────────────────────────────── */}
+      <section
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "0 20px 64px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginBottom: "24px",
+            flexWrap: "wrap",
+            gap: "12px",
+          }}
+        >
+          <h2
+            className="text-xl font-semibold"
+            style={{ color: "var(--color-text-primary)", margin: 0 }}
+          >
+            Featured Collection
+          </h2>
+          <Link
+            href="/products"
+            style={{
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "var(--color-accent)",
+              textDecoration: "none",
+            }}
+          >
+            View all →
+          </Link>
+        </div>
+
+        {products.length === 0 ? (
+          <div
+            style={{
+              padding: "80px 20px",
+              textAlign: "center",
+              backgroundColor: "var(--color-surface)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-lg)",
+            }}
+          >
+            <p style={{ color: "var(--color-text-secondary)", fontSize: "16px" }}>
+              Products coming soon. Check back shortly!
+            </p>
+          </div>
+        ) : (
+          <div className="product-grid">
+            {products.map((product) => {
+              const primaryImage =
+                product.images.find((img) => img.isPrimary) || product.images[0];
+              const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
+              const totalStock = product.variants.reduce(
+                (acc, v) => acc + v.stock,
+                0
+              );
+              const isOutOfStock = totalStock === 0;
+              const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
+
+              return (
+                <Link
+                  key={product.id}
+                  href={`/products/${product.slug}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div
+                    className="card card-interactive card-product"
+                    style={{ height: "100%" }}
+                  >
+                    {/* Image */}
+                    <div
+                      className="card-product-image-container"
+                      style={{ opacity: isOutOfStock ? 0.65 : 1 }}
+                    >
+                      <Image
+                        src={imageUrl}
+                        alt={primaryImage?.altText || product.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                        className="card-product-image"
+                      />
+                      {isOutOfStock ? (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "10px",
+                            left: "10px",
+                            backgroundColor: "var(--color-error)",
+                            color: "#fff",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            padding: "3px 7px",
+                            borderRadius: "var(--radius-sm)",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Out of Stock
+                        </span>
+                      ) : totalStock <= 5 ? (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "10px",
+                            left: "10px",
+                            backgroundColor: "var(--color-warning)",
+                            color: "#fff",
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            padding: "3px 7px",
+                            borderRadius: "var(--radius-sm)",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Only {totalStock} left
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {/* Info */}
+                    <div className="card-product-content">
+                      <h3
+                        className="card-product-title"
+                        style={{ color: "var(--color-text-primary)" }}
+                      >
+                        {product.name}
+                      </h3>
+                      <span
+                        className="card-product-price"
+                        style={{
+                          color: "var(--color-accent)",
+                          display: "block",
+                          marginTop: "6px",
+                        }}
+                      >
+                        {formattedPrice}
+                      </span>
+                      <div
+                        style={{
+                          marginTop: "auto",
+                          paddingTop: "14px",
+                        }}
+                      >
+                        <div
+                          className="btn btn-primary"
+                          style={{
+                            width: "100%",
+                            justifyContent: "center",
+                            opacity: isOutOfStock ? 0.5 : 1,
+                            pointerEvents: "none",
+                            fontSize: "13px",
+                            minHeight: "38px",
+                          }}
+                        >
+                          {isOutOfStock ? "Out of Stock" : "Select Options"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ── COD EXPLAINER ─────────────────────────────────────────────────── */}
+      <section
+        style={{
+          backgroundColor: "var(--color-surface)",
+          borderTop: "1px solid var(--color-border)",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "64px 20px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "40px",
+            textAlign: "center",
+          }}
+        >
+          {[
+            {
+              icon: "🛒",
+              title: "Add to Cart",
+              desc: "Browse and select your items. No prepayment needed to start shopping.",
+            },
+            {
+              icon: "📍",
+              title: "Enter Address",
+              desc: "We verify your pincode in real-time to confirm COD availability.",
+            },
+            {
+              icon: "📦",
+              title: "We Dispatch",
+              desc: "Orders confirmed within 24 hours and dispatched in 1–2 business days.",
+            },
+            {
+              icon: "💵",
+              title: "Pay on Delivery",
+              desc: "Hand cash to the courier at your doorstep. Simple and safe.",
+            },
+          ].map((step) => (
+            <div key={step.title}>
+              <div style={{ fontSize: "36px", marginBottom: "12px" }}>{step.icon}</div>
+              <h3
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "var(--color-text-primary)",
+                  marginBottom: "8px",
+                }}
+              >
+                {step.title}
+              </h3>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.6,
+                  maxWidth: "240px",
+                  margin: "0 auto",
+                }}
+              >
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── BOTTOM CTA ────────────────────────────────────────────────────── */}
+      <section
+        style={{
+          maxWidth: "720px",
+          margin: "0 auto",
+          padding: "80px 20px",
+          textAlign: "center",
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "var(--font-heading), serif",
+            fontSize: "clamp(28px, 5vw, 44px)",
+            fontWeight: 700,
+            color: "var(--color-text-primary)",
+            marginBottom: "16px",
+          }}
+        >
+          Ready to Shop?
+        </h2>
+        <p
+          style={{
+            fontSize: "16px",
+            color: "var(--color-text-secondary)",
+            lineHeight: 1.6,
+            marginBottom: "32px",
+          }}
+        >
+          Create a free account and start shopping the Stitch collection today.
+          Cash on Delivery available across Andhra Pradesh.
+        </p>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <Link
+            href="/signup"
+            className="btn btn-primary"
+            style={{ fontSize: "15px", padding: "12px 32px" }}
+          >
+            Create Free Account
+          </Link>
+          <Link
+            href="/products"
+            className="btn btn-secondary"
+            style={{ fontSize: "15px", padding: "12px 32px" }}
+          >
+            Browse Products
+          </Link>
+        </div>
+      </section>
+    </div>
   );
 }
