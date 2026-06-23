@@ -39,7 +39,7 @@ const defaultFormData = {
 export default function AddressesClient({ initialAddresses }: AddressesClientProps) {
   const { toast } = useToast();
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   
   const [formData, setFormData] = useState(defaultFormData);
@@ -47,6 +47,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
   
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [settingDefaultId, setSettingDefaultId] = useState<string | null>(null);
 
   // Synchronize state with backend
@@ -66,7 +67,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
     setEditingAddress(null);
     setFormData(defaultFormData);
     setFieldErrors({});
-    setIsModalOpen(true);
+    setShowForm(true);
   };
 
   const handleOpenEdit = (address: Address) => {
@@ -82,7 +83,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
       isDefault: address.isDefault,
     });
     setFieldErrors({});
-    setIsModalOpen(true);
+    setShowForm(true);
   };
 
   const validate = () => {
@@ -151,7 +152,6 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
 
       const data = await res.json();
       if (!res.ok) {
-        // Specifically map serviceability/pincode errors to the pincode field
         if (data.error && (data.error.includes("ship to this pincode") || data.error.includes("serviceable"))) {
           setFieldErrors((prev) => ({ ...prev, pincode: data.error }));
           throw new Error(data.error);
@@ -160,7 +160,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
       }
 
       toast.success(isEdit ? "Address updated successfully" : "Address created successfully");
-      setIsModalOpen(false);
+      setShowForm(false);
       await refreshAddresses();
     } catch (err: unknown) {
       const error = err as Error;
@@ -196,8 +196,6 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
   };
 
   const handleDelete = async (addressId: string) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
-
     setDeletingId(addressId);
 
     try {
@@ -221,81 +219,170 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      {/* Header action */}
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button variant="primary" onClick={handleOpenAdd} style={{ padding: "10px 24px" }}>
-          + Add New Address
-        </Button>
-      </div>
+    <div className="flex flex-col gap-5">
+      {/* Header action / form toggle */}
+      {!showForm && (
+        <div className="flex justify-end">
+          <Button variant="primary" onClick={handleOpenAdd}>
+            + Add New Address
+          </Button>
+        </div>
+      )}
+
+      {/* Inline Form Add / Edit */}
+      {showForm && (
+        <div className="card p-6 flex flex-col gap-5">
+          <div className="border-b border-color-border pb-3 mb-2" style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: "12px", marginBottom: "8px" }}>
+            <h2 className="text-lg font-semibold text-primary">
+              {editingAddress ? "Edit Address Details" : "Add a New Address"}
+            </h2>
+            <p className="text-xs text-secondary">
+              Please enter your full details. Pincode validation will check serviceability automatically.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Full Name"
+                placeholder="e.g. John Doe"
+                value={formData.fullName}
+                error={fieldErrors.fullName}
+                required
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              />
+              <Input
+                label="Mobile Number"
+                placeholder="10-digit Indian number"
+                value={formData.phone}
+                error={fieldErrors.phone}
+                required
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Input
+                label="Pincode"
+                placeholder="6-digit PIN code"
+                value={formData.pincode}
+                error={fieldErrors.pincode}
+                required
+                onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
+              />
+              <Input
+                label="City"
+                placeholder="e.g. Bangalore"
+                value={formData.city}
+                error={fieldErrors.city}
+                required
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              />
+              <Input
+                label="State"
+                placeholder="e.g. Karnataka"
+                value={formData.state}
+                error={fieldErrors.state}
+                required
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+              />
+            </div>
+
+            <Input
+              label="Address Line 1"
+              placeholder="Flat, House no., Building, Company, Apartment"
+              value={formData.line1}
+              error={fieldErrors.line1}
+              required
+              onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
+            />
+
+            <Input
+              label="Address Line 2 (Optional)"
+              placeholder="Area, Street, Sector, Village"
+              value={formData.line2}
+              error={fieldErrors.line2}
+              onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
+            />
+
+            <div className="flex items-center gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="isDefault"
+                checked={formData.isDefault}
+                onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                className="icon-xs"
+                style={{
+                  cursor: "pointer",
+                  accentColor: "var(--color-accent)",
+                }}
+              />
+              <label
+                htmlFor="isDefault"
+                className="text-sm text-primary"
+                style={{
+                  cursor: "pointer",
+                  userSelect: "none",
+                }}
+              >
+                Make this my default shipping address
+              </label>
+            </div>
+
+            <div className="admin-divider mt-12" />
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setShowForm(false)}
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                loading={submitting}
+                className="btn-min-w-160"
+              >
+                {editingAddress ? "Save Changes" : "Add Address"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Address List Grid */}
       {addresses.length === 0 ? (
-        <Card
-          style={{
-            padding: "48px 24px",
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "16px",
-            backgroundColor: "var(--color-surface)",
-          }}
-        >
+        <Card className="p-6 flex flex-col items-center text-center gap-4">
           <span style={{ fontSize: "48px" }}>📍</span>
-          <h2 className="text-xl font-semibold" style={{ color: "var(--color-text-primary)" }}>No addresses found</h2>
-          <p style={{ color: "var(--color-text-secondary)", maxWidth: "400px", fontSize: "14px" }}>
+          <h2 className="text-xl font-semibold text-primary">No addresses found</h2>
+          <p className="text-sm text-secondary max-w-xl">
             Add a shipping address to enable quick checkout for your cash on delivery orders.
           </p>
-          <Button variant="primary" onClick={handleOpenAdd} style={{ marginTop: "8px" }}>
-            Add Your First Address
-          </Button>
+          {!showForm && (
+            <Button variant="primary" onClick={handleOpenAdd} className="mt-8">
+              Add Your First Address
+            </Button>
+          )}
         </Card>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }} className="md:grid-cols-2">
+        <div className="address-grid">
           {addresses.map((address) => (
             <Card
               key={address.id}
-              style={{
-                padding: "24px",
-                backgroundColor: "var(--color-surface)",
-                borderColor: address.isDefault ? "var(--color-accent)" : "var(--color-border)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                position: "relative",
-              }}
+              className={`p-5 flex flex-col gap-4 relative ${address.isDefault ? "address-card-default" : ""}`}
             >
               {/* Badges Container */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", position: "absolute", top: "16px", right: "16px" }}>
+              <div className="flex flex-wrap gap-2 absolute" style={{ top: "16px", right: "16px" }}>
                 {address.isDefault && (
-                  <span
-                    style={{
-                      backgroundColor: "rgba(212, 169, 67, 0.12)",
-                      border: "1px solid var(--color-accent)",
-                      color: "var(--color-accent)",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      padding: "2px 8px",
-                      borderRadius: "var(--radius-sm)",
-                      textTransform: "uppercase",
-                    }}
-                  >
+                  <span className="badge-default">
                     Default
                   </span>
                 )}
                 {address.codBlocked && (
-                  <span
-                    style={{
-                      backgroundColor: "var(--color-warning-bg)",
-                      border: "1px solid var(--color-warning)",
-                      color: "var(--color-warning)",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      padding: "2px 8px",
-                      borderRadius: "var(--radius-sm)",
-                    }}
-                  >
+                  <span className="badge-warning">
                     COD Unavailable
                   </span>
                 )}
@@ -303,40 +390,39 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
 
               {/* Recipient Details */}
               <div>
-                <h3 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)", paddingRight: address.isDefault || address.codBlocked ? "120px" : "0" }}>
+                <h3 className={`text-lg font-semibold text-primary ${address.isDefault || address.codBlocked ? "address-title-with-badges" : ""}`}>
                   {address.fullName}
                 </h3>
-                <p style={{ color: "var(--color-text-secondary)", fontSize: "14px", marginTop: "4px" }}>
+                <p className="text-sm text-secondary mt-4">
                   Phone: {address.phone}
                 </p>
               </div>
 
               {/* Address Details */}
-              <div style={{ color: "var(--color-text-primary)", fontSize: "14px", lineHeight: "1.6" }}>
+              <div className="text-sm text-primary" style={{ lineHeight: "1.6" }}>
                 <p>{address.line1}</p>
                 {address.line2 && <p>{address.line2}</p>}
                 <p>
                   {address.city}, {address.state} &ndash;{" "}
-                  <strong style={{ color: "var(--color-accent)" }}>{address.pincode}</strong>
+                  <strong className="text-accent">{address.pincode}</strong>
                 </p>
               </div>
 
               {/* Footer Actions */}
-              <div style={{ display: "flex", gap: "12px", marginTop: "auto", borderTop: "1px solid var(--color-border)", paddingTop: "16px", flexWrap: "wrap", alignItems: "center" }}>
+              <div className="address-card-footer">
                 <Button
                   variant="secondary"
                   onClick={() => handleOpenEdit(address)}
                   disabled={deletingId === address.id || settingDefaultId === address.id}
-                  style={{ minHeight: "36px", height: "36px", padding: "0 16px", fontSize: "13px" }}
+                  className="btn-sm"
                 >
                   Edit
                 </Button>
                 <Button
                   variant="danger"
-                  onClick={() => handleDelete(address.id)}
-                  loading={deletingId === address.id}
+                  onClick={() => setConfirmDeleteId(address.id)}
                   disabled={deletingId === address.id || settingDefaultId === address.id}
-                  style={{ minHeight: "36px", height: "36px", padding: "0 16px", fontSize: "13px" }}
+                  className="btn-sm"
                 >
                   Delete
                 </Button>
@@ -346,15 +432,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
                     onClick={() => handleSetDefault(address.id)}
                     loading={settingDefaultId === address.id}
                     disabled={deletingId === address.id || settingDefaultId === address.id}
-                    style={{ minHeight: "36px", height: "36px", padding: "0 16px", fontSize: "13px", border: "1px solid var(--color-accent)", color: "var(--color-accent)" }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-accent)";
-                      e.currentTarget.style.color = "var(--color-accent-text)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = "var(--color-accent)";
-                    }}
+                    className="btn-sm"
                   >
                     Set as Default
                   </Button>
@@ -365,122 +443,38 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
         </div>
       )}
 
-      {/* Add / Edit Address Modal */}
+      {/* Delete Confirmation Modal */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingAddress ? "Edit Address" : "Add New Address"}
+        isOpen={!!confirmDeleteId}
+        onClose={() => setConfirmDeleteId(null)}
+        title="Delete Address"
         footer={
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", width: "100%" }}>
+          <div className="flex justify-end gap-3 w-full">
             <Button
               variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-              disabled={submitting}
-              style={{ minHeight: "44px" }}
+              onClick={() => setConfirmDeleteId(null)}
+              disabled={deletingId !== null}
             >
               Cancel
             </Button>
             <Button
-              variant="primary"
-              onClick={handleSubmit}
-              loading={submitting}
-              style={{ minHeight: "44px", minWidth: "120px" }}
+              variant="danger"
+              onClick={async () => {
+                if (confirmDeleteId) {
+                  await handleDelete(confirmDeleteId);
+                  setConfirmDeleteId(null);
+                }
+              }}
+              loading={deletingId === confirmDeleteId}
             >
-              {editingAddress ? "Save Changes" : "Add Address"}
+              Delete Address
             </Button>
           </div>
         }
       >
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-2">
-            <Input
-              label="Full Name"
-              placeholder="e.g. John Doe"
-              value={formData.fullName}
-              error={fieldErrors.fullName}
-              required
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            />
-            <Input
-              label="Mobile Number"
-              placeholder="10-digit Indian number"
-              value={formData.phone}
-              error={fieldErrors.phone}
-              required
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
-            />
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-3">
-            <Input
-              label="Pincode"
-              placeholder="6-digit PIN code"
-              value={formData.pincode}
-              error={fieldErrors.pincode}
-              required
-              onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
-            />
-            <Input
-              label="City"
-              placeholder="e.g. Bangalore"
-              value={formData.city}
-              error={fieldErrors.city}
-              required
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
-            <Input
-              label="State"
-              placeholder="e.g. Karnataka"
-              value={formData.state}
-              error={fieldErrors.state}
-              required
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            />
-          </div>
-
-          <Input
-            label="Address Line 1"
-            placeholder="Flat, House no., Building, Company, Apartment"
-            value={formData.line1}
-            error={fieldErrors.line1}
-            required
-            onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
-          />
-
-          <Input
-            label="Address Line 2 (Optional)"
-            placeholder="Area, Street, Sector, Village"
-            value={formData.line2}
-            error={fieldErrors.line2}
-            onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
-          />
-
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
-            <input
-              type="checkbox"
-              id="isDefault"
-              checked={formData.isDefault}
-              onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-              style={{
-                width: "18px",
-                height: "18px",
-                cursor: "pointer",
-                accentColor: "var(--color-accent)",
-              }}
-            />
-            <label
-              htmlFor="isDefault"
-              style={{
-                fontSize: "14px",
-                color: "var(--color-text-primary)",
-                cursor: "pointer",
-                userSelect: "none",
-              }}
-            >
-              Make this my default shipping address
-            </label>
-          </div>
-        </form>
+        <p className="text-sm text-secondary">
+          Are you sure you want to permanently delete this shipping address? This action cannot be undone.
+        </p>
       </Modal>
     </div>
   );

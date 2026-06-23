@@ -18,14 +18,16 @@ export default async function AdminRiskPage() {
   const initialData = await listRiskFlags({ page: 1, limit: 20 });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <header>
-        <h1 className="text-3xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}>
-          Risk & Fraud Rules
-        </h1>
-        <p style={{ color: "var(--color-text-secondary)" }}>
-          Manage serviceability and COD restrictions for specific pincodes, phone numbers, addresses, or users.
-        </p>
+    <div className="flex flex-col gap-5">
+      <header className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">
+            Risk & Fraud Rules
+          </h1>
+          <p className="text-secondary">
+            Manage serviceability and COD restrictions for specific pincodes, phone numbers, addresses, or users.
+          </p>
+        </div>
       </header>
 
       <RiskManager initialData={initialData} />

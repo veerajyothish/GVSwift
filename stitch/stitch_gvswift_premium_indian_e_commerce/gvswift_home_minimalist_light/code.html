@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVSWIFT | Heritage in Motion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Using the provided Tailwind configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e2e2e2",
+                    "on-primary": "#ffffff",
+                    "primary-container": "#181d19",
+                    "secondary-fixed": "#e7e2da",
+                    "inverse-surface": "#2f3131",
+                    "on-surface-variant": "#444844",
+                    "tertiary": "#000000",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#eeeeee",
+                    "outline": "#747874",
+                    "background": "#f9f9f9",
+                    "outline-variant": "#c4c7c2",
+                    "on-secondary-container": "#65625c",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#dadada",
+                    "surface-bright": "#f9f9f9",
+                    "surface-container-highest": "#e2e2e2",
+                    "tertiary-container": "#1d1c16",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#1d1c17",
+                    "tertiary-fixed-dim": "#cac6be",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#87847c",
+                    "secondary": "#615e58",
+                    "surface-container-high": "#e8e8e8",
+                    "on-tertiary-fixed": "#1d1c16",
+                    "surface-container-low": "#f3f3f4",
+                    "primary": "#000000",
+                    "secondary-fixed-dim": "#cac6be",
+                    "error": "#ba1a1a",
+                    "on-background": "#1a1c1c",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#181d19",
+                    "tertiary-fixed": "#e7e2d9",
+                    "secondary-container": "#e4dfd7",
+                    "surface": "#f9f9f9",
+                    "on-secondary-fixed-variant": "#494741",
+                    "inverse-on-surface": "#f0f1f1",
+                    "primary-fixed-dim": "#c4c7c2",
+                    "on-tertiary-fixed-variant": "#494740",
+                    "inverse-primary": "#c4c7c2",
+                    "surface-tint": "#5b5f5b",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-fixed-variant": "#444844",
+                    "on-primary-container": "#818580",
+                    "primary-fixed": "#e0e3de"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "32px",
+                    "margin-desktop": "64px",
+                    "container-max": "1440px",
+                    "gutter": "24px",
+                    "stack-md": "64px",
+                    "stack-xl": "120px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["DM Sans"],
+                    "headline-sm": ["Libre Caslon Text"],
+                    "display-lg": ["Libre Caslon Text"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "label-sm": ["DM Sans"],
+                    "body-lg": ["DM Sans"],
+                    "label-md": ["DM Sans"],
+                    "display-lg-mobile": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            overflow-x: hidden;
+        }
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .luxury-line {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #101411, transparent);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary-fixed selection:text-primary">
+<!-- TopNavBar from JSON -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-on-surface border-b border-primary dark:border-on-primary">
+<div class="flex justify-between items-center w-full px-margin-desktop py-6 max-w-container-max mx-auto">
+<div class="flex items-center gap-12">
+<h1 class="font-display-lg text-display-lg tracking-tighter text-primary dark:text-on-primary uppercase cursor-pointer">GVSWIFT</h1>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-primary dark:text-on-primary border-b-2 border-primary dark:border-on-primary pb-1 cursor-pointer transition-all duration-200" href="#">COLLECTIONS</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-on-primary cursor-pointer transition-all duration-200" href="#">ARCHIVE</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-on-primary cursor-pointer transition-all duration-200" href="#">HERITAGE</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-on-primary cursor-pointer transition-all duration-200" href="#">ABOUT</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:block relative">
+<input class="bg-transparent border-b border-primary py-1 px-2 font-label-sm text-label-sm focus:outline-none w-48" placeholder="SEARCH" type="text"/>
+</div>
+<button class="material-symbols-outlined hover:opacity-70 transition-opacity duration-300 text-primary dark:text-on-primary" data-icon="shopping_bag">shopping_bag</button>
+<button class="material-symbols-outlined hover:opacity-70 transition-opacity duration-300 text-primary dark:text-on-primary" data-icon="person">person</button>
+</div>
+</div>
+</header>
+<main class="pt-[104px]">
+<!-- Hero Section -->
+<section class="relative w-full h-[90vh] overflow-hidden flex items-center justify-center bg-white px-margin-mobile md:px-margin-desktop">
+<div class="absolute inset-0 z-0">
+<img alt="GVSWIFT Hero Image" class="w-full h-full object-cover grayscale opacity-90" src="https://lh3.googleusercontent.com/aida/AP1WRLsBkF3oPik0ei4UKekxKVJJhNEadOdI3FzUcAmxOHGVAYUBywpMSEnyCgxsOHpOBioKxM80J_9NzXLnQAHugKUDOv28DBqjAjiNEFYGm4Az1ty1CKHG0obR9rIlWHi1zQLvhSt_NoydeYQ8DXw_ydTkjSuC6Q5nRZomF0c7vXOYT7r_f8yYnz4FDNW6HDFdu1m5p17eQYAOj1i1mKklW9yxmVFkd5gIh3apAoLpJ-CQWoz_DnG0kkEGLpq-"/>
+</div>
+<div class="relative z-10 text-center max-w-4xl mix-blend-difference">
+<span class="font-label-md text-label-md text-white tracking-[0.4em] uppercase mb-6 block reveal-on-scroll">Est. 2024</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-white mb-8 reveal-on-scroll" style="transition-delay: 100ms;">
+                    WEAR WHAT <br/> <span class="italic">MOVES YOU</span>
+</h2>
+<div class="flex justify-center gap-6 reveal-on-scroll" style="transition-delay: 200ms;">
+<button class="bg-white text-black px-10 py-4 font-label-md text-label-md uppercase hover:bg-black hover:text-white transition-colors duration-300">Shop Collection</button>
+<button class="border border-white text-white px-10 py-4 font-label-md text-label-md uppercase hover:bg-white hover:text-black transition-colors duration-300">View Lookbook</button>
+</div>
+</div>
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce opacity-40">
+<span class="font-label-sm text-label-sm uppercase tracking-widest mb-2">Scroll</span>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</section>
+<!-- Trust Bar -->
+<section class="bg-secondary-container py-8 border-y border-outline-variant">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex items-center justify-center gap-4 reveal-on-scroll">
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">CASH ON DELIVERY</span>
+</div>
+<div class="flex items-center justify-center gap-4 reveal-on-scroll" style="transition-delay: 100ms;">
+<span class="material-symbols-outlined text-primary" data-icon="keyboard_return">keyboard_return</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">FREE RETURNS</span>
+</div>
+<div class="flex items-center justify-center gap-4 reveal-on-scroll" style="transition-delay: 200ms;">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">2-DAY SHIPPING</span>
+</div>
+</div>
+</section>
+<!-- Featured Collection Grid -->
+<section class="max-w-container-max mx-auto px-margin-desktop py-stack-xl">
+<div class="flex flex-col md:flex-row justify-between items-end mb-stack-md reveal-on-scroll">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-[0.3em] text-secondary mb-4 block">Seasonal Selection</span>
+<h3 class="font-headline-md text-headline-md">FEATURED ARCHIVE</h3>
+</div>
+<a class="font-label-md text-label-md uppercase border-b border-primary pb-1 hover:opacity-50 transition-opacity" href="#">View All Series</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Asymmetric Layout Item 1 -->
+<div class="md:col-span-7 reveal-on-scroll">
+<div class="aspect-[4/5] overflow-hidden bg-surface-container-low group cursor-pointer mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A high-fashion editorial photograph of a contemporary minimalist garment draped on a mannequin in a stark, white-walled gallery. The lighting is crisp and overhead, casting sharp shadows that emphasize the architectural folds of the fabric. The overall mood is cold, clinical, and prestigious, utilizing a monochromatic black and white palette with ivory undertones. The setting is purely minimal, focusing the viewer's attention entirely on the intricate texture of the luxury apparel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYgY-VGBYO_6Qo7fhD3YxK9M5f0ds5FeLTReLIiyuFw6LlIKmxOdWEN6NOUBZSOof-up8IOI6GkYlW0ofJK7dibavLFz_2zxvVJ5jUL5kjkhsoCQAIllVmMt_OWpUAr7Cxn2x0vA-QceCr2pEnNssZ7rZ2nXL1ioJ1txNL7_HELSaeMmOnhjZv2owv_qc-Q4KtpluLx2R2zwx8cRC98WlyhXGp4c4yFwSFTV-W--R0ybyTnyednWNULVB91xnRjlz2Ntoyi-7-khpN"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md uppercase mb-1">GVS-01 ARCHIVE TUNIC</p>
+<p class="font-body-md text-body-md text-secondary">RAW SILK &amp; LINEN BLEND</p>
+</div>
+<p class="font-label-md text-label-md">₹14,500</p>
+</div>
+</div>
+<!-- Asymmetric Layout Item 2 -->
+<div class="md:col-span-4 md:col-start-9 mt-stack-md md:mt-0 reveal-on-scroll" style="transition-delay: 200ms;">
+<div class="aspect-[3/4] overflow-hidden bg-surface-container-low group cursor-pointer mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Close-up artistic shot of a luxury fashion accessory, a hand-crafted leather belt with a brushed silver buckle, resting on a smooth bone-colored pedestal. The lighting is soft and diffused, highlighting the premium grain of the leather. The environment is an empty, high-end boutique with pure white surfaces. The aesthetic is extremely minimalist and sophisticated, following a high-contrast black and white theme typical of a modern museum archive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4oZXKbvUP5cjZ0c7Ti8SwOAeX5DMJN0-Zet6Cnj6wTuN0M_h5cCK-BJozQ69H6RtSNHLZpSf_a0XKEBizvxLKQRgcP2lEz3l7Axh4icn6paUEEacd-y16PPOTFJ3cwJhDnJzJpJeW-AX0EhwRm-J5JNxvkNlblCQEyIpjK5W89K-3OeCheTgUWDL4OCSEh63oquLk4IrmrD9Y__wdhHsjvlBM_2-K5UEqf7Zk_Ua4Rkf3lyW-tOklXKoOZ3xZfB4IfbdlUw7toomf"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md uppercase mb-1">HERITAGE WAISTBAND</p>
+<p class="font-body-md text-body-md text-secondary">FULL-GRAIN TUSCAN LEATHER</p>
+</div>
+<p class="font-label-md text-label-md">₹8,900</p>
+</div>
+</div>
+<!-- Asymmetric Layout Item 3 -->
+<div class="md:col-span-5 md:mt-[-120px] reveal-on-scroll" style="transition-delay: 100ms;">
+<div class="aspect-square overflow-hidden bg-surface-container-low group cursor-pointer mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A wide-angle landscape fashion photograph featuring a model walking through a minimalist concrete structure. The model is wearing an oversized ivory wool coat with clean, sharp lines. The lighting is natural but dramatic, with strong chiaroscuro effects separating the subject from the architectural background. The color palette is strictly limited to blacks, whites, and warm ivory, creating a sense of timeless prestige and museum-like quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0D9HthZz2ipeqXe_KDe9BD3lkqYCzNbPpKPkPGPiKzpmJg6cO8D_94tQCbtikoTTd6c_CbhfaAuLR7ELXDC5x7lBugj0cku4SyqjQ-SDSLqoEAOayZy9XxWg3fhbP1Rt-y2gfn0sdXf_nDAV3BlCK4XMEeUw4mnW32rHE2mmkiasxn43wH1aioXaqr9m2Ct8Le8i5ZhcUDQgu1OrARgXAO7nVDr68H3pURUVxVlvfNl1eqGfnw8IyghJnruodWJeA-tQ_1Lffg6HP"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md uppercase mb-1">FLUID STRUCTURE COAT</p>
+<p class="font-body-md text-body-md text-secondary">DOUBLE-FACED VIRGIN WOOL</p>
+</div>
+<p class="font-label-md text-label-md">₹28,200</p>
+</div>
+</div>
+<!-- Asymmetric Layout Item 4 -->
+<div class="md:col-span-6 md:col-start-7 reveal-on-scroll" style="transition-delay: 300ms;">
+<div class="aspect-[16/9] overflow-hidden bg-surface-container-low group cursor-pointer mb-6">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="An abstract fashion image focusing on the texture of a pleated black fabric against a bright white background. The intricate folds create a rhythmic pattern of light and shadow, resembling an architectural blueprint. The shot is high-contrast and very sharp, emphasizing the premium quality of the material. This editorial style image communicates a sense of modern heritage and sophisticated minimalism, fitting for a luxury clothing brand website." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdj_PEh66FX-EPKyFdiyI-h5w60_zj00T0JrjqUyr8oAuZYoEYMOkAnj7V6Bouk7wCoi6Jc_TBLCPNejqc8Pn0Yp2WtxLVt8KLrAT4oDoQndT7NFkTuXs_gbxbYCjA7Hd2VtxpxMkOhi0HCjCNj1ZAbxqA35U8pbIHnaCrkrBdOB8dI53P3OZdl1ZsBDgyhvnK-VSZEFMAoElt2mzvPK8rvR4nPF1JrMcEa39_sLFswTUdD_xSPXbF5Lte03RNAi-kMX0oWba59k4x"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-label-md text-label-md uppercase mb-1">MUSEUM SERIES TROUSER</p>
+<p class="font-body-md text-body-md text-secondary">PLEATED TECHNICAL CREPE</p>
+</div>
+<p class="font-label-md text-label-md">₹12,400</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Statement Section -->
+<section class="bg-primary text-on-primary py-stack-xl">
+<div class="max-w-4xl mx-auto px-margin-mobile text-center">
+<span class="material-symbols-outlined text-4xl mb-8" data-icon="auto_awesome">auto_awesome</span>
+<blockquote class="font-headline-md text-headline-md italic mb-12 leading-relaxed reveal-on-scroll">
+                    "Fashion is the armor to survive the reality of everyday life, but GVSWIFT is the motion that defines your legacy."
+                </blockquote>
+<div class="luxury-line w-24 mx-auto mb-12"></div>
+<p class="font-label-md text-label-md tracking-widest reveal-on-scroll">CRAFTED IN NEW DELHI | CURATED FOR THE WORLD</p>
+</div>
+</section>
+<!-- Newsletter -->
+<section class="py-stack-xl max-w-container-max mx-auto px-margin-desktop border-b border-outline-variant">
+<div class="flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="max-w-lg reveal-on-scroll">
+<h4 class="font-headline-sm text-headline-sm mb-4">THE EDITORIAL LIST</h4>
+<p class="font-body-md text-body-md text-secondary">Join our community for early access to new collections, archive releases, and cultural perspectives.</p>
+</div>
+<div class="w-full md:w-auto min-w-[300px] reveal-on-scroll" style="transition-delay: 200ms;">
+<form class="flex flex-col gap-4">
+<div class="relative">
+<input class="w-full bg-transparent border-b border-primary py-4 px-0 font-label-md text-label-md focus:outline-none focus:border-opacity-50 transition-colors uppercase" placeholder="EMAIL ADDRESS" type="email"/>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 font-label-md text-label-md uppercase hover:opacity-50 transition-opacity" type="submit">Subscribe</button>
+</div>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 border-primary rounded-none text-primary focus:ring-0" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-secondary uppercase">I accept the privacy policy</span>
+</label>
+</form>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer from JSON -->
+<footer class="w-full mt-stack-xl bg-surface-container dark:bg-surface-container-highest border-t border-secondary-fixed dark:border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-sm max-w-container-max mx-auto gap-8 md:gap-0">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="font-headline-sm text-headline-sm text-primary dark:text-on-primary">GVSWIFT</span>
+<p class="font-label-sm text-label-sm text-primary dark:text-on-primary opacity-60">© 2024 GVSWIFT. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+<a class="font-label-sm text-label-sm text-secondary dark:text-on-secondary-container hover:text-primary dark:hover:text-on-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">PRIVACY POLICY</a>
+<a class="font-label-sm text-label-sm text-secondary dark:text-on-secondary-container hover:text-primary dark:hover:text-on-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">TERMS OF SERVICE</a>
+<a class="font-label-sm text-label-sm text-secondary dark:text-on-secondary-container hover:text-primary dark:hover:text-on-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">SHIPPING &amp; RETURNS</a>
+<a class="font-label-sm text-label-sm text-secondary dark:text-on-secondary-container hover:text-primary dark:hover:text-on-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">CONTACT</a>
+</div>
+<div class="flex gap-4">
+<a class="material-symbols-outlined text-primary hover:opacity-50 transition-opacity" data-icon="share" href="#">share</a>
+<a class="material-symbols-outlined text-primary hover:opacity-50 transition-opacity" data-icon="language" href="#">language</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple scroll reveal observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // Hover effect for product images
+        document.querySelectorAll('.group').forEach(group => {
+            group.addEventListener('mouseenter', () => {
+                // Potential for more complex JS micro-interactions here
+            });
+        });
+
+        // Floating Header effect
+        let lastScroll = 0;
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll <= 0) {
+                header.classList.remove('shadow-sm');
+                return;
+            }
+            if (currentScroll > lastScroll) {
+                // Scrolling down
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up
+                header.style.transform = 'translateY(0)';
+                header.classList.add('shadow-sm');
+            }
+            lastScroll = currentScroll;
+        });
+    </script>
+</body></html>

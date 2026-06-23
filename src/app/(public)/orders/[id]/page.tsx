@@ -95,10 +95,10 @@ export default async function OrderDetailPage({
   };
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-default">
       <Navbar />
 
-      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
+      <main className="container-md">
         <OrderDetailClient
           order={serializedOrder}
           canCancel={canCancel}

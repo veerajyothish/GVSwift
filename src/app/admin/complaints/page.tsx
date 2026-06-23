@@ -75,23 +75,23 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps) {
   const tickets = await listAllTickets(activeStatus ? { status: activeStatus } : undefined);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <header style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: "16px" }}>
-        <h1 className="text-2xl font-bold" style={{ color: "var(--color-accent)" }}>
-          Complaint & Ticket Management
-        </h1>
-        <p style={{ color: "var(--color-text-secondary)", fontSize: "14px", marginTop: "4px" }}>
-          Respond to customer complaints, add internal notes, and manage ticket lifecycle.
-        </p>
+    <div className="flex flex-col gap-5">
+      <header className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">
+            Complaint & Ticket Management
+          </h1>
+          <p className="text-secondary text-sm mt-2">
+            Respond to customer complaints, add internal notes, and manage ticket lifecycle.
+          </p>
+        </div>
       </header>
 
       {/* Status Tabs */}
       <div
+        className="flex gap-2 pb-3 mb-4"
         style={{
-          display: "flex",
-          gap: "8px",
           borderBottom: "1px solid var(--color-border)",
-          paddingBottom: "12px",
           overflowX: "auto",
         }}
       >
@@ -103,18 +103,8 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps) {
             <Link
               key={tab.value}
               href={href}
-              style={{
-                padding: "8px 16px",
-                borderRadius: "var(--radius-md)",
-                fontSize: "14px",
-                fontWeight: 500,
-                backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
-                color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                border: "1px solid",
-                borderColor: isActive ? "var(--color-accent)" : "var(--color-border)",
-                whiteSpace: "nowrap",
-                transition: "all 0.2s ease",
-              }}
+              className={isActive ? "category-link-active" : "category-link"}
+              style={{ whiteSpace: "nowrap" }}
             >
               {tab.label}
             </Link>
@@ -123,18 +113,9 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps) {
       </div>
 
       {/* Tickets List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="flex flex-col gap-4">
         {tickets.length === 0 ? (
-          <div
-            style={{
-              padding: "48px",
-              textAlign: "center",
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)",
-              color: "var(--color-text-secondary)",
-            }}
-          >
+          <div className="card p-6 text-center text-secondary py-20">
             No tickets found matching this filter.
           </div>
         ) : (
@@ -151,44 +132,27 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps) {
             return (
               <div
                 key={ticket.id}
-                style={{
-                  backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "var(--radius-lg)",
-                  padding: "20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  transition: "border-color 0.2s ease",
-                }}
+                className="card p-5 flex flex-col gap-3"
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex flex-col gap-1">
                     <Link
                       href={`/admin/complaints/${ticket.id}`}
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: 600,
-                        color: "var(--color-text-primary)",
-                        textDecoration: "none",
-                      }}
+                      className="text-lg font-semibold text-primary"
                     >
                       {ticket.subject}
                     </Link>
-                    <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
+                    <span className="text-secondary text-13">
                       Customer: {ticket.user?.email || "Guest User"}
                     </span>
                   </div>
 
                   <span
+                    className="status-badge"
                     style={{
-                      padding: "4px 8px",
-                      borderRadius: "var(--radius-sm)",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      border: "1px solid",
                       ...badge,
+                      textTransform: "uppercase",
+                      fontWeight: 600,
                     }}
                   >
                     {ticket.status.replace("_", " ")}
@@ -196,25 +160,17 @@ export default async function AdminComplaintsPage({ searchParams }: PageProps) {
                 </div>
 
                 <div
+                  className="flex justify-between items-center text-secondary text-13 mt-2"
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    fontSize: "13px",
-                    color: "var(--color-text-secondary)",
                     borderTop: "1px solid var(--color-border)",
                     paddingTop: "12px",
-                    marginTop: "4px",
                   }}
                 >
                   <div>
                     {ticket.orderId ? (
                       <Link
                         href={`/admin/orders/${ticket.orderId}`}
-                        style={{
-                          color: "var(--color-accent)",
-                          fontWeight: 500,
-                        }}
+                        className="text-accent font-medium"
                       >
                         Order Details
                       </Link>

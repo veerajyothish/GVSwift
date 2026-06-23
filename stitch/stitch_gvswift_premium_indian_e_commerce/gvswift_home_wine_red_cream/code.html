@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVSwift | Wear What Moves You</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Eb+Garamond:wght@400;500;700&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {tertiary: "#452805", "surface-container-lowest": "#ffffff", "surface-container": "#f0eded", "secondary-fixed": "#e6e2dd", "inverse-surface": "#313030", "on-surface-variant": "#534343", "surface-variant": "#e5e2e1", "on-primary": "#ffffff", "primary-container": "#722f37", "on-tertiary": "#ffffff", "surface-bright": "#fcf9f8", "surface-container-highest": "#e5e2e1", "tertiary-container": "#5f3e19", "error-container": "#ffdad6", "surface-dim": "#dcd9d9", background: "#fcf9f8", outline: "#867273", "outline-variant": "#d8c1c2", "on-secondary-container": "#666460", "secondary-fixed-dim": "#c9c6c1", error: "#ba1a1a", "surface-container-low": "#f6f3f2", primary: "#561922", secondary: "#605e5b", "surface-container-high": "#eae7e7", "on-tertiary-fixed": "#2c1600", "on-secondary-fixed": "#1c1c19", "on-secondary": "#ffffff", "on-error-container": "#93000a", "tertiary-fixed-dim": "#eebd8e", "on-tertiary-container": "#d9aa7c", "inverse-primary": "#ffb2b8", "surface-tint": "#92484f", "on-surface": "#1c1b1b", "on-primary-fixed-variant": "#753139", "on-primary-container": "#f499a0", "primary-fixed": "#ffdadb", "on-secondary-fixed-variant": "#484743", "inverse-on-surface": "#f3f0ef", "primary-fixed-dim": "#ffb2b8", "on-tertiary-fixed-variant": "#61401b", "secondary-container": "#e6e2dd", surface: "#fcf9f8", "on-background": "#1c1b1b", "on-error": "#ffffff", "on-primary-fixed": "#3c0610", "tertiary-fixed": "#ffdcbd"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {unit: "8px", "margin-mobile": "20px", gutter: "24px", "container-max": "1280px", "margin-desktop": "64px"}, fontFamily: {"body-md": ["Manrope"], "display-lg": ["EB Garamond"], "headline-sm": ["EB Garamond"], "headline-md": ["EB Garamond"], "body-lg": ["Manrope"], "label-md": ["Manrope"], "display-lg-mobile": ["EB Garamond"], caption: ["Manrope"], headline: ["Eb Garamond"], display: ["Eb Garamond"], body: ["Manrope"], label: ["Manrope"]}, fontSize: {"body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "display-lg": ["64px", {lineHeight: "72px", letterSpacing: "-0.02em", fontWeight: "500"}], "headline-sm": ["24px", {lineHeight: "32px", fontWeight: "500"}], "headline-md": ["32px", {lineHeight: "40px", fontWeight: "500"}], "body-lg": ["18px", {lineHeight: "28px", fontWeight: "400"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.05em", fontWeight: "600"}], "display-lg-mobile": ["40px", {lineHeight: "48px", letterSpacing: "-0.01em", fontWeight: "500"}], caption: ["12px", {lineHeight: "16px", fontWeight: "400"}]}}}};</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+        .hero-clip {
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0% 100%);
+        }
+        .letterpress-border {
+            border: 1px solid #d8c1c2;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #561922;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-white">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 transition-all duration-300">
+<div class="flex justify-between items-center px-6 md:px-16 py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-display-lg text-headline-md text-primary italic" href="#">GVSwift</a>
+<div class="hidden md:flex gap-6">
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md text-label-md uppercase tracking-widest" href="#">New Arrivals</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-label-md uppercase tracking-widest" href="#">Collections</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-label-md uppercase tracking-widest" href="#">Couture</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-300 font-body-md text-label-md uppercase tracking-widest" href="#">Heritage</a>
+</div>
+</div>
+<div class="flex items-center gap-6 text-primary">
+<div class="hidden lg:flex items-center border-b border-outline-variant py-1 px-2">
+<span class="material-symbols-outlined text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-[10px] uppercase tracking-widest w-32 placeholder:text-outline" placeholder="SEARCH" type="text"/>
+</div>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-200 relative">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-primary text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full">2</span>
+</button>
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-200 md:hidden">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative h-[921px] md:h-[870px] flex items-center overflow-hidden bg-surface">
+<div class="absolute inset-0 z-0">
+<img alt="GVSwift Hero Couture" class="w-full h-full object-cover opacity-90 md:opacity-100" src="https://lh3.googleusercontent.com/aida/AP1WRLsBkF3oPik0ei4UKekxKVJJhNEadOdI3FzUcAmxOHGVAYUBywpMSEnyCgxsOHpOBioKxM80J_9NzXLnQAHugKUDOv28DBqjAjiNEFYGm4Az1ty1CKHG0obR9rIlWHi1zQLvhSt_NoydeYQ8DXw_ydTkjSuC6Q5nRZomF0c7vXOYT7r_f8yYnz4FDNW6HDFdu1m5p17eQYAOj1i1mKklW9yxmVFkd5gIh3apAoLpJ-CQWoz_DnG0kkEGLpq-"/>
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent opacity-60"></div>
+</div>
+<div class="relative z-10 px-6 md:px-16 max-w-container-max mx-auto w-full">
+<div class="max-w-xl space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary leading-tight">
+                        Wear what <br/>
+<span class="italic font-normal">moves you.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                        A curation of heritage craftsmanship meeting modern silhouettes. Designed for the discerning individual who values timeless luxury.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="bg-primary text-on-primary px-10 py-4 font-label-md uppercase tracking-widest hover:bg-primary-container transition-all active:scale-95">
+                            Shop The Collection
+                        </button>
+<button class="border border-primary text-primary px-10 py-4 font-label-md uppercase tracking-widest hover:bg-primary hover:text-white transition-all active:scale-95">
+                            Our Heritage
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Bar -->
+<section class="bg-primary-container py-8 border-y border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-6 md:px-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="flex items-center justify-center gap-4 text-on-primary-container">
+<span class="material-symbols-outlined text-3xl">payments</span>
+<div class="text-left">
+<p class="font-label-md uppercase tracking-tighter text-xs">Cash on Delivery</p>
+<p class="text-[10px] opacity-70">Pay when you receive</p>
+</div>
+</div>
+<div class="flex items-center justify-center gap-4 text-on-primary-container border-y md:border-y-0 md:border-x border-on-primary-container/20 py-4 md:py-0">
+<span class="material-symbols-outlined text-3xl">assignment_return</span>
+<div class="text-left">
+<p class="font-label-md uppercase tracking-tighter text-xs">Free Returns</p>
+<p class="text-[10px] opacity-70">30-day effortless returns</p>
+</div>
+</div>
+<div class="flex items-center justify-center gap-4 text-on-primary-container">
+<span class="material-symbols-outlined text-3xl">local_shipping</span>
+<div class="text-left">
+<p class="font-label-md uppercase tracking-tighter text-xs">2-Day Shipping</p>
+<p class="text-[10px] opacity-70">Complimentary fast delivery</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Collection Grid (Bento Style) -->
+<section class="py-24 px-6 md:px-16 max-w-container-max mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="space-y-4">
+<h2 class="font-display-lg text-headline-md text-primary">The Autumn Edit</h2>
+<p class="font-body-md text-on-surface-variant max-w-md">Refined textures and earthy tones inspired by the transitional beauty of the changing seasons.</p>
+</div>
+<a class="text-primary font-label-md uppercase tracking-widest border-b border-primary hover:opacity-70 transition-opacity" href="#">Explore All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Large Feature -->
+<div class="md:col-span-7 group cursor-pointer overflow-hidden relative aspect-[4/5] md:aspect-auto h-[600px]">
+<div class="absolute inset-0 bg-surface-container-high transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center" data-alt="A sophisticated fashion editorial photograph of a model in a deep wine red tailored coat. The background is a minimalist, cream-toned architectural space with soft, directional light casting long shadows. The overall mood is high-end, luxurious, and quiet, emphasizing the high-quality textile and refined craftsmanship of the garment." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMKjzwWjlDnqj7Kgm6xsHkZ7PzCD_4VkPilKh-qx5yjoGTTvaWzSqX4jCm47y0h8w97UffK8NyFiBx21rigKNidxBVEDKt5TLc_bF71Cw9Xn3V9OJdU9bI9_DlZjvU5IEtO-veA5OIPygh0PewCDcnxZQ65uQa8TD04jr6hV2hP5PmpSF1xjcGT3aPj7Wb5Oipl9wXu1Wa1xqhXlHL2cLy0zJ23505C-LCpYF9dQd5YwlEiqDdCT9Sa3kirDC3x49ImCftbnjtYq4b')"></div>
+</div>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+<div class="absolute bottom-10 left-10 text-white z-10 transition-transform duration-500 translate-y-4 group-hover:translate-y-0">
+<p class="font-label-md uppercase tracking-[0.2em] mb-2 opacity-80">Heritage Line</p>
+<h3 class="font-display-lg text-headline-md mb-4">Structured Wool Blazers</h3>
+<span class="bg-white/10 backdrop-blur-md px-6 py-2 border border-white/20 uppercase text-[10px] tracking-widest">Shop Now</span>
+</div>
+</div>
+<!-- Column Split -->
+<div class="md:col-span-5 grid grid-rows-2 gap-gutter">
+<!-- Top Small -->
+<div class="group cursor-pointer overflow-hidden relative">
+<div class="absolute inset-0 bg-surface-container transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center" data-alt="Close up detail of luxury cream-colored silk fabric being draped over an antique wooden mannequin. The lighting is warm and golden, highlighting the subtle sheen and luxurious texture of the material. The aesthetic is tactile and minimalist, focusing on craftsmanship and quality of material within a high-end boutique setting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAW9FfNzmV8WMynPLmkhBR2A3Vsrtkqu-ADd2AQQOsYnxPfxVvLuDblr8h9VEeCvyUu3j_GoMrST23BC20L4KaFtpxsmtPVi_OSzu6K2hTFDW1XbVXHyi9pJIB4iiKN0CK6nvALp4jC2KWrmCAN2vVCLNsl44HGDsPhOR1EZNTk-3-qzSNaG7yHdCn3mXf7yTyVm183KM_jxd2g4pz_xTWSTr_ahKJv7cR3nYJOoN_066EDZzpPIh3pa4Sd3zzE6Lc2Lfft3suJOPbw')"></div>
+</div>
+<div class="absolute inset-0 bg-black/5"></div>
+<div class="absolute bottom-8 left-8 text-on-surface z-10">
+<h3 class="font-display-lg text-headline-sm italic">Silk &amp; Satins</h3>
+<p class="text-[10px] uppercase tracking-widest opacity-70">Lingerie &amp; Nightwear</p>
+</div>
+</div>
+<!-- Bottom Small -->
+<div class="group cursor-pointer overflow-hidden relative">
+<div class="absolute inset-0 bg-surface-container transition-transform duration-700 group-hover:scale-105">
+<div class="w-full h-full bg-cover bg-center" data-alt="An artistic arrangement of premium leather accessories including a structured wine red handbag and cream-colored leather gloves. The items are placed on a textured paper surface that feels like handmade cardstock. The composition uses asymmetrical balance and generous white space to create an editorial, boutique brand atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOnZ30bqd_MDX5qPwcm5-k9o4NlOwnLRFZV06qcexi8WQDCs4GugMU0d_5pT2SsZ8bKK4gc969KbgLW_G5-RygqXsnPWIPTzH-EuhZGiAmiwKa4R9dh8zJPEfmKCNH8NTC86af0gO9I0doIcripauT-zsmkmVQ4qiUmn3lpjSL3mVIKBeiddAbt_91jqCn1iPT4J7GXtanDaDRjKnVxmkxXOYKvBVyYVuDtwWZq2Rg_ip5Y_1s016Ilu4UGvc8IuO141PuIR4LboVw')"></div>
+</div>
+<div class="absolute bottom-8 left-8 text-on-surface z-10">
+<h3 class="font-display-lg text-headline-sm italic">The Accessory Suite</h3>
+<p class="text-[10px] uppercase tracking-widest opacity-70">Artisan Leather Goods</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonial Section -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-3xl mx-auto px-6 text-center space-y-8">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+<blockquote class="font-display-lg text-headline-md italic text-on-surface-variant leading-relaxed">
+                    "GVSwift isn't just about clothing; it's an architectural approach to movement and elegance. The Wine Red collection has become my signature silhouette for every gallery opening."
+                </blockquote>
+<div class="flex items-center justify-center gap-4">
+<div class="h-[1px] w-12 bg-outline-variant"></div>
+<cite class="font-label-md uppercase tracking-widest text-primary not-italic">Elena Moretti, Creative Director</cite>
+<div class="h-[1px] w-12 bg-outline-variant"></div>
+</div>
+</div>
+</section>
+<!-- Product Carousel Preview -->
+<section class="py-24 overflow-hidden">
+<div class="px-6 md:px-16 max-w-container-max mx-auto mb-12 flex justify-between items-center">
+<h2 class="font-display-lg text-headline-md text-primary">Trending Now</h2>
+<div class="flex gap-4">
+<button class="w-10 h-10 flex items-center justify-center border border-outline hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-outline hover:border-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-gutter px-6 md:px-16 overflow-x-auto custom-scrollbar pb-12">
+<!-- Product Card 1 -->
+<div class="min-w-[280px] md:min-w-[320px] group">
+<div class="relative aspect-[3/4] bg-surface-container-highest overflow-hidden mb-4">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="A studio product shot of a wine red cashmere turtleneck sweater. The garment is shown against a soft cream background with sharp, editorial lighting that emphasizes the rich knit texture. The styling is clean and professional, typical of a high-end fashion catalog." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzaz1B4EgebIo_Z81BQ0ubO3TSP7Oit5mM6L85oZQ9kFssAASiXAayDSpGeksPPnQbzofg8BB-mMgR6hFtgs7YMjrHrv6VNkEtNx6pylo5Lx7r_wgHsKkpXZS3faQPLd7dVZQLhDhMBRQfV8XpMURpIJlolk7jgeLW9mdOz6nfhjSy4cdFBeRamMckfonrhvFYo2W3lBPoLNviPi6bAa2VuepeQsZHO2YYodqA2yWNa5sw-QnkcOzZngoGg3p_dJtAbaHeco99q7eV')"></div>
+<button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-6 py-2 opacity-0 group-hover:opacity-100 transition-all duration-300 font-label-md text-[10px] tracking-widest uppercase">Quick Add</button>
+</div>
+<h4 class="font-body-md text-on-surface">Signature Cashmere Knit</h4>
+<p class="text-primary font-bold mt-1">$420</p>
+</div>
+<!-- Product Card 2 -->
+<div class="min-w-[280px] md:min-w-[320px] group">
+<div class="relative aspect-[3/4] bg-surface-container-highest overflow-hidden mb-4">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="A high-end fashion product photograph of cream-colored tailored trousers. The pants are shown in motion to demonstrate the elegant drape of the fabric. The lighting is bright and airy, consistent with a luxury brand's light-mode aesthetic, utilizing soft shadows to define the garment's structure." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGOfGvGKUpTylZ3pOTS1F1ggtbrLagbTlppy6qxZ4U0xdiepdgHRka07h0awe8CzIe0tml5KCiGV7WQQuNrRdHshno5QlEFPHwOCkE-rfNhvL87iWCO1ldHrmpwJ1X4bCe_Z10IoDQLTpKTOWtcr7EyOhN5LAWe1pi9ODOPBb_Mja8XTjfx94Dr82uHFHJFWEFjtYCKH1yCPsGjOSyVXqFUS-2A3JA7x0bFM3le4Sg00-ZUMGeQsu9hxOF0qVHwCDD3G-zM9RbFl2-')"></div>
+<button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-6 py-2 opacity-0 group-hover:opacity-100 transition-all duration-300 font-label-md text-[10px] tracking-widest uppercase">Quick Add</button>
+</div>
+<h4 class="font-body-md text-on-surface">Palazzo Silk Trouser</h4>
+<p class="text-primary font-bold mt-1">$385</p>
+</div>
+<!-- Product Card 3 -->
+<div class="min-w-[280px] md:min-w-[320px] group">
+<div class="relative aspect-[3/4] bg-surface-container-highest overflow-hidden mb-4">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="A detailed shot of a handcrafted wine red leather belt with a minimalist gold buckle. The belt is artfully coiled on a marble surface, surrounded by hints of dried flowers in muted tones. The lighting is warm and focus is sharp on the leather grain and craftsmanship." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBaThIpmkEcTtj0vKnHMmAd1N-30hOjgeAkW-Ddf_mZ20w6DjNhzBVpLGfNz3KAyCM3hDwVLDQP-peHV3ArtvyenUSVP-pGn5HnjnfXe5YSJ1ZNu6uDhcOZpeu1BG27WH1Tu4z_gBcbSBXTu9BlvlSYuQQfDyUUWDWY_6LW9c6ZguDuJpsI9iDOIYo-fnLPVHxK4zU49jm3amyUkIfr8PaB0i_FECf1q7QuB3qNH3AIWMz4tnoI9NuIgivKhzX8fHiIFM28HNDJn5Ob')"></div>
+<button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-6 py-2 opacity-0 group-hover:opacity-100 transition-all duration-300 font-label-md text-[10px] tracking-widest uppercase">Quick Add</button>
+</div>
+<h4 class="font-body-md text-on-surface">Artisan Leather Belt</h4>
+<p class="text-primary font-bold mt-1">$195</p>
+</div>
+<!-- Product Card 4 -->
+<div class="min-w-[280px] md:min-w-[320px] group">
+<div class="relative aspect-[3/4] bg-surface-container-highest overflow-hidden mb-4">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="A luxury fashion item photo featuring a structured cream wool coat with deep wine red lapel accents. The model is photographed from behind to showcase the perfect tailoring and fit of the garment. The setting is a minimalist studio with soft, diffused lighting that creates a clean, premium feel." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDfZT0VZLXPA5o7xPVbBt711do93Pq8d66pXsZwG4W5x0s4T4um671fOWev7xNby-AGrbLQ9OHyODbHt9YPaW_5vYVURnIjHzpg2gCJZOHBXHpwa3jTnGshwn6CeT7HfjmmYmpST1Y4xqXT6-oWaYrUf-AdXEn3nkAGGfGUS9hROPnBlxJJMRmm4bTmt5r17pWizv3KEx4pqo0yLqUTuYDqIfkSYC-vPPtQbF0bz6sizQ6udmfAAujLneJ_MDe68oUk8uFFgvXelqwl')"></div>
+<button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-6 py-2 opacity-0 group-hover:opacity-100 transition-all duration-300 font-label-md text-[10px] tracking-widest uppercase">Quick Add</button>
+</div>
+<h4 class="font-body-md text-on-surface">Bi-Color Heritage Coat</h4>
+<p class="text-primary font-bold mt-1">$890</p>
+</div>
+</div>
+</section>
+<!-- Newsletter Section -->
+<section class="bg-primary py-24 text-center">
+<div class="max-w-2xl mx-auto px-6 space-y-6">
+<h2 class="font-display-lg text-headline-md text-on-primary">Join the Heritage Circle</h2>
+<p class="text-on-primary/70 font-body-md">Subscribers receive early access to new collections and private invitations to our seasonal trunk shows.</p>
+<form class="flex flex-col sm:flex-row gap-0 border-b border-on-primary/30 mt-8">
+<input class="bg-transparent border-none focus:ring-0 text-on-primary placeholder:text-on-primary/40 flex-grow py-4 px-0 uppercase text-xs tracking-widest" placeholder="YOUR EMAIL ADDRESS" type="email"/>
+<button class="text-on-primary font-label-md uppercase tracking-[0.2em] py-4 px-6 hover:opacity-70 transition-opacity" type="submit">Subscribe</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-primary/10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-6 md:px-16 py-16 max-w-container-max mx-auto">
+<div class="space-y-6">
+<a class="font-display-lg text-headline-md text-primary italic" href="#">GVSwift</a>
+<p class="text-on-surface-variant font-body-md text-sm leading-relaxed">
+                    Celebrating the art of fine dressmaking since 1994. Every piece is a testament to the enduring beauty of quality and the power of refined silhouettes.
+                </p>
+<div class="flex gap-4">
+<a class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:border-primary transition-colors" href="#"><span class="material-symbols-outlined text-sm">public</span></a>
+<a class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:border-primary transition-colors" href="#"><span class="material-symbols-outlined text-sm">mail</span></a>
+<a class="w-8 h-8 flex items-center justify-center border border-outline-variant hover:border-primary transition-colors" href="#"><span class="material-symbols-outlined text-sm">camera</span></a>
+</div>
+</div>
+<div class="space-y-6">
+<h5 class="font-label-md uppercase tracking-widest text-primary">Shop</h5>
+<ul class="space-y-4">
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">New Arrivals</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Best Sellers</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">The Couture Edit</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Accessories</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h5 class="font-label-md uppercase tracking-widest text-primary">Company</h5>
+<ul class="space-y-4">
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Our Story</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Sustainability</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Store Locator</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Contact Us</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h5 class="font-label-md uppercase tracking-widest text-primary">Customer Care</h5>
+<ul class="space-y-4">
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Shipping &amp; Returns</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Track Your Order</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary hover:translate-x-1 transition-all inline-block font-body-md" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="px-6 md:px-16 py-8 border-t border-primary/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-on-surface-variant/60 font-body-md text-xs">© 2024 GVSwift Heritage. All Rights Reserved.</p>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-on-surface-variant/40">payments</span>
+<span class="material-symbols-outlined text-on-surface-variant/40">credit_card</span>
+<span class="material-symbols-outlined text-on-surface-variant/40">account_balance_wallet</span>
+</div>
+</div>
+</footer>
+<script>
+        // Simple Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-8');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'ease-out');
+        });
+
+        // Navigation scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2', 'shadow-sm');
+                nav.classList.remove('py-4');
+            } else {
+                nav.classList.add('py-4');
+                nav.classList.remove('py-2', 'shadow-sm');
+            }
+        });
+    </script>
+</body></html>

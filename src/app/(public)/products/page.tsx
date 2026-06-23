@@ -40,7 +40,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         }),
   ]);
 
-
   const { products, totalPages } = productsResult;
 
   // Helper to build URLs preserving other parameters
@@ -69,54 +68,29 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   };
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+    <div className="homepage-wrapper">
       {/* ── Navbar with Search ── */}
       <Navbar />
 
       {/* ── Page Header ── */}
-      <header
-        style={{
-          borderBottom: "1px solid var(--color-border)",
-          backgroundColor: "var(--color-surface)",
-          padding: "24px 0",
-        }}
-      >
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
-          <h1 className="text-2xl" style={{ margin: 0, fontWeight: 600 }}>
+      <header className="products-header">
+        <div className="products-header-inner">
+          <h1 className="text-2xl margin-0 font-semibold">
             Shop Collection
           </h1>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)", marginTop: "4px" }}>
+          <p className="text-sm footer-text-muted" style={{ marginTop: "4px" }}>
             Explore fast fashion with secure Cash on Delivery (COD) services.
           </p>
         </div>
       </header>
 
-      <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+      <main className="products-main">
         
         {/* ── Category Filters ── */}
-        <nav
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "12px",
-            marginBottom: "32px",
-            borderBottom: "1px solid var(--color-border)",
-            paddingBottom: "16px",
-          }}
-          aria-label="Product categories"
-        >
+        <nav className="products-filter-nav" aria-label="Product categories">
           <Link
             href={buildUrl({ categoryId: null, page: 1 })}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "var(--radius-md)",
-              fontSize: "14px",
-              fontWeight: 500,
-              backgroundColor: !currentCategoryId ? "var(--color-accent)" : "var(--color-surface)",
-              color: !currentCategoryId ? "var(--color-accent-text)" : "var(--color-text-primary)",
-              border: `1px solid ${!currentCategoryId ? "var(--color-accent)" : "var(--color-border)"}`,
-              transition: "all 0.2s ease",
-            }}
+            className={!currentCategoryId ? "category-link-active" : "category-link"}
           >
             All Products
           </Link>
@@ -126,16 +100,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               <Link
                 key={category.id}
                 href={buildUrl({ categoryId: category.id, page: 1 })}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
-                  color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                  border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
-                  transition: "all 0.2s ease",
-                }}
+                className={isActive ? "category-link-active" : "category-link"}
               >
                 {category.name}
               </Link>
@@ -145,19 +110,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
         {/* ── Search Indicator (if active) ── */}
         {currentSearch && (
-          <div style={{ marginBottom: "24px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+          <div className="search-indicator-row">
+            <span className="text-sm footer-text-muted">
               Search results for:
             </span>
             <strong className="text-sm">&ldquo;{currentSearch}&rdquo;</strong>
             <Link
               href={buildUrl({ page: 1 })}
-              style={{
-                fontSize: "12px",
-                color: "var(--color-error)",
-                marginLeft: "8px",
-                textDecoration: "underline",
-              }}
+              className="search-indicator-clear"
             >
               Clear search
             </Link>
@@ -166,19 +126,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
         {/* ── Products Grid ── */}
         {products.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "80px 20px",
-              backgroundColor: "var(--color-surface)",
-              borderRadius: "var(--radius-lg)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
+          <div className="products-empty-container">
             <h3 className="text-lg" style={{ marginBottom: "8px" }}>
               No products found
             </h3>
-            <p className="text-sm" style={{ color: "var(--color-text-secondary)", marginBottom: "20px" }}>
+            <p className="text-sm footer-text-muted" style={{ marginBottom: "20px" }}>
               We couldn&apos;t find any products matching your selection.
             </p>
             <Link href="/products" className="btn btn-primary">
@@ -197,7 +149,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 const isOutOfStock = totalStock === 0;
 
                 // Format price
-                const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString()}`;
+                const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
 
                 return (
                   <Card key={product.id} interactive className="card-product">
@@ -214,35 +166,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       
                       {/* Out of Stock Badge */}
                       {isOutOfStock ? (
-                        <span
-                          className="text-xs font-semibold"
-                          style={{
-                            position: "absolute",
-                            top: "12px",
-                            left: "12px",
-                            backgroundColor: "var(--color-error)",
-                            color: "var(--color-text-on-dark)",
-                            padding: "4px 8px",
-                            borderRadius: "var(--radius-sm)",
-                            boxShadow: "var(--shadow-sm)",
-                          }}
-                        >
+                        <span className="product-card-badge-error">
                           OUT OF STOCK
                         </span>
                       ) : totalStock <= 5 ? (
-                        <span
-                          className="text-xs font-semibold"
-                          style={{
-                            position: "absolute",
-                            top: "12px",
-                            left: "12px",
-                            backgroundColor: "var(--color-warning)",
-                            color: "var(--color-text-on-dark)",
-                            padding: "4px 8px",
-                            borderRadius: "var(--radius-sm)",
-                            boxShadow: "var(--shadow-sm)",
-                          }}
-                        >
+                        <span className="product-card-badge-warning">
                           ONLY {totalStock} LEFT
                         </span>
                       ) : null}
@@ -254,35 +182,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       
                       {/* Category Label */}
                       {product.categoryId && (
-                        <span
-                          className="text-xs"
-                          style={{
-                            color: "var(--color-text-secondary)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.05em",
-                            marginBottom: "8px",
-                            display: "block",
-                          }}
-                        >
+                        <span className="card-product-category">
                           {categories.find((c) => c.id === product.categoryId)?.name || "Apparel"}
                         </span>
                       )}
 
-                      <div
-                        style={{
-                          marginTop: "auto",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "between",
-                          width: "100%",
-                        }}
-                      >
-                        <span className="card-product-price" style={{ color: "var(--color-text-primary)" }}>
+                      <div className="card-product-price-row">
+                        <span className="card-product-price">
                           {formattedPrice}
                         </span>
                       </div>
 
-                      <div style={{ marginTop: "16px" }}>
+                      <div className="card-product-btn-row">
                         <Link
                           href={`/products/${product.slug}`}
                           className="w-full"
@@ -305,17 +216,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
             {/* ── Pagination Controls ── */}
             {totalPages > 1 && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "24px",
-                  marginTop: "60px",
-                  borderTop: "1px solid var(--color-border)",
-                  paddingTop: "24px",
-                }}
-              >
+              <div className="pagination-container">
                 {currentPage > 1 ? (
                   <Link href={buildUrl({ page: currentPage - 1 })} className="btn btn-secondary">
                     Previous
@@ -326,7 +227,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   </Button>
                 )}
 
-                <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                <span className="text-sm footer-text-muted">
                   Page <strong>{currentPage}</strong> of {totalPages}
                 </span>
 

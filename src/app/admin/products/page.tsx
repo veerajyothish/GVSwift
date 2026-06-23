@@ -30,21 +30,12 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-      }}
-    >
+    <div className="flex flex-col gap-5">
       {/* Header section */}
-      <div className="flex justify-between items-center" style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: "16px" }}>
+      <div className="admin-page-header">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--color-accent)" }}>Product Catalog Management</h1>
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "14px" }}>
+          <h1 className="admin-page-title">Product Catalog Management</h1>
+          <p className="text-secondary text-sm">
             Add, update, activate or deactivate products in your store.
           </p>
         </div>
@@ -52,9 +43,8 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
         <Link
           href="/admin/products/new"
           className="btn btn-primary"
-          style={{ minHeight: "44px" }}
         >
-          <svg style={{ width: "20px", height: "20px", marginRight: "6px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg className="icon-sm" style={{ marginRight: "6px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
           Add Product

@@ -299,7 +299,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full" style={{ maxWidth: "800px", margin: "0 auto" }}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
       {/* Messages */}
       {errorMsg && (
         <div className="alert-banner alert-error" role="alert">
@@ -314,9 +314,9 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
         </div>
       )}
 
-      {/* Grid for basics */}
-      <div className="card p-6 flex flex-col gap-4" style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-        <h2 className="text-xl font-semibold" style={{ color: "var(--color-accent)", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
+      {/* Basics Card */}
+      <div className="card p-6 flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-accent pb-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
           {isEdit ? "Edit Product Details" : "Create New Product"}
         </h2>
 
@@ -363,7 +363,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+        <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {/* Base Price */}
           <div className="input-group">
             <label className="input-label input-required" htmlFor="prod-price">Base Price (INR ₹)</label>
@@ -402,7 +402,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
         </div>
 
         {/* Status Toggle */}
-        <div className="flex items-center gap-3" style={{ marginTop: "10px" }}>
+        <div className="flex items-center gap-3 mt-2">
           <input
             id="prod-active"
             type="checkbox"
@@ -418,19 +418,18 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
       </div>
 
       {/* Variants Section */}
-      <div className="card p-6 flex flex-col gap-4" style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-        <div className="flex justify-between items-center" style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
-          <h2 className="text-xl font-semibold" style={{ color: "var(--color-accent)" }}>
+      <div className="card p-6 flex flex-col gap-4">
+        <div className="flex justify-between items-center pb-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
+          <h2 className="text-xl font-semibold text-accent">
             Product Variants
           </h2>
           <button
             type="button"
-            className="btn btn-secondary"
-            style={{ minHeight: "36px", padding: "4px 12px", fontSize: "13px" }}
+            className="btn btn-secondary btn-sm"
             onClick={addVariant}
             disabled={isSubmitting}
           >
-            <svg style={{ width: "16px", height: "16px", marginRight: "4px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg className="icon-xs" style={{ marginRight: "4px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Add Variant
@@ -438,22 +437,21 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
         </div>
 
         {variants.length === 0 ? (
-          <p style={{ color: "var(--color-text-secondary)", fontSize: "14px", fontStyle: "italic", textAlign: "center", padding: "20px 0" }}>
+          <p className="text-secondary text-sm italic text-center py-20">
             No variants created. This product will sell as a single standard unit.
           </p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="flex flex-col gap-3">
             {variants.map((variant, index) => (
               <div
                 key={index}
-                className="flex items-center gap-3 p-3"
+                className="flex items-center gap-3 p-3 rounded-md"
                 style={{
-                  backgroundColor: "rgba(0,0,0,0.2)",
+                  backgroundColor: "rgba(86, 25, 34, 0.04)",
                   border: "1px solid var(--color-border)",
-                  borderRadius: "var(--radius-md)",
                 }}
               >
-                <div className="input-group" style={{ margin: 0, flex: 2 }}>
+                <div className="input-group margin-0" style={{ flex: 2 }}>
                   <label className="text-xs font-semibold input-required">SKU</label>
                   <input
                     type="text"
@@ -467,7 +465,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
                   />
                 </div>
 
-                <div className="input-group" style={{ margin: 0, flex: 1 }}>
+                <div className="input-group margin-0" style={{ flex: 1 }}>
                   <label className="text-xs font-semibold input-required">Stock</label>
                   <input
                     type="number"
@@ -481,7 +479,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
                   />
                 </div>
 
-                <div className="input-group" style={{ margin: 0, flex: 1.5 }}>
+                <div className="input-group margin-0" style={{ flex: 1.5 }}>
                   <label className="text-xs font-semibold">Price Delta (INR ₹)</label>
                   <input
                     type="number"
@@ -497,13 +495,13 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
 
                 <button
                   type="button"
-                  className="btn btn-danger"
+                  className="btn btn-danger btn-sm"
                   style={{ minHeight: "38px", padding: "0 12px", marginTop: "18px" }}
                   onClick={() => removeVariant(index)}
                   disabled={isSubmitting}
                   title="Remove Variant"
                 >
-                  <svg style={{ width: "16px", height: "16px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
@@ -514,8 +512,8 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
       </div>
 
       {/* Images Section */}
-      <div className="card p-6 flex flex-col gap-4" style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
-        <h2 className="text-xl font-semibold" style={{ color: "var(--color-accent)", borderBottom: "1px solid var(--color-border)", paddingBottom: "10px" }}>
+      <div className="card p-6 flex flex-col gap-4">
+        <h2 className="text-xl font-semibold text-accent pb-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
           Product Images (Max 8)
         </h2>
 
@@ -528,7 +526,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
               padding: "24px",
               textAlign: "center",
               cursor: isSubmitting || isUploading ? "not-allowed" : "pointer",
-              backgroundColor: "rgba(0,0,0,0.1)",
+              backgroundColor: "rgba(86, 25, 34, 0.02)",
               position: "relative",
             }}
           >
@@ -550,31 +548,29 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
             <svg style={{ width: "32px", height: "32px", color: "var(--color-accent)", margin: "0 auto 8px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <p className="font-semibold" style={{ fontSize: "14px", marginBottom: "4px" }}>
+            <p className="font-semibold text-sm mb-4">
               {isUploading ? "Uploading..." : "Click or drag image to upload"}
             </p>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "12px" }}>
+            <p className="text-secondary text-xs">
               JPEG, PNG, or WEBP formats only. Max 5MB file size.
             </p>
           </div>
         ) : (
-          <p style={{ color: "var(--color-warning)", fontSize: "14px", fontStyle: "italic", textAlign: "center" }}>
+          <p className="text-warning text-sm italic text-center">
             Maximum image limit (8) reached.
           </p>
         )}
 
         {/* Uploaded Images List */}
         {images.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "10px" }}>
+          <div className="flex flex-col gap-4 mt-2">
             {images.map((img, index) => (
               <div
                 key={index}
-                className="flex gap-4 p-4"
+                className="flex gap-4 p-4 rounded-md items-center"
                 style={{
-                  backgroundColor: "rgba(0,0,0,0.2)",
+                  backgroundColor: "rgba(86, 25, 34, 0.04)",
                   border: "1px solid var(--color-border)",
-                  borderRadius: "var(--radius-md)",
-                  alignItems: "center",
                 }}
               >
                 {/* Thumbnail */}
@@ -584,9 +580,9 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
                 </div>
 
                 {/* Details Form */}
-                <div className="flex flex-col gap-2" style={{ flexGrow: 1 }}>
+                <div className="flex flex-col gap-2 flex-1">
                   {/* Alt Text (strictly required) */}
-                  <div className="input-group" style={{ margin: 0 }}>
+                  <div className="input-group margin-0">
                     <label className="text-xs font-semibold input-required">Alt Text (Accessibility requirement)</label>
                     <input
                       type="text"
@@ -600,7 +596,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
                     />
                   </div>
 
-                  <div className="flex items-center gap-6" style={{ marginTop: "4px" }}>
+                  <div className="flex items-center gap-6 mt-2">
                     {/* Primary Image Toggle */}
                     <div className="flex items-center gap-2">
                       <input
@@ -634,13 +630,12 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
                 {/* Delete button */}
                 <button
                   type="button"
-                  className="btn btn-danger"
-                  style={{ minHeight: "38px", padding: "0 12px" }}
+                  className="btn btn-danger btn-sm"
                   onClick={() => removeImage(index)}
                   disabled={isSubmitting}
                   title="Remove Image"
                 >
-                  <svg style={{ width: "16px", height: "16px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
@@ -651,22 +646,20 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-4 justify-between" style={{ marginTop: "12px", borderTop: "1px solid var(--color-border)", paddingTop: "20px" }}>
+      <div className="flex gap-4 justify-between mt-2 pt-20" style={{ borderTop: "1px solid var(--color-border)" }}>
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary flex-1"
           onClick={() => router.push("/admin/products")}
           disabled={isSubmitting}
-          style={{ flex: 1 }}
         >
           Cancel
         </button>
 
         <button
           type="submit"
-          className={`btn btn-primary ${isSubmitting ? "btn-loading" : ""}`}
+          className={`btn btn-primary flex-2 ${isSubmitting ? "btn-loading" : ""}`}
           disabled={isSubmitting || isUploading}
-          style={{ flex: 2 }}
         >
           {isEdit ? "Update Product" : "Create Product"}
         </button>

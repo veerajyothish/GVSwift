@@ -11,6 +11,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 
@@ -239,15 +240,12 @@ export default function OrderDetailClient({
       {/* Header */}
       <div className="order-detail-header">
         <div>
-          <h1
-            className="text-2xl font-semibold"
-            style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}
-          >
+          <h1 className="text-2xl font-semibold text-primary mb-8">
             Order Details
           </h1>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+          <p className="text-sm text-secondary">
             Placed on {formatDate(order.createdAt)} · Order ID:{" "}
-            <span style={{ fontFamily: "monospace", fontSize: "12px" }}>
+            <span className="text-xs-mono">
               {order.id.slice(0, 8)}…
             </span>
           </p>
@@ -270,9 +268,9 @@ export default function OrderDetailClient({
         {/* Left column: items + summary */}
         <div className="order-detail-main">
           {/* Order Items */}
-          <section className="card" style={{ marginBottom: "24px" }}>
+          <section className="card mb-24">
             <div className="order-section-header">
-              <h2 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              <h2 className="text-lg font-semibold text-primary">
                 Items ({order.items.length})
               </h2>
             </div>
@@ -280,28 +278,17 @@ export default function OrderDetailClient({
             <div className="order-items-list">
               {order.items.map((item) => (
                 <div key={item.id} className="order-item-row">
-                  {/* Thumbnail */}
-                  <div className="order-item-thumb">
+                  <div className="order-item-thumb relative">
                     {item.productImage ? (
-                      <img
+                      <Image
                         src={item.productImage}
                         alt={item.productName}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-md)" }}
+                        className="w-full h-full object-cover rounded-md"
+                        fill
+                        sizes="(max-width: 640px) 48px, 60px"
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          backgroundColor: "var(--color-bg)",
-                          borderRadius: "var(--radius-md)",
-                          color: "var(--color-text-secondary)",
-                          fontSize: "20px",
-                        }}
-                      >
+                      <div className="w-full h-full flex items-center justify-center bg-default rounded-md text-secondary" style={{ fontSize: "20px" }}>
                         📦
                       </div>
                     )}
@@ -316,18 +303,18 @@ export default function OrderDetailClient({
                       {item.productName}
                     </Link>
                     {item.variantSku && (
-                      <p className="text-xs" style={{ color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                      <p className="text-xs text-secondary mt-2">
                         SKU: {item.variantSku}
                       </p>
                     )}
-                    <p className="text-sm" style={{ color: "var(--color-text-secondary)", marginTop: "4px" }}>
+                    <p className="text-sm text-secondary mt-4">
                       Qty: {item.quantity} × {formatPaise(item.unitPricePaise)}
                     </p>
                   </div>
 
                   {/* Line total */}
                   <div className="order-item-price">
-                    <span className="font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    <span className="font-semibold text-primary">
                       {formatPaise(item.lineTotalPaise)}
                     </span>
                   </div>
@@ -338,41 +325,38 @@ export default function OrderDetailClient({
             {/* Order Summary */}
             <div className="order-summary-section">
               <div className="order-summary-row">
-                <span style={{ color: "var(--color-text-secondary)" }}>Subtotal</span>
-                <span style={{ color: "var(--color-text-primary)" }}>
+                <span className="text-secondary">Subtotal</span>
+                <span className="text-primary">
                   {formatPaise(order.subtotalPaise)}
                 </span>
               </div>
               <div className="order-summary-row">
-                <span style={{ color: "var(--color-text-secondary)" }}>Shipping</span>
-                <span style={{ color: "var(--color-text-primary)" }}>
+                <span className="text-secondary">Shipping</span>
+                <span className="text-primary">
                   {order.shippingPaise === 0 ? "Free" : formatPaise(order.shippingPaise)}
                 </span>
               </div>
               {order.codFeePaise > 0 && (
                 <div className="order-summary-row">
-                  <span style={{ color: "var(--color-text-secondary)" }}>COD Fee</span>
-                  <span style={{ color: "var(--color-text-primary)" }}>
+                  <span className="text-secondary">COD Fee</span>
+                  <span className="text-primary">
                     {formatPaise(order.codFeePaise)}
                   </span>
                 </div>
               )}
-              <div
-                className="order-summary-row order-summary-total"
-                style={{ borderTop: "1px solid var(--color-border)", paddingTop: "12px", marginTop: "8px" }}
-              >
-                <span className="font-semibold" style={{ color: "var(--color-text-primary)" }}>
+              <div className="order-summary-row order-summary-total">
+                <span className="font-semibold text-primary">
                   Total
                 </span>
-                <span className="font-bold text-lg" style={{ color: "var(--color-accent)" }}>
+                <span className="font-bold text-lg text-accent">
                   {formatPaise(order.totalPaise)}
                 </span>
               </div>
-              <div className="order-summary-row" style={{ marginTop: "4px" }}>
-                <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+              <div className="order-summary-row mt-4">
+                <span className="text-xs text-secondary">
                   Payment Method
                 </span>
-                <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
+                <span className="text-sm font-medium text-primary">
                   {order.paymentMethod === "COD" ? "Cash on Delivery" : order.paymentMethod}
                 </span>
               </div>
@@ -384,35 +368,14 @@ export default function OrderDetailClient({
         <div className="order-detail-sidebar">
           {/* Tracking Reference */}
           {order.trackingReference && (
-            <section className="card" style={{ marginBottom: "24px", padding: "20px" }}>
-              <h3
-                className="font-semibold"
-                style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "12px" }}
-              >
+            <section className="card order-sidebar-card">
+              <h3 className="font-semibold text-primary mb-12 text-15">
                 📋 Tracking Reference
               </h3>
-              <p
-                style={{
-                  fontFamily: "monospace",
-                  fontSize: "14px",
-                  color: "var(--color-accent)",
-                  padding: "10px 14px",
-                  backgroundColor: "var(--color-bg)",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--color-border)",
-                  wordBreak: "break-all",
-                }}
-              >
+              <p className="tracking-reference-code">
                 {order.trackingReference}
               </p>
-              <p
-                className="text-xs"
-                style={{
-                  color: "var(--color-text-secondary)",
-                  marginTop: "8px",
-                  lineHeight: "1.5",
-                }}
-              >
+              <p className="text-xs text-secondary mt-8 lh-1-5">
                 This is a manually-entered reference, not live courier tracking.
                 Contact support if you need delivery status updates.
               </p>
@@ -420,11 +383,8 @@ export default function OrderDetailClient({
           )}
 
           {/* Status Timeline */}
-          <section className="card" style={{ marginBottom: "24px", padding: "20px" }}>
-            <h3
-              className="font-semibold"
-              style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "16px" }}
-            >
+          <section className="card order-sidebar-card">
+            <h3 className="font-semibold text-primary mb-16 text-15">
               Status Timeline
             </h3>
 
@@ -455,27 +415,19 @@ export default function OrderDetailClient({
                     {/* Content */}
                     <div className="order-timeline-content">
                       <p
-                        className="font-medium"
+                        className="font-medium text-sm"
                         style={{
                           color: isLast ? entryCfg.colorVar : "var(--color-text-primary)",
-                          fontSize: "14px",
                         }}
                       >
                         {entryCfg.label}
                       </p>
-                      <p className="text-xs" style={{ color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                      <p className="text-xs text-secondary mt-2">
                         {formatDateTime(entry.createdAt)}
                         {entry.changedById === null && " · System"}
                       </p>
                       {entry.reason && (
-                        <p
-                          className="text-xs"
-                          style={{
-                            color: "var(--color-text-secondary)",
-                            marginTop: "4px",
-                            fontStyle: "italic",
-                          }}
-                        >
+                        <p className="text-xs text-secondary mt-4 italic">
                           {entry.reason}
                         </p>
                       )}
@@ -487,15 +439,12 @@ export default function OrderDetailClient({
           </section>
 
           {/* Shipping Address */}
-          <section className="card" style={{ marginBottom: "24px", padding: "20px" }}>
-            <h3
-              className="font-semibold"
-              style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "12px" }}
-            >
+          <section className="card order-sidebar-card">
+            <h3 className="font-semibold text-primary mb-12 text-15">
               Shipping Address
             </h3>
-            <div className="text-sm" style={{ color: "var(--color-text-secondary)", lineHeight: "1.7" }}>
-              <p className="font-medium" style={{ color: "var(--color-text-primary)" }}>
+            <div className="text-sm text-secondary lh-1-7">
+              <p className="font-medium text-primary">
                 {order.address.fullName}
               </p>
               <p>{order.address.line1}</p>
@@ -503,7 +452,7 @@ export default function OrderDetailClient({
               <p>
                 {order.address.city}, {order.address.state} — {order.address.pincode}
               </p>
-              <p style={{ marginTop: "4px" }}>📞 {order.address.phone}</p>
+              <p className="mt-4">📞 {order.address.phone}</p>
             </div>
           </section>
 
@@ -573,28 +522,28 @@ export default function OrderDetailClient({
 
             <div className="modal-body">
               {cancelSuccess ? (
-                <div className="alert-banner alert-success" style={{ marginBottom: 0 }}>
+                <div className="alert-banner alert-success mb-0">
                   <span>✓</span>
                   <div>
                     <strong>Order cancelled successfully.</strong>
-                    <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                    <p className="mt-4 text-13">
                       Stock has been restored. Redirecting...
                     </p>
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="alert-banner alert-warning" style={{ marginBottom: "20px" }}>
+                  <div className="alert-banner alert-warning mb-20">
                     <span>⚠</span>
                     <div>
                       <strong>Are you sure you want to cancel this order?</strong>
-                      <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                      <p className="mt-4 text-13">
                         This action cannot be undone. The reserved stock will be released.
                       </p>
                     </div>
                   </div>
 
-                  <div className="input-group" style={{ marginBottom: 0 }}>
+                  <div className="input-group mb-0">
                     <label htmlFor="cancel-reason" className="input-label input-required">
                       Reason for cancellation
                     </label>
@@ -612,13 +561,13 @@ export default function OrderDetailClient({
                       disabled={cancelLoading}
                       autoFocus
                     />
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div className="flex justify-between items-center">
                       {cancelError ? (
                         <span className="input-error-msg">⚠ {cancelError}</span>
                       ) : (
                         <span />
                       )}
-                      <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+                      <span className="text-xs text-secondary">
                         {cancelReason.length}/500
                       </span>
                     </div>
@@ -694,28 +643,28 @@ export default function OrderDetailClient({
 
             <div className="modal-body">
               {returnSuccess ? (
-                <div className="alert-banner alert-success" style={{ marginBottom: 0 }}>
+                <div className="alert-banner alert-success mb-0">
                   <span>✓</span>
                   <div>
                     <strong>Return request submitted successfully.</strong>
-                    <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                    <p className="mt-4 text-13">
                       Our support team will review your request. Redirecting...
                     </p>
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="alert-banner alert-warning" style={{ marginBottom: "20px" }}>
+                  <div className="alert-banner alert-warning mb-20">
                     <span>⚠</span>
                     <div>
                       <strong>Are you sure you want to request a return?</strong>
-                      <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                      <p className="mt-4 text-13">
                         Please enter a detailed reason for returning the items. Requests must be within {returnWindowDays} days of delivery.
                       </p>
                     </div>
                   </div>
 
-                  <div className="input-group" style={{ marginBottom: 0 }}>
+                  <div className="input-group mb-0">
                     <label htmlFor="return-reason" className="input-label input-required">
                       Reason for return
                     </label>
@@ -733,13 +682,13 @@ export default function OrderDetailClient({
                       disabled={returnLoading}
                       autoFocus
                     />
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div className="flex justify-between items-center">
                       {returnError ? (
                         <span className="input-error-msg">⚠ {returnError}</span>
                       ) : (
                         <span />
                       )}
-                      <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+                      <span className="text-xs text-secondary">
                         {returnReason.length}/500
                       </span>
                     </div>
@@ -762,12 +711,7 @@ export default function OrderDetailClient({
                   Keep Items
                 </button>
                 <button
-                  className={`btn btn-secondary ${returnLoading ? "btn-loading" : ""}`}
-                  style={{
-                    backgroundColor: "var(--color-accent)",
-                    color: "var(--color-bg)",
-                    border: "none",
-                  }}
+                  className={`btn btn-primary ${returnLoading ? "btn-loading" : ""}`}
                   onClick={handleReturnOrder}
                   disabled={returnLoading || !returnReason.trim()}
                   id="confirm-return-btn"

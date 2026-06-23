@@ -10,6 +10,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/guards";
 import { listUserOrders } from "@/features/orders/service";
 import { Navbar } from "@/components/ui/Navbar";
+import Image from "next/image";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -54,18 +55,15 @@ export default async function OrdersPage({
   const { orders, total, totalPages, page: currentPage } = await listUserOrders(user.id, page, 10);
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-default">
       <Navbar />
 
-      <main style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
-        <header style={{ marginBottom: "32px" }}>
-          <h1
-            className="text-3xl font-semibold"
-            style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}
-          >
+      <main className="container-md">
+        <header className="mb-32">
+          <h1 className="text-3xl font-semibold text-primary mb-8">
             My Orders
           </h1>
-          <p style={{ color: "var(--color-text-secondary)" }}>
+          <p className="text-secondary">
             {total === 0
               ? "You haven't placed any orders yet."
               : `${total} order${total !== 1 ? "s" : ""} total`}
@@ -75,7 +73,7 @@ export default async function OrdersPage({
         {orders.length === 0 ? (
           <div className="orders-empty-state">
             <div className="orders-empty-icon">📦</div>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "16px", marginBottom: "16px" }}>
+            <p className="text-secondary mb-16 text-base">
               No orders found. Start shopping to see your orders here.
             </p>
             <Link href="/products" className="btn btn-primary">
@@ -98,30 +96,17 @@ export default async function OrdersPage({
                     className="order-card card card-interactive"
                     id={`order-${order.id}`}
                   >
-                    {/* Thumbnail */}
-                    <div className="order-card-thumb">
+                    <div className="order-card-thumb relative">
                       {order.firstItemImage ? (
-                        <img
+                        <Image
                           src={order.firstItemImage}
                           alt={order.firstItemName}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
+                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 640px) 56px, 72px"
                         />
                       ) : (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "var(--color-text-secondary)",
-                            fontSize: "24px",
-                          }}
-                        >
+                        <div className="w-full h-full flex items-center justify-center text-secondary text-xl">
                           📦
                         </div>
                       )}
@@ -130,7 +115,7 @@ export default async function OrdersPage({
                     {/* Info */}
                     <div className="order-card-info">
                       <div className="order-card-header">
-                        <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+                        <span className="text-sm text-secondary">
                           {formatDate(order.createdAt)}
                         </span>
                         <span
@@ -145,24 +130,17 @@ export default async function OrdersPage({
                         </span>
                       </div>
 
-                      <p
-                        className="font-medium"
-                        style={{
-                          color: "var(--color-text-primary)",
-                          fontSize: "15px",
-                          marginBottom: "4px",
-                        }}
-                      >
+                      <p className="font-medium text-primary mb-4 text-sm">
                         {order.firstItemName}
                         {order.itemCount > 1 && (
-                          <span style={{ color: "var(--color-text-secondary)" }}>
+                          <span className="text-secondary">
                             {" "}
                             +{order.itemCount - 1} more
                           </span>
                         )}
                       </p>
 
-                      <p className="font-semibold" style={{ color: "var(--color-accent)", fontSize: "16px" }}>
+                      <p className="font-semibold text-accent text-base">
                         {formatPaise(order.totalPaise)}
                       </p>
                     </div>
@@ -194,7 +172,6 @@ export default async function OrdersPage({
                   <Link
                     href={`/orders?page=${currentPage - 1}`}
                     className="btn btn-secondary"
-                    style={{ fontSize: "14px", padding: "8px 16px" }}
                   >
                     ← Previous
                   </Link>
@@ -202,10 +179,7 @@ export default async function OrdersPage({
                   <span />
                 )}
 
-                <span
-                  className="text-sm"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
+                <span className="text-sm text-secondary">
                   Page {currentPage} of {totalPages}
                 </span>
 
@@ -213,7 +187,6 @@ export default async function OrdersPage({
                   <Link
                     href={`/orders?page=${currentPage + 1}`}
                     className="btn btn-secondary"
-                    style={{ fontSize: "14px", padding: "8px 16px" }}
                   >
                     Next →
                   </Link>

@@ -60,19 +60,9 @@ export function SupportReplyForm({ ticketId, isTerminalStatus, statusLabel }: Su
 
   if (isTerminalStatus) {
     return (
-      <div
-        className="card"
-        style={{
-          padding: "20px",
-          backgroundColor: "var(--color-bg)",
-          borderColor: "var(--color-border)",
-          textAlign: "center",
-          color: "var(--color-text-secondary)",
-          marginTop: "24px",
-        }}
-      >
-        <span style={{ fontSize: "20px", display: "block", marginBottom: "8px" }}>🔒</span>
-        <p style={{ fontSize: "14px" }}>
+      <div className="card bg-default p-4 text-center text-secondary mt-24">
+        <div className="mb-8" style={{ fontSize: "20px" }}>🔒</div>
+        <p className="text-sm">
           This ticket is marked as <strong>{statusLabel}</strong>. Replies are disabled.
         </p>
       </div>
@@ -80,7 +70,7 @@ export function SupportReplyForm({ ticketId, isTerminalStatus, statusLabel }: Su
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: "24px" }}>
+    <form onSubmit={handleSubmit} className="mt-24">
       <div className="input-group">
         <label htmlFor="reply-message" className="input-label input-required">
           Write a reply
@@ -99,22 +89,15 @@ export function SupportReplyForm({ ticketId, isTerminalStatus, statusLabel }: Su
           disabled={loading}
           required
         />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "4px",
-          }}
-        >
+        <div className="flex justify-between items-center mt-4">
           {error ? (
-            <span className="input-error-msg" style={{ fontSize: "13px" }}>
+            <span className="input-error-msg text-13">
               ⚠ {error}
             </span>
           ) : (
             <span />
           )}
-          <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+          <span className="text-xs text-secondary">
             {message.length}/5000
           </span>
         </div>
@@ -122,8 +105,8 @@ export function SupportReplyForm({ ticketId, isTerminalStatus, statusLabel }: Su
 
       <button
         type="submit"
-        className={`btn btn-primary ${loading ? "btn-loading" : ""}`}
-        style={{ marginTop: "12px", minWidth: "120px" }}
+        className={`btn btn-primary mt-12 ${loading ? "btn-loading" : ""}`}
+        style={{ minWidth: "120px" }}
         disabled={loading || !message.trim()}
       >
         Send Reply

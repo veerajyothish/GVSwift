@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVSWIFT | COLLECTIONS</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&amp;family=Libre+Caslon+Text:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e2e2e2",
+                    "on-primary": "#ffffff",
+                    "primary-container": "#181d19",
+                    "secondary-fixed": "#e7e2da",
+                    "inverse-surface": "#2f3131",
+                    "on-surface-variant": "#444844",
+                    "tertiary": "#000000",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#eeeeee",
+                    "outline": "#747874",
+                    "background": "#f9f9f9",
+                    "outline-variant": "#c4c7c2",
+                    "on-secondary-container": "#65625c",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#dadada",
+                    "surface-bright": "#f9f9f9",
+                    "surface-container-highest": "#e2e2e2",
+                    "tertiary-container": "#1d1c16",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#1d1c17",
+                    "tertiary-fixed-dim": "#cac6be",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#87847c",
+                    "secondary": "#615e58",
+                    "surface-container-high": "#e8e8e8",
+                    "on-tertiary-fixed": "#1d1c16",
+                    "surface-container-low": "#f3f3f4",
+                    "primary": "#000000",
+                    "secondary-fixed-dim": "#cac6be",
+                    "error": "#ba1a1a",
+                    "on-background": "#1a1c1c",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed": "#181d19",
+                    "tertiary-fixed": "#e7e2d9",
+                    "secondary-container": "#e4dfd7",
+                    "surface": "#f9f9f9",
+                    "on-secondary-fixed-variant": "#494741",
+                    "inverse-on-surface": "#f0f1f1",
+                    "primary-fixed-dim": "#c4c7c2",
+                    "on-tertiary-fixed-variant": "#494740",
+                    "inverse-primary": "#c4c7c2",
+                    "surface-tint": "#5b5f5b",
+                    "on-surface": "#1a1c1c",
+                    "on-primary-fixed-variant": "#444844",
+                    "on-primary-container": "#818580",
+                    "primary-fixed": "#e0e3de"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "32px",
+                    "margin-desktop": "64px",
+                    "container-max": "1440px",
+                    "gutter": "24px",
+                    "stack-md": "64px",
+                    "stack-xl": "120px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["DM Sans"],
+                    "headline-sm": ["Libre Caslon Text"],
+                    "display-lg": ["Libre Caslon Text"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "label-sm": ["DM Sans"],
+                    "body-lg": ["DM Sans"],
+                    "label-md": ["DM Sans"],
+                    "display-lg-mobile": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9f9f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #000;
+        }
+        .product-image-container {
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background: #f3f3f4;
+        }
+        .hover-reveal-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-card:hover .hover-reveal-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .product-card img {
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface border-b border-primary">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-6 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-display-lg text-[32px] md:text-display-lg tracking-tighter text-primary uppercase" href="#">GVSWIFT</a>
+<div class="hidden md:flex gap-6">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="#">COLLECTIONS</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-opacity duration-300" href="#">ARCHIVE</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-opacity duration-300" href="#">HERITAGE</a>
+<a class="font-label-md text-label-md text-secondary hover:text-primary transition-opacity duration-300" href="#">ABOUT</a>
+</div>
+</div>
+<div class="flex items-center gap-4 md:gap-6">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity duration-300">shopping_bag</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity duration-300">person</span>
+<span class="material-symbols-outlined md:hidden text-primary cursor-pointer">menu</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-[120px] max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop min-h-screen">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-end mb-stack-md">
+<div class="w-full md:w-1/2">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg uppercase leading-none mb-4">The Collection</h1>
+<p class="font-body-md text-body-lg text-secondary max-w-md">An curated archive of heritage-inspired apparel and footwear. Designed for the contemporary global lens.</p>
+</div>
+<div class="flex flex-wrap gap-4 mt-8 md:mt-0">
+<button class="px-6 py-2 border border-primary bg-primary text-on-primary font-label-md text-label-md uppercase tracking-wider transition-all duration-300">All Objects</button>
+<button class="px-6 py-2 border border-outline-variant hover:border-primary text-primary font-label-md text-label-md uppercase tracking-wider transition-all duration-300">Apparel</button>
+<button class="px-6 py-2 border border-outline-variant hover:border-primary text-primary font-label-md text-label-md uppercase tracking-wider transition-all duration-300">Footwear</button>
+<button class="px-6 py-2 border border-outline-variant hover:border-primary text-primary font-label-md text-label-md uppercase tracking-wider transition-all duration-300">Heritage</button>
+</div>
+</header>
+<!-- Product Grid (4-Column) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-xl">
+<!-- Product Card 1 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="A high-fashion editorial portrait of a model wearing a structured black architectural blazer. The lighting is stark and dramatic, with deep shadows and brilliant highlights reflecting off the premium fabric texture. Set against a pure white minimalist studio background, emphasizing clean lines and high-contrast luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa4blQc5HD3AxdYTvy1i0cqoK4b0SU3RF9W1tSnSMk2sgagjo52IdCfwWXM6S3EvIC3dZCNAhbmyv7h0jH8L0GkMDGN1dSRnOiNS27HqaqC_0xRybNRkB1nph-qGFz-gsFUbaZ6lhDgKDVqLWdKGFutpBcLe6xxprGh7xa6prYTjlp5_BZKCAof7YKX1KK6MoGpOzcyB1fjeWV1qBki6aQ-MarMrmPCWJ3ZECgZa1J3wWbbQUlobnZVMr4fOs3zi9q2UNggkCfvSh0"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Architectural Blazer</span>
+<span class="font-body-md text-secondary">$840.00</span>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Detail shot of luxury leather boots in deep charcoal black. The footwear is positioned asymmetrically on a white stone pedestal. The lighting is clinical and bright, highlighting the grain of the Italian leather and the sharp, square-toe silhouette. The background is a vast, empty gallery space with a soft light-mode glow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzvXrEW9dDIs-RCJ4I9O6K79PMWjggSmiM4KQAAeM7oCfckAv6LuwqA_MEVWB3zp8VQdkj5MkcwoYARuwYLkL0vrdNB_ZYQwULb8yLq4bJMcCUaue1jdI1Rod24iHNOrokS9OKUskmgEh6ZUiWYPPJVHe93_FvvRU3w48_KSOTGitmYMblO6GQ7I1YF2asbcNC_nK-Zxn1xerLHj8mQofueSJzJXx4HdexoP3CO-sHMXO_h0g1ojbvMdO7JOG2CmKtUyWtLkrOB24u"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Heritage Chelsea Boot</span>
+<span class="font-body-md text-secondary">$620.00</span>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Close-up of a premium heavy-knit wool sweater in bone white. The texture of the knit is intricately detailed, showing every loop and fiber. The garment is draped over a minimalist black wire chair in a brightly lit, high-key contemporary room. The mood is quiet, sophisticated, and texture-focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvZz-3z7qmaNDER9Tkgk_6NroJ4gqiAfdFoYphvTZA5JGLNp8HtVQMuP_-oyO3pU4AZVkwcJQX-hevexXxkzwPqguDAPMbBCQfcJy4_jVymGBRPZU6fZrT5zjVCX2bbE7cTLneTFUot861Uq9bmlRoakFq3dvSKcCkUbqNtu4WE6uv4-NjWZsOoY3l7VYijWv11Q_JbtpkrQBUy3_1VsPenyXkHB2GXZVSkNZ7YZaFshr8m_mnBfAZwhlbWHpNdrkVB-_q062K86u4"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Sculpted Knit Tunic</span>
+<span class="font-body-md text-secondary">$490.00</span>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="A minimalist fashion accessory shot featuring a structured leather tote bag. The bag is jet black and sits on a polished white floor. Strong directional light creates a long, sharp shadow. The composition is off-center, creating a dynamic architectural feel within a high-contrast black and white environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvEUuQqzTWaDRnDNv4MY0-OrUi1u7d76yK9BFOO24XmzZ6xHAmTkO2u8NnUy2lwldegG2dzixDtx1eXvl-OCQEBEMyVT_br8oDEDH1bp6_dzfa7t0e_XIfl6L_FjJRXddL1UoGwzuIL_T3PKXkOlYd0IxHp85MoAk59Ajurwf7vSolkg_tI5HbfSa4Tng89SrnBmJAzC8JvCSyG4HKv6X6xDfluXhzNrYiMhWp59akypwtEMuF0ydbH176Pb0wKbuH8aN4QISiBm64"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Archive Carryall</span>
+<span class="font-body-md text-secondary">$1,150.00</span>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Editorial fashion image of high-waisted pleated trousers in a deep obsidian wool. The focus is on the sharp creases and the way the fabric moves. A stark white background and bright studio lights emphasize the silhouette. The image feels like a page from a high-end avant-garde fashion lookbook." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACEDvEU3al5n6uoEnBLcLTSkCNMxCc1Q9fdyHCtDTrfGvleV8E66KjuHIoL_av6N_ihLBr6dgk65d2HNEvlJiAhOou3PV887j6XFwg3naycCDPB8M_l8AxzjY0me6HvMVYCIgx3l9chzKGZu2r_gj_KRaqTpmea-ARRn61j9Br72wezA9IVpzsCJwwAfgh8PBLY4aTn5B9SzYBZJC2s2CJlzdD2hUevivBYeeiQ7ADf49DNCozQqNIsr7DfG1-MgWZNQB2boaBKzMD"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Structured Trouser</span>
+<span class="font-body-md text-secondary">$380.00</span>
+</div>
+</div>
+<!-- Product Card 6 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Studio shot of a minimalist silk shirt in ivory. The shirt is slightly unbuttoned and caught in motion, creating fluid lines against a matte black background. The high-contrast palette of white and black creates a feeling of timeless luxury and contemporary heritage style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9U2n0FQwr-ewjGHJSkVvjdq7xtOuFCcnRez3A1nEgVcUiYKY_kcFdTiGiWr7mL5-Cn9Spg9OvehvQJnCRJX-Ak-dz8fcm5ARNfQTGKY8OQm5eOfAl2RzIlrPW3CZaz84wI4cVsa8IOFyVv-0IWaf2GGkRbskHGafjM5M6DSPfNWD5-RTWjVeru3U265SUdiP2qePLJTzHrucSG90Y3xNcHj_ygFq8Fo7Fa_Pz0C-5-s5CdKWRy6fVj8g1g8cPvSWOzwtf8WmJiRr1"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Fluid Silk Blouse</span>
+<span class="font-body-md text-secondary">$550.00</span>
+</div>
+</div>
+<!-- Product Card 7 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Macro photography of a heritage textile pattern in black and white. The intricate weave of the fabric is shown in extreme detail, revealing subtle variations in yarn and texture. The lighting is soft but defined, highlighting the depth of the textile's craftsmanship in a museum-like presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo9w0ah3wmK8imp8NtBULvNW51bnJN111zTS7Jayg4nJzvf5d-nCL-u45GydAcmYKg_u-5jbp0KcVbzZAOkoe4Y7I4p5e7L_CAtQ-d0ayUaCiS5Hz_JxHTa4tv5iO0lJSuWJflkFxj9cdAdlSBR5EDSahJHeEjmNFPziCgejpjdxWEaEuhKni8FdKyTFPDvGzfTwl41tFe2MRuSUe4625i5rAp3EivUkAm0LTgAMOyx39HaIzFc6PjkPuhWnLM7yINnkWWYoWVCRFZ"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Heritage Wrap Scarf</span>
+<span class="font-body-md text-secondary">$210.00</span>
+</div>
+</div>
+<!-- Product Card 8 -->
+<div class="product-card group cursor-pointer">
+<div class="product-image-container relative mb-4">
+<img class="w-full h-full object-cover" data-alt="Modern sculptural eyewear displayed on a white marble slab. The sunglasses have thick black frames and dark lenses, casting a sharp geometric shadow. The background is a clean, white-walled gallery space with cool-toned studio lighting that emphasizes the product's architectural form." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNWoBGW5ekPfyRMhTiNtw9T3SeWj3POnkyU4mCtmKsPjX_8Xgtkxaasgi7wjPS-ZdR5NZC7WiQfwMrvj1tufhhmGcaf8dbtoXuwP0I94NHljOiS8TGAkdkmHKg1q4_CuH5vXb49gjl-iVMscgPY3ssLXkMSZVPfkYr-LHZrQQBY9xeLticGUUXPHNTv4xfv_PiyyDprCede9OtXm0eoENoUVU9XOVwkAySYAngHZZ0sxxmweuIsY3PDm_LnWMk_-uONPsIi_9PREdM"/>
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 hover-reveal-btn w-[80%]">
+<button class="w-full bg-primary text-on-primary py-3 font-label-md text-label-md uppercase tracking-widest">Quick View</button>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<span class="font-label-md text-label-md uppercase tracking-tighter mb-1">Obsidian Eye-Frame</span>
+<span class="font-body-md text-secondary">$325.00</span>
+</div>
+</div>
+</section>
+<!-- Pagination -->
+<div class="flex flex-col items-center justify-center gap-6 pb-stack-xl">
+<div class="flex items-center gap-8">
+<button class="flex items-center gap-2 font-label-md text-label-md uppercase text-secondary hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined">chevron_left</span>
+                    Previous
+                </button>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-primary border-b border-primary">01</span>
+<span class="font-label-md text-label-md text-secondary hover:text-primary cursor-pointer">02</span>
+<span class="font-label-md text-label-md text-secondary hover:text-primary cursor-pointer">03</span>
+<span class="font-label-md text-label-md text-secondary">...</span>
+<span class="font-label-md text-label-md text-secondary hover:text-primary cursor-pointer">12</span>
+</div>
+<button class="flex items-center gap-2 font-label-md text-label-md uppercase text-primary hover:opacity-70 transition-opacity duration-200">
+                    Next
+                    <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="h-[1px] w-32 bg-outline-variant"></div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-stack-xl bg-surface-container border-t border-secondary-fixed">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-stack-sm max-w-container-max mx-auto">
+<div class="mb-8 md:mb-0">
+<span class="font-headline-sm text-headline-sm text-primary uppercase">GVSWIFT</span>
+<p class="font-label-sm text-label-sm text-secondary mt-2">© 2024 GVSWIFT. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 md:gap-12">
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">PRIVACY POLICY</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">TERMS OF SERVICE</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">SHIPPING &amp; RETURNS</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline" href="#">CONTACT</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for navbar transparency shift on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-sm');
+                nav.style.backgroundColor = 'rgba(249, 249, 249, 0.95)';
+                nav.style.backdropFilter = 'blur(10px)';
+            } else {
+                nav.classList.remove('shadow-sm');
+                nav.style.backgroundColor = '#f9f9f9';
+                nav.style.backdropFilter = 'none';
+            }
+        });
+
+        // Add smooth entrance animation for cards
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body></html>

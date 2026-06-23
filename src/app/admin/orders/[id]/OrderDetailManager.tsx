@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface OrderItem {
   id: string;
@@ -324,13 +325,13 @@ export default function OrderDetailManager({
       </nav>
 
       {/* Header */}
-      <div className="order-detail-header" style={{ marginBottom: "24px" }}>
+      <div className="order-detail-header mb-24">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}>
+          <h1 className="text-2xl font-bold text-primary mb-8">
             Manage Order
           </h1>
-          <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-            ID: <span style={{ fontFamily: "monospace", fontSize: "13px" }}>{order.id}</span>
+          <p className="text-sm text-secondary">
+            ID: <span className="text-xs-mono">{order.id}</span>
           </p>
         </div>
 
@@ -348,21 +349,21 @@ export default function OrderDetailManager({
 
       {/* Alert Banners */}
       {transitionError && (
-        <div className="alert-banner alert-error" style={{ marginBottom: "24px" }}>
+        <div className="alert-banner alert-error mb-24">
           <span>⚠</span>
           <div>
             <strong>Action Failed</strong>
-            <p style={{ marginTop: "4px", fontSize: "13px" }}>{transitionError}</p>
+            <p className="mt-4 text-xs">{transitionError}</p>
           </div>
         </div>
       )}
 
       {autoCancelledStock && (
-        <div className="alert-banner alert-warning" style={{ marginBottom: "24px" }}>
+        <div className="alert-banner alert-warning mb-24">
           <span>ℹ</span>
           <div>
             <strong>Oversold Auto-Cancellation</strong>
-            <p style={{ marginTop: "4px", fontSize: "13px" }}>
+            <p className="mt-4 text-xs">
               Order confirmation was automatically cancelled due to insufficient variant inventory. The variant stock has been restored.
             </p>
           </div>
@@ -374,36 +375,36 @@ export default function OrderDetailManager({
         {/* Left column */}
         <div className="order-detail-main">
           {/* Order Items */}
-          <section className="card" style={{ marginBottom: "24px" }}>
-            <h2 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)", padding: "16px 20px 0" }}>
+          <section className="card mb-24">
+            <h2 className="text-lg font-semibold text-primary" style={{ padding: "16px 20px 0" }}>
               Items ({order.items.length})
             </h2>
 
             <div className="order-items-list" style={{ padding: "0 20px 20px" }}>
               {order.items.map((item) => (
                 <div key={item.id} className="order-item-row" style={{ padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
-                  <div className="order-item-thumb">
+                  <div className="order-item-thumb relative">
                     {item.productImage ? (
-                      <img src={item.productImage} alt={item.productName} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "var(--radius-md)" }} />
+                      <Image src={item.productImage} alt={item.productName} className="w-full h-full object-cover rounded-md" fill sizes="(max-width: 640px) 48px, 60px" />
                     ) : (
-                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--color-bg)", borderRadius: "var(--radius-md)", color: "var(--color-text-secondary)", fontSize: "20px" }}>📦</div>
+                      <div className="w-full h-full flex items-center justify-center bg-default rounded-md text-secondary text-xl">📦</div>
                     )}
                   </div>
 
                   <div className="order-item-details">
                     <span className="order-item-name">{item.productName}</span>
                     {item.variantSku && (
-                      <p className="text-xs" style={{ color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                      <p className="text-xs text-secondary mt-2">
                         SKU: {item.variantSku}
                       </p>
                     )}
-                    <p className="text-sm" style={{ color: "var(--color-text-secondary)", marginTop: "4px" }}>
+                    <p className="text-sm text-secondary mt-4">
                       Qty: {item.quantity} × {formatPaise(item.unitPricePaise)}
                     </p>
                   </div>
 
                   <div className="order-item-price">
-                    <span className="font-semibold" style={{ color: "var(--color-text-primary)" }}>
+                    <span className="font-semibold text-primary">
                       {formatPaise(item.lineTotalPaise)}
                     </span>
                   </div>
@@ -412,40 +413,40 @@ export default function OrderDetailManager({
             </div>
 
             {/* Totals */}
-            <div className="order-summary-section" style={{ padding: "20px", borderTop: "1px solid var(--color-border)" }}>
+            <div className="order-summary-section">
               <div className="order-summary-row">
-                <span style={{ color: "var(--color-text-secondary)" }}>Subtotal</span>
-                <span style={{ color: "var(--color-text-primary)" }}>{formatPaise(order.subtotalPaise)}</span>
+                <span className="text-secondary">Subtotal</span>
+                <span className="text-primary">{formatPaise(order.subtotalPaise)}</span>
               </div>
               <div className="order-summary-row">
-                <span style={{ color: "var(--color-text-secondary)" }}>Shipping</span>
-                <span style={{ color: "var(--color-text-primary)" }}>{order.shippingPaise === 0 ? "Free" : formatPaise(order.shippingPaise)}</span>
+                <span className="text-secondary">Shipping</span>
+                <span className="text-primary">{order.shippingPaise === 0 ? "Free" : formatPaise(order.shippingPaise)}</span>
               </div>
               {order.codFeePaise > 0 && (
                 <div className="order-summary-row">
-                  <span style={{ color: "var(--color-text-secondary)" }}>COD Fee</span>
-                  <span style={{ color: "var(--color-text-primary)" }}>{formatPaise(order.codFeePaise)}</span>
+                  <span className="text-secondary">COD Fee</span>
+                  <span className="text-primary">{formatPaise(order.codFeePaise)}</span>
                 </div>
               )}
-              <div className="order-summary-row order-summary-total" style={{ borderTop: "1px solid var(--color-border)", paddingTop: "12px", marginTop: "8px" }}>
-                <span className="font-semibold" style={{ color: "var(--color-text-primary)" }}>Total</span>
-                <span className="font-bold text-lg" style={{ color: "var(--color-accent)" }}>{formatPaise(order.totalPaise)}</span>
+              <div className="order-summary-row order-summary-total">
+                <span className="font-semibold text-primary">Total</span>
+                <span className="font-bold text-lg text-accent">{formatPaise(order.totalPaise)}</span>
               </div>
             </div>
           </section>
 
           {/* Risk Flags Section */}
-          <section className="card" style={{ padding: "20px", marginBottom: "24px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "16px", marginBottom: "16px" }}>
+          <section className="card p-5 mb-24">
+            <h3 className="font-semibold text-primary text-base mb-16">
               🛡️ Fraud & Risk Assessment
             </h3>
 
             {order.riskFlags.length === 0 ? (
-              <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+              <p className="text-sm text-secondary">
                 No risk flags exist for this customer, phone number, or pincode.
               </p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="flex flex-col gap-3">
                 {order.riskFlags.map((flag) => {
                   let alertClass = "alert-success";
                   if (flag.riskLevel === "MEDIUM") alertClass = "alert-warning";
@@ -454,18 +455,18 @@ export default function OrderDetailManager({
                   return (
                     <div
                       key={flag.id}
-                      className={`alert-banner ${alertClass}`}
-                      style={{ marginBottom: 0, padding: "10px 14px" }}
+                      className={`alert-banner mb-0 ${alertClass}`}
+                      style={{ padding: "10px 14px" }}
                     >
-                      <span style={{ fontSize: "16px" }}>🛡️</span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span className="text-base">🛡️</span>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center">
                           <strong>
                             {flag.entityType}: {flag.entityValue}
                           </strong>
-                          <span style={{ fontWeight: "bold" }}>Level: {flag.riskLevel}</span>
+                          <span className="font-bold">Level: {flag.riskLevel}</span>
                         </div>
-                        <p style={{ fontSize: "12px", marginTop: "2px", color: "var(--color-text-secondary)" }}>
+                        <p className="text-xs mt-2 text-secondary">
                           Flagged on {formatDateTime(flag.createdAt)}
                         </p>
                       </div>
@@ -477,18 +478,18 @@ export default function OrderDetailManager({
           </section>
 
           {/* Customer Address Details */}
-          <section className="card" style={{ padding: "20px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "16px", marginBottom: "12px" }}>
+          <section className="card p-5">
+            <h3 className="font-semibold text-primary text-base mb-12">
               📍 Shipping Details
             </h3>
-            <div className="text-sm" style={{ color: "var(--color-text-secondary)", lineHeight: "1.7" }}>
-              <p className="font-medium" style={{ color: "var(--color-text-primary)" }}>{order.address.fullName}</p>
+            <div className="text-sm text-secondary lh-1-7">
+              <p className="font-medium text-primary">{order.address.fullName}</p>
               <p>{order.address.line1}</p>
               {order.address.line2 && <p>{order.address.line2}</p>}
               <p>{order.address.city}, {order.address.state} — {order.address.pincode}</p>
-              <p style={{ marginTop: "4px" }}>📞 {order.address.phone}</p>
-              <p style={{ marginTop: "4px" }}>✉️ {order.customer.email}</p>
-              <p style={{ marginTop: "4px" }}>👤 Risk Status: <strong>{order.customer.riskStatus}</strong></p>
+              <p className="mt-4">📞 {order.address.phone}</p>
+              <p className="mt-4">✉️ {order.customer.email}</p>
+              <p className="mt-4">👤 Risk Status: <strong>{order.customer.riskStatus}</strong></p>
             </div>
           </section>
         </div>
@@ -496,17 +497,17 @@ export default function OrderDetailManager({
         {/* Right column */}
         <div className="order-detail-sidebar">
           {/* Status Transitions Control Panel */}
-          <section className="card" style={{ padding: "20px", marginBottom: "24px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "16px" }}>
+          <section className="card p-5 mb-24">
+            <h3 className="font-semibold text-primary text-15 mb-16">
               Status Controls
             </h3>
 
             {validNextStatuses.length === 0 ? (
-              <p className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
+              <p className="text-sm text-secondary">
                 No further transitions are possible for this order.
               </p>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div className="flex flex-col gap-2">
                 {validNextStatuses.map((nextStatus) => {
                   const cfg = STATUS_CONFIG[nextStatus] ?? { label: nextStatus, colorVar: "var(--color-text-secondary)" };
                   const isCancel = nextStatus === "CANCELLED";
@@ -533,12 +534,12 @@ export default function OrderDetailManager({
           </section>
 
           {/* Delivery Attempt Tracker */}
-          <section className="card" style={{ padding: "20px", marginBottom: "24px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "12px" }}>
+          <section className="card p-5 mb-24">
+            <h3 className="font-semibold text-primary text-15 mb-12">
               🚚 Delivery Attempts
             </h3>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>Attempts Recorded:</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-secondary">Attempts Recorded:</span>
               <span className="font-bold text-lg" style={{ color: order.deliveryAttempts >= maxDeliveryAttempts ? "var(--color-error)" : "var(--color-text-primary)" }}>
                 {order.deliveryAttempts} / {maxDeliveryAttempts}
               </span>
@@ -546,12 +547,12 @@ export default function OrderDetailManager({
           </section>
 
           {/* Internal Notes */}
-          <section className="card" style={{ padding: "20px", marginBottom: "24px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "12px" }}>
+          <section className="card p-5 mb-24">
+            <h3 className="font-semibold text-primary text-15 mb-12">
               📝 Internal Notes
             </h3>
 
-            <div className="input-group" style={{ margin: 0 }}>
+            <div className="input-group margin-0">
               <textarea
                 className="input-field"
                 placeholder="Type administrative internal notes here..."
@@ -565,9 +566,9 @@ export default function OrderDetailManager({
                 maxLength={5000}
                 disabled={notesSaving}
               />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
-                {notesError && <span className="input-error-msg" style={{ fontSize: "12px" }}>⚠ {notesError}</span>}
-                {notesSuccess && <span style={{ color: "var(--color-success)", fontSize: "12px" }}>✓ Saved successfully</span>}
+              <div className="flex justify-between items-center mt-8">
+                {notesError && <span className="input-error-msg text-xs">⚠ {notesError}</span>}
+                {notesSuccess && <span className="text-success text-xs">✓ Saved successfully</span>}
                 <span />
                 <button
                   className={`btn btn-secondary ${notesSaving ? "btn-loading" : ""}`}
@@ -583,12 +584,12 @@ export default function OrderDetailManager({
 
           {/* Tracking Reference (if SHIPPED or later) */}
           {hasReachedShipped && (
-            <section className="card" style={{ padding: "20px", marginBottom: "24px" }}>
-              <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "12px" }}>
+            <section className="card p-5 mb-24">
+              <h3 className="font-semibold text-primary text-15 mb-12">
                 📦 Tracking Reference
               </h3>
 
-              <div className="input-group" style={{ margin: 0 }}>
+              <div className="input-group margin-0">
                 <input
                   type="text"
                   className="input-field"
@@ -602,9 +603,9 @@ export default function OrderDetailManager({
                   maxLength={500}
                   disabled={trackingSaving}
                 />
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
-                  {trackingError && <span className="input-error-msg" style={{ fontSize: "12px" }}>⚠ {trackingError}</span>}
-                  {trackingSuccess && <span style={{ color: "var(--color-success)", fontSize: "12px" }}>✓ Saved successfully</span>}
+                <div className="flex justify-between items-center mt-8">
+                  {trackingError && <span className="input-error-msg text-xs">⚠ {trackingError}</span>}
+                  {trackingSuccess && <span className="text-success text-xs">✓ Saved successfully</span>}
                   <span />
                   <button
                     className={`btn btn-secondary ${trackingSaving ? "btn-loading" : ""}`}
@@ -620,8 +621,8 @@ export default function OrderDetailManager({
           )}
 
           {/* Chronological Timeline */}
-          <section className="card" style={{ padding: "20px" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text-primary)", fontSize: "15px", marginBottom: "16px" }}>
+          <section className="card p-5">
+            <h3 className="font-semibold text-primary text-15 mb-16">
               Status History Timeline
             </h3>
 
@@ -632,31 +633,31 @@ export default function OrderDetailManager({
 
                 return (
                   <div key={entry.id} className="order-timeline-entry">
-                    <div className="order-timeline-marker">
-                      <div
-                        className="order-timeline-dot"
-                        style={{
-                          backgroundColor: isLast ? cfg.colorVar : "var(--color-border)",
-                          boxShadow: isLast ? `0 0 0 4px color-mix(in srgb, ${cfg.colorVar} 20%, transparent)` : "none",
-                        }}
-                      />
-                      {!isLast && <div className="order-timeline-line" />}
-                    </div>
+                     <div className="order-timeline-marker">
+                       <div
+                         className="order-timeline-dot"
+                         style={{
+                           backgroundColor: isLast ? cfg.colorVar : "var(--color-border)",
+                           boxShadow: isLast ? `0 0 0 4px color-mix(in srgb, ${cfg.colorVar} 20%, transparent)` : "none",
+                         }}
+                       />
+                       {!isLast && <div className="order-timeline-line" />}
+                     </div>
 
-                    <div className="order-timeline-content">
-                      <p className="font-medium" style={{ color: isLast ? cfg.colorVar : "var(--color-text-primary)", fontSize: "14px" }}>
-                        {cfg.label}
-                      </p>
-                      <p className="text-xs" style={{ color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                        {formatDateTime(entry.createdAt)}
-                        {entry.changedByEmail ? ` · ${entry.changedByEmail} (${entry.changedByRole})` : " · System"}
-                      </p>
-                      {entry.reason && (
-                        <p className="text-xs" style={{ color: "var(--color-text-secondary)", marginTop: "4px", fontStyle: "italic" }}>
-                          {entry.reason}
-                        </p>
-                      )}
-                    </div>
+                     <div className="order-timeline-content">
+                       <p className="font-medium text-sm" style={{ color: isLast ? cfg.colorVar : "var(--color-text-primary)" }}>
+                         {cfg.label}
+                       </p>
+                       <p className="text-xs text-secondary mt-2">
+                         {formatDateTime(entry.createdAt)}
+                         {entry.changedByEmail ? ` · ${entry.changedByEmail} (${entry.changedByRole})` : " · System"}
+                       </p>
+                       {entry.reason && (
+                         <p className="text-xs text-secondary mt-4 italic">
+                           {entry.reason}
+                         </p>
+                       )}
+                     </div>
                   </div>
                 );
               })}
@@ -691,17 +692,17 @@ export default function OrderDetailManager({
             </div>
 
             <div className="modal-body">
-              <div className="alert-banner alert-warning" style={{ marginBottom: "20px" }}>
+              <div className="alert-banner alert-warning mb-20">
                 <span>⚠</span>
                 <div>
                   <strong>Post-Shipped Cancellation Override</strong>
-                  <p style={{ marginTop: "4px", fontSize: "13px" }}>
+                  <p className="mt-4 text-xs">
                     This order has already been shipped. Cancelling requires a mandatory administrative override reason that will be logged in the audit history.
                   </p>
                 </div>
               </div>
 
-              <div className="input-group" style={{ marginBottom: 0 }}>
+              <div className="input-group mb-0">
                 <label htmlFor="override-reason" className="input-label input-required">
                   Override Reason
                 </label>
@@ -719,9 +720,9 @@ export default function OrderDetailManager({
                   disabled={transitionLoading}
                   autoFocus
                 />
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div className="flex justify-between items-center">
                   {overrideError ? <span className="input-error-msg">⚠ {overrideError}</span> : <span />}
-                  <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+                  <span className="text-xs text-secondary">
                     {overrideReason.length}/500
                   </span>
                 </div>

@@ -10,10 +10,10 @@ export default async function AdminLayout({
   await requireAdmin();
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--color-bg)" }}>
+    <div className="min-h-screen flex flex-col bg-default">
       {/* Admin Nav Shell */}
-      <header className="site-navbar" aria-label="Admin navigation" style={{ borderBottom: "1px solid var(--color-border)", backgroundColor: "rgba(11, 11, 12, 0.95)" }}>
-        <div className="site-navbar-inner" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header className="admin-header" aria-label="Admin navigation">
+        <div className="site-navbar-inner flex items-center justify-between">
           <div className="flex items-center gap-5">
             <Link href="/admin" className="site-navbar-brand">
               <span className="site-navbar-logo">GV</span>
@@ -40,14 +40,14 @@ export default async function AdminLayout({
           </div>
 
           <div>
-            <Link href="/" className="site-navbar-link" style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
+            <Link href="/" className="site-navbar-link text-secondary text-13">
               Back to Store
             </Link>
           </div>
         </div>
       </header>
       
-      <main style={{ flex: 1, padding: "32px 20px", maxWidth: "1200px", width: "100%", margin: "0 auto" }}>
+      <main className="admin-main">
         {children}
       </main>
     </div>

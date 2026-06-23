@@ -78,51 +78,20 @@ export function SupportForm({ orders }: SupportFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card" style={{ padding: "24px" }}>
-      <h2
-        className="text-lg font-semibold"
-        style={{ color: "var(--color-text-primary)", marginBottom: "20px" }}
-      >
+    <form onSubmit={handleSubmit} className="card p-5">
+      <h2 className="text-lg font-semibold text-primary mb-20">
         Submit a Support Ticket
       </h2>
 
       {error && (
-        <div
-          className="alert-banner alert-error"
-          style={{
-            marginBottom: "20px",
-            padding: "12px 16px",
-            borderRadius: "var(--radius-md)",
-            fontSize: "14px",
-            backgroundColor: "var(--color-error-bg)",
-            color: "var(--color-error)",
-            border: "1px solid color-mix(in srgb, var(--color-error) 25%, transparent)",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
+        <div className="alert-banner alert-error mb-20">
           <span>⚠</span>
           <div>{error}</div>
         </div>
       )}
 
       {success && (
-        <div
-          className="alert-banner alert-success"
-          style={{
-            marginBottom: "20px",
-            padding: "12px 16px",
-            borderRadius: "var(--radius-md)",
-            fontSize: "14px",
-            backgroundColor: "var(--color-success-bg)",
-            color: "var(--color-success)",
-            border: "1px solid color-mix(in srgb, var(--color-success) 25%, transparent)",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
+        <div className="alert-banner alert-success mb-20">
           <span>✓</span>
           <div>Support ticket created successfully!</div>
         </div>
@@ -149,7 +118,7 @@ export function SupportForm({ orders }: SupportFormProps) {
       </div>
 
       {/* Description Input */}
-      <div className="input-group" style={{ marginTop: "16px" }}>
+      <div className="input-group mt-16">
         <label htmlFor="ticket-description" className="input-label">
           Description
         </label>
@@ -166,15 +135,15 @@ export function SupportForm({ orders }: SupportFormProps) {
           maxLength={5000}
           disabled={loading}
         />
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "4px" }}>
-          <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
+        <div className="flex justify-end mt-4">
+          <span className="text-xs text-secondary">
             {description.length}/5000
           </span>
         </div>
       </div>
 
       {/* Order Dropdown */}
-      <div className="input-group" style={{ marginTop: "8px" }}>
+      <div className="input-group mt-8">
         <label htmlFor="ticket-order" className="input-label">
           Related Order (Optional)
         </label>
@@ -197,8 +166,7 @@ export function SupportForm({ orders }: SupportFormProps) {
       {/* Submit Button */}
       <button
         type="submit"
-        className={`btn btn-primary w-full ${loading ? "btn-loading" : ""}`}
-        style={{ marginTop: "24px" }}
+        className={`btn btn-primary w-full mt-24 ${loading ? "btn-loading" : ""}`}
         disabled={loading || !subject.trim()}
       >
         Submit Ticket

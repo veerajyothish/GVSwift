@@ -22,36 +22,20 @@ export default async function AdminEditProductPage({ params }: PageProps) {
   }
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        maxWidth: "800px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-      }}
-    >
+    <div className="container-sm flex flex-col gap-4">
       {/* Back button and title */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div className="flex flex-col gap-2">
         <Link
           href="/admin/products"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "var(--color-text-secondary)",
-            fontSize: "14px",
-            fontWeight: "500",
-          }}
+          className="flex items-center gap-2 text-secondary text-sm font-medium"
         >
-          <svg style={{ width: "16px", height: "16px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <svg className="icon-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
           Back to Product Catalog
         </Link>
-        <h1 className="text-2xl font-bold" style={{ color: "var(--color-accent)", marginTop: "4px" }}>
-          Edit Product: <span style={{ color: "var(--color-text-primary)" }}>{product.name}</span>
+        <h1 className="text-2xl font-bold text-accent mt-4">
+          Edit Product: <span className="text-primary">{product.name}</span>
         </h1>
       </div>
 

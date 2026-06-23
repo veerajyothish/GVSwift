@@ -91,13 +91,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   };
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
-      <main style={{ maxWidth: "1000px", margin: "0 auto", padding: "16px 0" }}>
-        <OrderDetailManager
-          order={serializedOrder}
-          maxDeliveryAttempts={maxDeliveryAttempts}
-        />
-      </main>
+    <div className="w-full">
+      <OrderDetailManager
+        order={serializedOrder}
+        maxDeliveryAttempts={maxDeliveryAttempts}
+      />
     </div>
   );
 }

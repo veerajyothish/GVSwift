@@ -117,36 +117,24 @@ export function Footer() {
               </span>
             </button>
             <div className={`footer-content ${openSections.connect ? "open" : ""}`}>
-              <span style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
+              <span className="footer-text-muted">
                 For queries or grievance redressal:
               </span>
-              <a href="mailto:gvswift.help@gmail.com" className="footer-link" style={{ fontWeight: 500, color: "var(--color-accent)" }}>
+              <a href="mailto:gvswift.help@gmail.com" className="footer-link footer-link-highlight">
                 gvswift.help@gmail.com
               </a>
-              <div style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
-                <span style={{ color: "var(--color-text-secondary)", fontSize: "13px" }}>[Instagram Link Placeholder]</span>
-                <span style={{ color: "var(--color-text-secondary)", fontSize: "13px" }}>[Twitter Link Placeholder]</span>
+              <div className="footer-social-links">
+                <span className="footer-social-placeholder">[Instagram Link Placeholder]</span>
+                <span className="footer-social-placeholder">[Twitter Link Placeholder]</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer Bottom copyright section */}
-        <div
-          style={{
-            borderTop: "1px solid var(--color-border)",
-            paddingTop: "24px",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "16px",
-            fontSize: "13px",
-            color: "var(--color-text-secondary)",
-          }}
-        >
+        <div className="footer-bottom-bar">
           <span>&copy; {new Date().getFullYear()} GVSwift. All rights reserved.</span>
-          <span style={{ fontSize: "12px" }}>Shop with Confidence. Fast Delivery &amp; COD assessment active.</span>
+          <span className="footer-bottom-disclaimer">Shop with Confidence. Fast Delivery &amp; COD assessment active.</span>
         </div>
       </div>
     </footer>

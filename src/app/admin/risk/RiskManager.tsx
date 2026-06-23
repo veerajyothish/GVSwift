@@ -156,7 +156,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div className="flex flex-col gap-5">
       {/* Create Flag Trigger & Form */}
       <div>
         {!showCreateForm ? (
@@ -164,9 +164,9 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
             + Create Manual Risk Flag
           </Button>
         ) : (
-          <form onSubmit={handleCreateFlag} className="card p-5" style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "600px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--color-accent)" }}>Create Risk Flag</h2>
+          <form onSubmit={handleCreateFlag} className="card p-5 flex flex-col gap-4" style={{ maxWidth: "600px" }}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-accent margin-0">Create Risk Flag</h2>
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
@@ -176,8 +176,8 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
               </button>
             </div>
             
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-              <div className="input-group">
+            <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <div className="input-group margin-0">
                 <label className="input-label">Entity Type</label>
                 <select className="input-field" value={newType} onChange={(e) => setNewType(e.target.value)}>
                   <option value="PHONE">PHONE</option>
@@ -187,7 +187,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
                 </select>
               </div>
 
-              <div className="input-group">
+              <div className="input-group margin-0">
                 <label className="input-label">Risk Level</label>
                 <select className="input-field" value={newLevel} onChange={(e) => setNewLevel(e.target.value)}>
                   <option value="LOW">LOW</option>
@@ -198,7 +198,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
               </div>
             </div>
 
-            <div className="input-group">
+            <div className="input-group margin-0">
               <label className="input-label">Entity Value</label>
               <input
                 type="text"
@@ -214,7 +214,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
               />
             </div>
 
-            <div className="input-group">
+            <div className="input-group margin-0">
               <label className="input-label">Reason for Flagging</label>
               <textarea
                 className="input-field"
@@ -225,7 +225,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
               />
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "8px" }}>
+            <div className="flex justify-end gap-3 mt-4">
               <Button type="button" variant="secondary" onClick={() => setShowCreateForm(false)}>
                 Cancel
               </Button>
@@ -238,9 +238,9 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
       </div>
 
       {/* Filter / Search Form */}
-      <form onSubmit={handleFilterSubmit} className="card p-4" style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "end" }}>
-        <div className="input-group" style={{ flex: "1 1 200px", margin: 0 }}>
-          <label className="input-label text-xs">Search Value</label>
+      <form onSubmit={handleFilterSubmit} className="card p-4 flex flex-wrap gap-4 items-end">
+        <div className="input-group margin-0" style={{ flex: "1 1 200px" }}>
+          <label className="input-label text-sm">Search Value</label>
           <input
             type="text"
             className="input-field"
@@ -251,8 +251,8 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
           />
         </div>
 
-        <div className="input-group" style={{ flex: "1 1 150px", margin: 0 }}>
-          <label className="input-label text-xs">Entity Type</label>
+        <div className="input-group margin-0" style={{ flex: "1 1 150px" }}>
+          <label className="input-label text-sm">Entity Type</label>
           <select
             className="input-field"
             style={{ minHeight: "38px", padding: "8px 12px" }}
@@ -267,8 +267,8 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
           </select>
         </div>
 
-        <div className="input-group" style={{ flex: "1 1 150px", margin: 0 }}>
-          <label className="input-label text-xs">Risk Level</label>
+        <div className="input-group margin-0" style={{ flex: "1 1 150px" }}>
+          <label className="input-label text-sm">Risk Level</label>
           <select
             className="input-field"
             style={{ minHeight: "38px", padding: "8px 12px" }}
@@ -283,7 +283,7 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
           </select>
         </div>
 
-        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+        <div className="flex gap-2 flex-shrink-0">
           <Button type="button" variant="secondary" onClick={handleResetFilters} style={{ minHeight: "38px", padding: "8px 16px" }}>
             Reset
           </Button>
@@ -294,64 +294,52 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
       </form>
 
       {/* Flag List */}
-      <div className="card" style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
+      <div className="table-responsive">
+        <table className="admin-table">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-border)", backgroundColor: "rgba(255, 255, 255, 0.02)" }}>
-              <th style={{ padding: "16px" }}>Entity Type</th>
-              <th style={{ padding: "16px" }}>Entity Value</th>
-              <th style={{ padding: "16px" }}>Risk Level</th>
-              <th style={{ padding: "16px" }}>Date Added</th>
-              <th style={{ padding: "16px", width: "100px", textAlign: "center" }}>Actions</th>
+            <tr>
+              <th>Entity Type</th>
+              <th>Entity Value</th>
+              <th>Risk Level</th>
+              <th>Date Added</th>
+              <th style={{ width: "100px", textAlign: "center" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {flags.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ padding: "32px", textAlign: "center", color: "var(--color-text-secondary)" }}>
+                <td colSpan={5} className="text-center text-secondary py-20">
                   No risk flags found.
                 </td>
               </tr>
             ) : (
               flags.map((flag) => (
-                <tr key={flag.id} style={{ borderBottom: "1px solid var(--color-border)" }}>
-                  <td style={{ padding: "16px" }}>
-                    <span style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.06)",
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      fontSize: "12px",
-                      fontWeight: 500
-                    }}>
+                <tr key={flag.id}>
+                  <td>
+                    <span className="admin-badge admin-badge-info">
                       {flag.entityType}
                     </span>
                   </td>
-                  <td style={{ padding: "16px", fontFamily: "monospace" }}>{flag.entityValue}</td>
-                  <td style={{ padding: "16px" }}>
-                    <span style={{
-                      color:
-                        flag.riskLevel === "BLOCKED" ? "var(--color-error)" :
-                        flag.riskLevel === "HIGH" ? "var(--color-warning)" :
-                        flag.riskLevel === "MEDIUM" ? "#d4b843" : "var(--color-success)",
-                      fontWeight: 600
-                    }}>
+                  <td className="font-mono">{flag.entityValue}</td>
+                  <td>
+                    <span className={`admin-badge ${
+                      flag.riskLevel === "BLOCKED" || flag.riskLevel === "HIGH"
+                        ? "admin-badge-error"
+                        : flag.riskLevel === "MEDIUM"
+                        ? "admin-badge-warning"
+                        : "admin-badge-success"
+                    }`}>
                       {flag.riskLevel}
                     </span>
                   </td>
-                  <td style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
+                  <td className="text-secondary">
                     {new Date(flag.createdAt).toLocaleDateString()}
                   </td>
-                  <td style={{ padding: "16px", textAlign: "center" }}>
+                  <td style={{ textAlign: "center" }}>
                     <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
                       onClick={() => handleDeleteFlag(flag.id, flag.entityType, flag.entityValue)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        color: "var(--color-error)",
-                        cursor: "pointer",
-                        fontSize: "13px",
-                        fontWeight: 500
-                      }}
                     >
                       Delete
                     </button>
@@ -365,11 +353,11 @@ export default function RiskManager({ initialData }: RiskManagerProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
-          <span style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
+        <div className="flex justify-between items-center mt-8">
+          <span className="text-secondary text-sm">
             Showing page {page} of {totalPages} ({totalCount} total flags)
           </span>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div className="flex gap-2">
             <Button
               variant="secondary"
               disabled={page <= 1}

@@ -103,26 +103,26 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="card p-6" style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "800px" }}>
+    <form onSubmit={handleSubmit} className="card p-6 flex flex-col gap-5 admin-settings-container">
       <div>
-        <h2 className="text-xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "4px" }}>System Configurations</h2>
-        <p style={{ color: "var(--color-text-secondary)", fontSize: "14px" }}>
+        <h2 className="text-xl font-semibold mb-4 text-primary">System Configurations</h2>
+        <p className="text-sm text-secondary">
           Tune operational properties and fraud thresholds. Changes take effect immediately.
         </p>
       </div>
 
-      <div style={{ borderBottom: "1px solid var(--color-border)" }} />
+      <div className="admin-divider" />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div className="flex flex-col gap-5">
         {/* COD Limit */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>COD Limit (₹)</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">COD Limit (₹)</label>
+            <span className="admin-settings-help">
               Maximum total order amount allowed for Cash on Delivery. Recommended: ₹10,000.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -134,17 +134,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* Return Window */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Return Window (Days)</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Return Window (Days)</label>
+            <span className="admin-settings-help">
               Number of days post-delivery in which customers can request returns. Recommended: 7.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -156,17 +156,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* Cancellation Cutoff Status */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Cancellation Cutoff Status</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Cancellation Cutoff Status</label>
+            <span className="admin-settings-help">
               Orders at or beyond this status can no longer be cancelled by the customer. Recommended: SHIPPED.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <select
               className="input-field"
               value={cancellationCutoffStatus}
@@ -182,17 +182,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* Max Delivery Attempts */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Max Delivery Attempts</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Max Delivery Attempts</label>
+            <span className="admin-settings-help">
               Maximum failed deliveries allowed before the order automatically changes to RTO. Recommended: 2.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -204,17 +204,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* Watchlist Threshold */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Failed Delivery Watchlist Threshold</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Failed Delivery Watchlist Threshold</label>
+            <span className="admin-settings-help">
               Failures in 90 days before auto-flagging entity to MEDIUM and user to WATCHLIST. Recommended: 1.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -226,17 +226,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* High Risk Threshold */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Failed Delivery High Risk Threshold</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Failed Delivery High Risk Threshold</label>
+            <span className="admin-settings-help">
               Failures in 90 days before auto-flagging entity to HIGH and user to HIGH_RISK. Recommended: 2.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -248,17 +248,17 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           </div>
         </div>
 
-        <div style={{ borderBottom: "1px solid var(--color-border)", opacity: 0.5 }} />
+        <div className="admin-divider-mute" />
 
         {/* Cancellation Risk Threshold */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+        <div className="admin-settings-row">
           <div>
-            <label className="font-medium" style={{ display: "block", marginBottom: "4px" }}>Cancellation Risk Threshold</label>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px", display: "block" }}>
+            <label className="admin-settings-label">Cancellation Risk Threshold</label>
+            <span className="admin-settings-help">
               Post-confirmation cancellations in 30 days before user is flagged for manual review. Recommended: 3.
             </span>
           </div>
-          <div className="input-group" style={{ margin: 0 }}>
+          <div className="input-group margin-0">
             <input
               type="number"
               className="input-field"
@@ -271,10 +271,10 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
         </div>
       </div>
 
-      <div style={{ borderBottom: "1px solid var(--color-border)", marginTop: "12px" }} />
+      <div className="admin-divider mt-12" />
 
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button type="submit" variant="primary" loading={loading} style={{ minWidth: "160px" }}>
+      <div className="flex justify-end">
+        <Button type="submit" variant="primary" loading={loading} className="btn-min-w-160">
           Save Settings
         </Button>
       </div>

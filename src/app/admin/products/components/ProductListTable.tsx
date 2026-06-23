@@ -128,13 +128,10 @@ export default function ProductListTable({
   return (
     <div className="flex flex-col gap-5 w-full">
       {/* Search & Filter Controls */}
-      <div
-        className="card p-4 flex flex-wrap gap-4 items-center justify-between"
-        style={{ backgroundColor: "var(--color-surface)", border: "1px solid var(--color-border)" }}
-      >
-        <div className="flex items-center gap-3" style={{ flexGrow: 1, maxWidth: "500px" }}>
+      <div className="card p-4 flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex items-center gap-3 flex-grow-1" style={{ maxWidth: "500px" }}>
           {/* Search bar */}
-          <div className="input-group" style={{ margin: 0, flexGrow: 1 }}>
+          <div className="input-group margin-0 flex-1">
             <input
               type="text"
               className="input-field"
@@ -146,7 +143,7 @@ export default function ProductListTable({
           </div>
 
           {/* Category drop down */}
-          <div className="input-group" style={{ margin: 0, width: "180px", flexShrink: 0 }}>
+          <div className="input-group margin-0" style={{ width: "180px", flexShrink: 0 }}>
             <select
               className="input-field"
               value={categoryIdVal}
@@ -167,7 +164,6 @@ export default function ProductListTable({
             <button
               type="button"
               className="btn btn-secondary"
-              style={{ minHeight: "44px" }}
               onClick={handleClearFilters}
               disabled={isPending}
             >
@@ -178,7 +174,6 @@ export default function ProductListTable({
           <button
             type="button"
             className="btn btn-primary"
-            style={{ minHeight: "44px" }}
             onClick={() => applyFilters(searchVal, categoryIdVal, 1)}
             disabled={isPending}
           >
@@ -188,32 +183,17 @@ export default function ProductListTable({
       </div>
 
       {/* Products Table Card */}
-      <div
-        className="card w-full"
-        style={{
-          backgroundColor: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          overflowX: "auto",
-        }}
-      >
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "14px",
-            color: "var(--color-text-primary)",
-          }}
-        >
+      <div className="table-responsive w-full">
+        <table className="admin-table">
           <thead>
-            <tr style={{ borderBottom: "2px solid var(--color-border)", backgroundColor: "rgba(0,0,0,0.15)" }}>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "80px" }}>Image</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)" }}>Product Details</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "120px" }}>Base Price</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "120px" }}>Variants</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "120px" }}>Total Stock</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "120px" }}>Status</th>
-              <th style={{ padding: "16px 20px", fontWeight: "600", color: "var(--color-accent)", width: "180px", textAlign: "right" }}>Actions</th>
+            <tr>
+              <th style={{ width: "80px" }}>Image</th>
+              <th>Product Details</th>
+              <th style={{ width: "120px" }}>Base Price</th>
+              <th style={{ width: "120px" }}>Variants</th>
+              <th style={{ width: "120px" }}>Total Stock</th>
+              <th style={{ width: "120px" }}>Status</th>
+              <th style={{ width: "180px", textAlign: "right" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -221,12 +201,8 @@ export default function ProductListTable({
               <tr>
                 <td
                   colSpan={7}
-                  style={{
-                    padding: "48px",
-                    textAlign: "center",
-                    color: "var(--color-text-secondary)",
-                    fontStyle: "italic",
-                  }}
+                  className="text-center text-secondary italic"
+                  style={{ padding: "48px" }}
                 >
                   No products found. Add a new product or adjust filters.
                 </td>
@@ -239,43 +215,21 @@ export default function ProductListTable({
                 return (
                   <tr
                     key={product.id}
-                    style={{
-                      borderBottom: "1px solid var(--color-border)",
-                      transition: "background-color 0.2s ease",
-                      opacity: product.isActive ? 1 : 0.65,
-                    }}
-                    className="table-row-hover"
+                    style={{ opacity: product.isActive ? 1 : 0.65 }}
                   >
                     {/* Thumbnail */}
-                    <td style={{ padding: "12px 20px" }}>
-                      <div
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          borderRadius: "var(--radius-sm)",
-                          overflow: "hidden",
-                          border: "1px solid var(--color-border)",
-                          backgroundColor: "rgba(0,0,0,0.1)",
-                        }}
-                      >
+                    <td>
+                      <div className="admin-thumbnail">
                         {primaryImage ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={primaryImage.url}
                             alt={primaryImage.altText || product.name}
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
                           />
                         ) : (
                           <div
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "10px",
-                              color: "var(--color-text-secondary)",
-                            }}
+                            className="w-full h-full flex items-center justify-center text-xs text-secondary"
+                            style={{ fontSize: "10px" }}
                           >
                             No Image
                           </div>
@@ -284,70 +238,52 @@ export default function ProductListTable({
                     </td>
 
                     {/* Details */}
-                    <td style={{ padding: "12px 20px" }}>
-                      <div className="font-semibold" style={{ fontSize: "15px", color: "var(--color-text-primary)" }}>{product.name}</div>
-                      <div style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>{product.slug}</div>
+                    <td>
+                      <div className="font-semibold text-primary">{product.name}</div>
+                      <div className="text-xs text-secondary">{product.slug}</div>
                     </td>
 
                     {/* Price */}
-                    <td style={{ padding: "12px 20px" }} className="font-medium">
+                    <td className="font-medium">
                       ₹{(product.basePricePaise / 100).toFixed(2)}
                     </td>
 
                     {/* Variants count */}
-                    <td style={{ padding: "12px 20px" }}>
+                    <td>
                       {product.variants.length} variant(s)
                     </td>
 
                     {/* Total Stock */}
-                    <td style={{ padding: "12px 20px" }} className="font-medium">
+                    <td className="font-medium">
                       {totalStock} units
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: "12px 20px" }}>
+                    <td>
                       {product.isActive ? (
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            padding: "2px 8px",
-                            borderRadius: "12px",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            backgroundColor: "var(--color-success-bg)",
-                            color: "var(--color-success)",
-                          }}
-                        >
+                        <span className="admin-badge admin-badge-success">
                           ACTIVE
                         </span>
                       ) : (
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            padding: "2px 8px",
-                            borderRadius: "12px",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            backgroundColor: "var(--color-error-bg)",
-                            color: "var(--color-error)",
-                          }}
-                        >
+                        <span className="admin-badge admin-badge-error">
                           INACTIVE
                         </span>
                       )}
                     </td>
 
                     {/* Actions */}
-                    <td style={{ padding: "12px 20px", textAlign: "right" }}>
-                      <div style={{ display: "inline-flex", gap: "8px" }}>
-                        <Link href={`/admin/products/${product.id}`} className="btn btn-secondary" style={{ minHeight: "36px", padding: "4px 12px", fontSize: "13px" }}>
+                    <td style={{ textAlign: "right" }}>
+                      <div className="flex gap-2 justify-end">
+                        <Link
+                          href={`/admin/products/${product.id}`}
+                          className="btn btn-secondary btn-sm"
+                        >
                           Edit
                         </Link>
 
                         <button
                           type="button"
-                          className={product.isActive ? "btn btn-danger" : "btn btn-primary"}
-                          style={{ minHeight: "36px", padding: "4px 12px", fontSize: "13px" }}
+                          className={product.isActive ? "btn btn-danger btn-sm" : "btn btn-primary btn-sm"}
                           onClick={() => handleToggleActive(product)}
                           disabled={actionLoadingId === product.id}
                         >
@@ -371,15 +307,14 @@ export default function ProductListTable({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-between items-center" style={{ marginTop: "10px", padding: "0 10px" }}>
-          <div style={{ color: "var(--color-text-secondary)", fontSize: "13px" }}>
+        <div className="flex justify-between items-center mt-8">
+          <div className="text-secondary text-sm">
             Page {currentPage} of {totalPages}
           </div>
           <div className="flex gap-2">
             <button
               type="button"
-              className="btn btn-secondary"
-              style={{ minHeight: "38px", padding: "0 14px", fontSize: "13px" }}
+              className="btn btn-secondary btn-sm"
               disabled={currentPage <= 1 || isPending}
               onClick={() => applyFilters(searchVal, categoryIdVal, currentPage - 1)}
             >
@@ -387,8 +322,7 @@ export default function ProductListTable({
             </button>
             <button
               type="button"
-              className="btn btn-secondary"
-              style={{ minHeight: "38px", padding: "0 14px", fontSize: "13px" }}
+              className="btn btn-secondary btn-sm"
               disabled={currentPage >= totalPages || isPending}
               onClick={() => applyFilters(searchVal, categoryIdVal, currentPage + 1)}
             >
@@ -397,13 +331,6 @@ export default function ProductListTable({
           </div>
         </div>
       )}
-
-      {/* Style overrides for custom table hover */}
-      <style jsx global>{`
-        .table-row-hover:hover {
-          background-color: rgba(255, 255, 255, 0.02) !important;
-        }
-      `}</style>
     </div>
   );
 }

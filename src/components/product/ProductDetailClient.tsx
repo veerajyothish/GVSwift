@@ -27,7 +27,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   const pricePaise =
     product.basePricePaise + (selectedVariant?.priceDeltaPaise || 0);
-  const formattedPrice = `₹${(pricePaise / 100).toLocaleString()}`;
+  const formattedPrice = `₹${(pricePaise / 100).toLocaleString("en-IN")}`;
   const stock = selectedVariant?.stock ?? 0;
   const isOutOfStock = stock === 0;
 
@@ -110,7 +110,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh", color: "var(--color-text-primary)" }}>
+    <div className="homepage-wrapper">
       {/* Responsive layout styles to force above-the-fold elements on mobile */}
       <style dangerouslySetInnerHTML={{ __html: `
         .detail-grid {
@@ -185,7 +185,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            style={{ width: "16px", height: "16px" }}
+            className="icon-xs"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
@@ -193,28 +193,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         </Link>
       </div>
 
-      <main
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "20px",
-        }}
-        className="detail-grid"
-      >
+      <main className="detail-grid products-main">
         {/* ── Desktop Image Column (Hidden on mobile to save vertical space) ── */}
-        <div
-          className="desktop-image-column"
-          style={{
-            position: "relative",
-            width: "100%",
-            aspectRatio: "1 / 1",
-            backgroundColor: "var(--color-surface)",
-            borderRadius: "var(--radius-lg)",
-            overflow: "hidden",
-            border: "1px solid var(--color-border)",
-            maxHeight: "500px",
-          }}
-        >
+        <div className="desktop-image-column detail-image-container">
           <Image
             src={imageUrl}
             alt={primaryImage?.altText || product.name}
@@ -223,41 +204,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             priority
           />
           {isOutOfStock && (
-            <span
-              className="text-xs font-semibold"
-              style={{
-                position: "absolute",
-                top: "12px",
-                left: "12px",
-                backgroundColor: "var(--color-error)",
-                color: "var(--color-text-on-dark)",
-                padding: "4px 8px",
-                borderRadius: "var(--radius-sm)",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
+            <span className="product-card-badge-error">
               OUT OF STOCK
             </span>
           )}
         </div>
 
         {/* ── Right Column: Info & Action panel ── */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div className="detail-main-col">
           
           {/* Mobile Header: Visible on mobile, floats image beside title */}
           <div className="mobile-header">
-            <div
-              style={{
-                position: "relative",
-                width: "90px",
-                height: "90px",
-                flexShrink: 0,
-                borderRadius: "var(--radius-md)",
-                overflow: "hidden",
-                border: "1px solid var(--color-border)",
-                backgroundColor: "var(--color-surface)",
-              }}
-            >
+            <div className="detail-thumb-mobile">
               <Image
                 src={imageUrl}
                 alt={product.name}
@@ -265,32 +223,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 style={{ objectFit: "cover" }}
               />
               {isOutOfStock && (
-                <span
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: "rgba(255, 92, 92, 0.9)",
-                    color: "white",
-                    fontSize: "8px",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    padding: "2px 0",
-                  }}
-                >
+                <span className="detail-thumb-out-badge">
                   OUT
                 </span>
               )}
             </div>
             <div>
-              <h1 className="text-base" style={{ fontWeight: 600, margin: "0 0 4px 0", lineHeight: "1.25" }}>
+              <h1 className="text-base detail-mobile-title">
                 {product.name}
               </h1>
-              <span
-                className="card-product-price"
-                style={{ color: "var(--color-accent)", fontSize: "18px", fontWeight: 700 }}
-              >
+              <span className="detail-mobile-price">
                 {formattedPrice}
               </span>
             </div>
@@ -298,23 +240,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* Desktop Header: Visible on desktop */}
           <div className="desktop-header">
-            <h1 className="text-xl" style={{ fontWeight: 600, marginBottom: "4px", lineHeight: "1.3" }}>
+            <h1 className="text-xl detail-desktop-title">
               {product.name}
             </h1>
-            <span
-              className="card-product-price"
-              style={{ color: "var(--color-accent)", fontSize: "22px", fontWeight: 700 }}
-            >
+            <span className="detail-desktop-price">
               {formattedPrice}
             </span>
           </div>
 
           {/* Variant Selector */}
           <div>
-            <span className="text-xs font-semibold" style={{ color: "var(--color-text-secondary)", display: "block", marginBottom: "6px" }}>
+            <span className="detail-label">
               SELECT SIZE
             </span>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <div className="detail-size-list">
               {product.variants.map((variant) => {
                 const { size } = parseVariantSku(variant.sku);
                 const isSelected = variant.id === selectedVariantId;
@@ -324,22 +263,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariantId(variant.id)}
+                    className="detail-size-btn"
                     style={{
-                      minWidth: "38px",
-                      height: "38px",
-                      borderRadius: "var(--radius-md)",
                       border: `1px solid ${isSelected ? "var(--color-accent)" : "var(--color-border)"}`,
                       backgroundColor: isSelected ? "var(--color-accent)" : "var(--color-surface)",
                       color: isSelected ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
                       opacity: isVarOutOfStock ? 0.4 : 1,
                       textDecoration: isVarOutOfStock ? "line-through" : "none",
-                      transition: "all 0.2s ease",
                     }}
                     title={isVarOutOfStock ? `${size} (Out of stock)` : size}
                     aria-label={`Size ${size}`}
@@ -352,21 +282,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Stock Status indicator */}
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className="detail-stock-indicator">
             <span
+              className="detail-stock-dot"
               style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
                 backgroundColor: isOutOfStock
                   ? "var(--color-error)"
                   : stock <= 5
                   ? "var(--color-warning)"
                   : "var(--color-success)",
-                display: "inline-block",
               }}
             />
-            <span className="text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+            <span className="text-xs font-medium footer-text-muted">
               {isOutOfStock
                 ? "Out of stock"
                 : stock <= 5
@@ -398,25 +325,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* COD & Shipping above-the-fold compact boxes */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-              padding: "10px",
-              backgroundColor: "var(--color-surface)",
-              borderRadius: "var(--radius-md)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 500 }}>
+          <div className="detail-info-box">
+            <div className="detail-info-row-flex">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                style={{ width: "14px", height: "14px", color: "var(--color-accent)", flexShrink: 0 }}
+                className="icon-xs"
+                style={{ color: "var(--color-accent)", flexShrink: 0 }}
               >
                 <path
                   strokeLinecap="round"
@@ -427,17 +345,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <span>COD available for serviceable areas</span>
             </div>
             
-            <div
-              style={{
-                borderTop: "1px solid var(--color-border)",
-                paddingTop: "6px",
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "8px",
-                fontSize: "11px",
-                color: "var(--color-text-secondary)",
-              }}
-            >
+            <div className="detail-info-grid">
               <div>
                 <strong>Shipping:</strong> Standard 3-5 days.{" "}
                 <Link href="/shipping" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
@@ -454,11 +362,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Description Section (Below fold / secondary space) */}
-          <div style={{ marginTop: "6px", borderTop: "1px solid var(--color-border)", paddingTop: "12px" }}>
+          <div className="detail-desc-section">
             <h2 className="text-xs font-semibold" style={{ marginBottom: "6px" }}>
               Product Details
             </h2>
-            <p className="text-xs" style={{ color: "var(--color-text-secondary)", lineHeight: "1.5" }}>
+            <p className="text-xs footer-text-muted" style={{ lineHeight: "1.5" }}>
               {product.description || "No product description provided."}
             </p>
           </div>

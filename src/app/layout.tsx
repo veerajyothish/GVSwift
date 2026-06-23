@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Manrope, EB_Garamond } from "next/font/google";
 import "./globals.css";
 
 const SITE_URL = "https://gvswift.vercel.app";
@@ -7,13 +7,13 @@ const SITE_TITLE = "GVSwift";
 const SITE_DESCRIPTION =
   "Shop GVSwift for fast fashion essentials with Cash on Delivery availability across India.";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const ebGaramond = EB_Garamond({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
@@ -51,7 +51,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable}`}
+      className={`${manrope.variable} ${ebGaramond.variable}`}
     >
       <body className="antialiased">
         <ToastProvider>

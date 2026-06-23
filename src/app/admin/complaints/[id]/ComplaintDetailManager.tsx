@@ -142,44 +142,32 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
   const ticketBadge = getStatusBadgeStyle(ticket.status);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div className="flex flex-col gap-5">
       {/* Header and Back navigation */}
       <div>
         <Link
           href="/admin/complaints"
-          style={{
-            fontSize: "14px",
-            color: "var(--color-accent)",
-            fontWeight: 500,
-            textDecoration: "none",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            marginBottom: "12px",
-          }}
+          className="text-accent text-sm font-medium mb-12 flex items-center gap-2"
         >
           &larr; Back to Complaints
         </Link>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "20px", flexWrap: "wrap" }}>
+        <div className="flex justify-between items-start gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "var(--color-text-primary)" }}>
+            <h1 className="text-2xl font-bold text-primary">
               {ticket.subject}
             </h1>
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "14px", marginTop: "4px" }}>
+            <p className="text-secondary text-sm mt-2">
               Ticket ID: {ticket.id}
             </p>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div className="flex items-center gap-4">
             <span
+              className="status-badge"
               style={{
-                padding: "6px 12px",
-                borderRadius: "var(--radius-sm)",
-                fontSize: "13px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                border: "1px solid",
                 ...ticketBadge,
+                textTransform: "uppercase",
+                fontWeight: 600,
               }}
             >
               {ticket.status.replace("_", " ")}
@@ -188,44 +176,34 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "24px", alignItems: "start" }}>
+      <div className="grid gap-5 items-start" style={{ gridTemplateColumns: "1fr 320px" }}>
         {/* Main conversation section */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="flex flex-col gap-5">
           {/* Ticket Description Card */}
-          <div
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)",
-              padding: "20px",
-            }}
-          >
-            <h3 style={{ fontSize: "15px", fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "8px" }}>
+          <div className="card p-5">
+            <h3 className="text-15 font-semibold text-primary mb-8">
               Original Description
             </h3>
             <div
+              className="text-primary text-sm rounded-md p-3"
               style={{
-                color: "var(--color-text-primary)",
-                fontSize: "14px",
                 whiteSpace: "pre-wrap",
-                backgroundColor: "rgba(0,0,0,0.15)",
-                padding: "12px",
-                borderRadius: "var(--radius-md)",
+                backgroundColor: "rgba(86, 25, 34, 0.04)",
                 border: "1px solid var(--color-border)",
               }}
             >
-              {ticket.description || <span style={{ color: "var(--color-text-secondary)" }}>No description provided.</span>}
+              {ticket.description || <span className="text-secondary">No description provided.</span>}
             </div>
           </div>
 
           {/* Conversation Thread */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <h2 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)", borderBottom: "1px solid var(--color-border)", paddingBottom: "8px" }}>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-lg font-semibold text-primary pb-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
               Message History
             </h2>
 
             {ticket.messages.length === 0 ? (
-              <div style={{ padding: "20px", textAlign: "center", color: "var(--color-text-secondary)", fontSize: "14px" }}>
+              <div className="p-5 text-center text-secondary text-sm">
                 No messages in this thread yet.
               </div>
             ) : (
@@ -252,7 +230,7 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                   ? {
                     cardStyle: {
                       ...baseCardStyle,
-                      backgroundColor: "rgba(212, 169, 67, 0.08)",
+                      backgroundColor: "rgba(86, 25, 34, 0.06)",
                       border: "1px solid var(--color-accent)",
                     },
                     headerLabel: "Internal Note",
@@ -262,8 +240,8 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                     ? {
                       cardStyle: {
                         ...baseCardStyle,
-                      backgroundColor: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
+                        backgroundColor: "var(--color-surface)",
+                        border: "1px solid var(--color-border)",
                       },
                       headerLabel: `Customer (${ticket.user?.email || "Guest"})`,
                       headerColor: "var(--color-text-primary)",
@@ -272,7 +250,7 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                       cardStyle: {
                         ...baseCardStyle,
                         backgroundColor: "var(--color-surface)",
-                        border: "1px solid rgba(212, 169, 67, 0.3)",
+                        border: "1px solid rgba(86, 25, 34, 0.25)",
                       },
                       headerLabel: "Admin Reply",
                       headerColor: "var(--color-accent)",
@@ -280,11 +258,11 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
 
                 return (
                   <div key={msg.id} style={cardStyle}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "4px" }}>
-                      <span style={{ fontWeight: 600, color: headerColor }}>
+                    <div className="flex justify-between text-xs pb-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+                      <span className="font-semibold" style={{ color: headerColor }}>
                         {headerLabel}
                       </span>
-                      <span style={{ color: "var(--color-text-secondary)" }}>
+                      <span className="text-secondary">
                         {new Date(msg.createdAt).toLocaleString("en-IN", {
                           day: "numeric",
                           month: "short",
@@ -294,7 +272,7 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                         })}
                       </span>
                     </div>
-                    <div style={{ fontSize: "14px", color: "var(--color-text-primary)", whiteSpace: "pre-wrap" }}>
+                    <div className="text-sm text-primary" style={{ whiteSpace: "pre-wrap" }}>
                       {msg.message}
                     </div>
                   </div>
@@ -304,16 +282,9 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
           </div>
 
           {/* Reply Form */}
-          <div
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)",
-              padding: "20px",
-            }}
-          >
+          <div className="card p-5">
             {/* Reply Type Toggle tabs */}
-            <div style={{ display: "flex", borderBottom: "1px solid var(--color-border)", marginBottom: "16px", gap: "16px" }}>
+            <div className="flex mb-16 gap-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
               <button
                 type="button"
                 onClick={() => setIsInternal(false)}
@@ -350,8 +321,8 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
               </button>
             </div>
 
-            <form onSubmit={handleSendReply} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div className="input-group" style={{ margin: 0 }}>
+            <form onSubmit={handleSendReply} className="flex flex-col gap-4">
+              <div className="input-group margin-0">
                 <textarea
                   className="input-field"
                   placeholder={isInternal ? "Write a private note only visible to admin staff..." : "Write a message that will be visible to the customer..."}
@@ -363,20 +334,20 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
               </div>
 
               {replyError && (
-                <div style={{ color: "var(--color-error)", fontSize: "14px", fontWeight: 500 }}>
+                <div className="text-error text-sm font-medium">
                   {replyError}
                 </div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={sendingReply || !replyText.trim()}
                   className="btn btn-primary"
                   style={{
                     minWidth: "160px",
-                    backgroundColor: isInternal ? "#d49843" : "var(--color-accent)", // visually differentiate internal note action button
-                    borderColor: isInternal ? "#d49843" : "var(--color-accent)",
+                    backgroundColor: isInternal ? "var(--color-text-secondary)" : "var(--color-accent)", // visual distinction for internal note
+                    borderColor: isInternal ? "var(--color-text-secondary)" : "var(--color-accent)",
                     color: "var(--color-accent-text)",
                   }}
                 >
@@ -388,26 +359,16 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
         </div>
 
         {/* Sidebar Info Section */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="flex flex-col gap-5">
           {/* Metadata Card */}
-          <div
-            style={{
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)",
-              padding: "20px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-            }}
-          >
-            <h3 style={{ fontSize: "16px", fontWeight: 600, color: "var(--color-accent)", borderBottom: "1px solid var(--color-border)", paddingBottom: "8px", margin: 0 }}>
+          <div className="card p-5 flex flex-col gap-4">
+            <h3 className="font-semibold text-accent text-base margin-0 pb-8" style={{ borderBottom: "1px solid var(--color-border)" }}>
               Ticket Details
             </h3>
 
             {/* Status Control */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontSize: "13px", fontWeight: 500, color: "var(--color-text-secondary)" }}>
+            <div className="flex flex-col gap-2">
+              <label className="text-secondary text-13 font-medium">
                 Update Status
               </label>
               <select
@@ -415,7 +376,6 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                 value={statusVal}
                 onChange={handleStatusChange}
                 disabled={updatingStatus}
-                style={{ padding: "8px 12px" }}
               >
                 <option value="OPEN">Open</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -423,50 +383,45 @@ export default function ComplaintDetailManager({ initialTicket }: ComplaintDetai
                 <option value="CLOSED">Closed</option>
               </select>
               {statusError && (
-                <span style={{ fontSize: "12px", color: "var(--color-error)" }}>{statusError}</span>
+                <span className="text-error text-xs">{statusError}</span>
               )}
             </div>
 
             {/* Customer Details */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>Customer Email</span>
-              <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-text-primary)", wordBreak: "break-all" }}>
+            <div className="flex flex-col gap-1">
+              <span className="text-secondary text-13">Customer Email</span>
+              <span className="text-primary text-sm font-medium" style={{ wordBreak: "break-all" }}>
                 {ticket.user?.email || "Guest"}
               </span>
             </div>
 
             {ticket.user?.phone && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>Customer Phone</span>
-                <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-text-primary)" }}>
+              <div className="flex flex-col gap-1">
+                <span className="text-secondary text-13">Customer Phone</span>
+                <span className="text-primary text-sm font-medium">
                   {ticket.user.phone}
                 </span>
               </div>
             )}
 
             {/* Order Association */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>Linked Order</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-secondary text-13">Linked Order</span>
               {ticket.orderId ? (
                 <Link
                   href={`/admin/orders/${ticket.orderId}`}
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "var(--color-accent)",
-                    textDecoration: "underline",
-                  }}
+                  className="text-accent text-sm font-semibold underline"
                 >
                   View Associated Order
                 </Link>
               ) : (
-                <span style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>None</span>
+                <span className="text-secondary text-sm">None</span>
               )}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>Created At</span>
-              <span style={{ fontSize: "14px", color: "var(--color-text-primary)" }}>
+            <div className="flex flex-col gap-1">
+              <span className="text-secondary text-13">Created At</span>
+              <span className="text-primary text-sm font-medium">
                 {new Date(ticket.createdAt).toLocaleString("en-IN", {
                   day: "numeric",
                   month: "short",

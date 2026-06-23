@@ -7,40 +7,17 @@ import { getProducts, getCategories } from "@/features/catalog/service";
 export const metadata = {
   title: "GVSwift — Shop with Confidence",
   description:
-    "Premium fashion with Cash on Delivery across Andhra Pradesh. Free shipping. 7-day returns.",
+    "Premium fashion with Cash on Delivery across India. Free shipping. 7-day returns.",
 };
 
 // ── Reusable stat badge ──────────────────────────────────────────────────────
 function StatBadge({ icon, label, sub }: { icon: string; label: string; sub: string }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        padding: "16px 20px",
-        backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-md)",
-        flex: "1 1 180px",
-      }}
-    >
-      <span style={{ fontSize: "28px", lineHeight: 1 }}>{icon}</span>
+    <div className="stat-badge">
+      <span className="stat-badge-icon">{icon}</span>
       <div>
-        <div
-          style={{
-            fontSize: "15px",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-          }}
-        >
-          {label}
-        </div>
-        <div
-          style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}
-        >
-          {sub}
-        </div>
+        <div className="stat-badge-label">{label}</div>
+        <div className="stat-badge-sub">{sub}</div>
       </div>
     </div>
   );
@@ -56,125 +33,46 @@ export default async function HomePage() {
   const { products } = productsResult;
 
   return (
-    <div
-      style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh", color: "var(--color-text-primary)" }}
-    >
+    <div className="homepage-wrapper">
       <Navbar />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          position: "relative",
-          minHeight: "520px",
-          display: "flex",
-          alignItems: "center",
-          overflow: "hidden",
-          borderBottom: "1px solid var(--color-border)",
-        }}
-      >
-        {/* Gold gradient background */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(ellipse 80% 60% at 60% 50%, rgba(212,169,67,0.10) 0%, transparent 70%)",
-            pointerEvents: "none",
-          }}
-        />
+      <section className="hero-section">
+        {/* Wine red/cream gradient background */}
+        <div className="hero-overlay" />
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "80px 20px",
-            display: "grid",
-            gridTemplateColumns: "1fr",
-            gap: "48px",
-            alignItems: "center",
-          }}
-          className="hero-grid"
-        >
+        <div className="hero-container hero-grid">
           {/* Left — copy */}
-          <div style={{ maxWidth: "560px" }}>
-            <span
-              style={{
-                display: "inline-block",
-                fontSize: "11px",
-                fontWeight: 700,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "var(--color-accent)",
-                marginBottom: "16px",
-                padding: "4px 10px",
-                border: "1px solid rgba(212,169,67,0.35)",
-                borderRadius: "100px",
-              }}
-            >
+          <div>
+            <span className="hero-badge">
               Shop with Confidence
             </span>
 
-            <h1
-              style={{
-                fontFamily: "var(--font-heading), serif",
-                fontSize: "clamp(36px, 6vw, 64px)",
-                fontWeight: 700,
-                lineHeight: 1.1,
-                color: "var(--color-text-primary)",
-                marginBottom: "20px",
-              }}
-            >
+            <h1 className="hero-title">
               Premium Fashion,{" "}
               <span style={{ color: "var(--color-accent)" }}>
                 Delivered to Your Door
               </span>
             </h1>
 
-            <p
-              style={{
-                fontSize: "17px",
-                lineHeight: 1.65,
-                color: "var(--color-text-secondary)",
-                marginBottom: "36px",
-                maxWidth: "480px",
-              }}
-            >
-              Exclusive styles with Cash on Delivery across Andhra Pradesh. No
+            <p className="hero-desc">
+              Exclusive styles with Cash on Delivery across India. No
               prepayment required — pay when you receive your order.
             </p>
 
-            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              <Link href="/products" className="btn btn-primary" style={{ fontSize: "15px", padding: "12px 28px" }}>
+            <div className="hero-buttons">
+              <Link href="/products" className="btn btn-primary btn-lg">
                 Shop Collection →
               </Link>
-              <Link href="/signup" className="btn btn-secondary" style={{ fontSize: "15px", padding: "12px 28px" }}>
+              <Link href="/signup" className="btn btn-secondary btn-lg">
                 Create Account
               </Link>
             </div>
           </div>
 
           {/* Right — hero image / showcase card */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-            }}
-            className="hero-image-col"
-          >
-            <div
-              style={{
-                width: "320px",
-                height: "380px",
-                borderRadius: "var(--radius-lg)",
-                overflow: "hidden",
-                border: "1px solid var(--color-border)",
-                backgroundColor: "var(--color-surface)",
-                position: "relative",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
-              }}
-            >
+          <div className="hero-image-col">
+            <div className="hero-image-card">
               <Image
                 src="/fashion_product_mockup.png"
                 alt="GVSwift Premium Fashion"
@@ -182,41 +80,14 @@ export default async function HomePage() {
                 style={{ objectFit: "cover" }}
                 priority
               />
-              {/* Gold shimmer overlay */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: "40%",
-                  background: "linear-gradient(0deg, rgba(11,11,12,0.7) 0%, transparent 100%)",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "20px",
-                  left: "20px",
-                  right: "20px",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "var(--color-accent)",
-                    marginBottom: "4px",
-                  }}
-                >
+              {/* Shimmer overlay */}
+              <div className="hero-shimmer" />
+              <div className="hero-shimmer-content">
+                <div className="hero-shimmer-tag">
                   New Arrival
                 </div>
-                <div
-                  style={{ fontSize: "15px", fontWeight: 600, color: "#fff" }}
-                >
-                  Stitch Gold Collection
+                <div className="hero-shimmer-title">
+                  Vintage Reserve Collection
                 </div>
               </div>
             </div>
@@ -234,20 +105,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── TRUST BADGES ──────────────────────────────────────────────────── */}
-      <section
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "40px 20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}
-        >
+      <section className="section-container">
+        <div className="flex gap-4 flex-wrap">
           <StatBadge icon="💵" label="Cash on Delivery" sub="No prepayment required" />
           <StatBadge icon="🚚" label="Free Shipping" sub="On all orders" />
           <StatBadge icon="↩️" label="7-Day Returns" sub="Hassle-free returns" />
@@ -257,51 +116,19 @@ export default async function HomePage() {
 
       {/* ── CATEGORY SHORTCUTS ────────────────────────────────────────────── */}
       {categories.length > 0 && (
-        <section
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "0 20px 40px",
-          }}
-        >
-          <h2
-            className="text-xl font-semibold"
-            style={{ color: "var(--color-text-primary)", marginBottom: "20px" }}
-          >
+        <section className="section-container-small">
+          <h2 className="text-xl font-semibold section-title">
             Shop by Category
           </h2>
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <Link
-              href="/products"
-              style={{
-                padding: "10px 20px",
-                borderRadius: "var(--radius-md)",
-                fontSize: "14px",
-                fontWeight: 500,
-                backgroundColor: "var(--color-accent)",
-                color: "var(--color-accent-text)",
-                border: "1px solid var(--color-accent)",
-                textDecoration: "none",
-                transition: "opacity 0.2s ease",
-              }}
-            >
+          <div className="category-list">
+            <Link href="/products" className="category-link-active">
               All Products
             </Link>
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/products?categoryId=${cat.id}`}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  backgroundColor: "var(--color-surface)",
-                  color: "var(--color-text-primary)",
-                  border: "1px solid var(--color-border)",
-                  textDecoration: "none",
-                  transition: "border-color 0.2s ease, color 0.2s ease",
-                }}
+                className="category-link"
               >
                 {cat.name}
               </Link>
@@ -311,53 +138,19 @@ export default async function HomePage() {
       )}
 
       {/* ── FEATURED PRODUCTS ─────────────────────────────────────────────── */}
-      <section
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 20px 64px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            marginBottom: "24px",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
-          <h2
-            className="text-xl font-semibold"
-            style={{ color: "var(--color-text-primary)", margin: 0 }}
-          >
+      <section className="section-container-small pb-64">
+        <div className="featured-header">
+          <h2 className="text-xl font-semibold section-title margin-0">
             Featured Collection
           </h2>
-          <Link
-            href="/products"
-            style={{
-              fontSize: "14px",
-              fontWeight: 500,
-              color: "var(--color-accent)",
-              textDecoration: "none",
-            }}
-          >
+          <Link href="/products" className="featured-view-all">
             View all →
           </Link>
         </div>
 
         {products.length === 0 ? (
-          <div
-            style={{
-              padding: "80px 20px",
-              textAlign: "center",
-              backgroundColor: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius-lg)",
-            }}
-          >
-            <p style={{ color: "var(--color-text-secondary)", fontSize: "16px" }}>
+          <div className="featured-empty">
+            <p className="featured-empty-text">
               Products coming soon. Check back shortly!
             </p>
           </div>
@@ -378,12 +171,9 @@ export default async function HomePage() {
                 <Link
                   key={product.id}
                   href={`/products/${product.slug}`}
-                  style={{ textDecoration: "none" }}
+                  className="product-card-link"
                 >
-                  <div
-                    className="card card-interactive card-product"
-                    style={{ height: "100%" }}
-                  >
+                  <div className="card card-interactive card-product">
                     {/* Image */}
                     <div
                       className="card-product-image-container"
@@ -398,37 +188,11 @@ export default async function HomePage() {
                         className="card-product-image"
                       />
                       {isOutOfStock ? (
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: "10px",
-                            left: "10px",
-                            backgroundColor: "var(--color-error)",
-                            color: "#fff",
-                            fontSize: "10px",
-                            fontWeight: 700,
-                            padding: "3px 7px",
-                            borderRadius: "var(--radius-sm)",
-                            textTransform: "uppercase",
-                          }}
-                        >
+                        <span className="product-card-badge-error">
                           Out of Stock
                         </span>
                       ) : totalStock <= 5 ? (
-                        <span
-                          style={{
-                            position: "absolute",
-                            top: "10px",
-                            left: "10px",
-                            backgroundColor: "var(--color-warning)",
-                            color: "#fff",
-                            fontSize: "10px",
-                            fontWeight: 700,
-                            padding: "3px 7px",
-                            borderRadius: "var(--radius-sm)",
-                            textTransform: "uppercase",
-                          }}
-                        >
+                        <span className="product-card-badge-warning">
                           Only {totalStock} left
                         </span>
                       ) : null}
@@ -436,37 +200,18 @@ export default async function HomePage() {
 
                     {/* Info */}
                     <div className="card-product-content">
-                      <h3
-                        className="card-product-title"
-                        style={{ color: "var(--color-text-primary)" }}
-                      >
+                      <h3 className="card-product-title">
                         {product.name}
                       </h3>
-                      <span
-                        className="card-product-price"
-                        style={{
-                          color: "var(--color-accent)",
-                          display: "block",
-                          marginTop: "6px",
-                        }}
-                      >
+                      <span className="card-product-price">
                         {formattedPrice}
                       </span>
-                      <div
-                        style={{
-                          marginTop: "auto",
-                          paddingTop: "14px",
-                        }}
-                      >
+                      <div className="product-card-btn-container">
                         <div
-                          className="btn btn-primary"
+                          className="btn btn-primary product-card-btn"
                           style={{
-                            width: "100%",
-                            justifyContent: "center",
                             opacity: isOutOfStock ? 0.5 : 1,
                             pointerEvents: "none",
-                            fontSize: "13px",
-                            minHeight: "38px",
                           }}
                         >
                           {isOutOfStock ? "Out of Stock" : "Select Options"}
@@ -482,24 +227,8 @@ export default async function HomePage() {
       </section>
 
       {/* ── COD EXPLAINER ─────────────────────────────────────────────────── */}
-      <section
-        style={{
-          backgroundColor: "var(--color-surface)",
-          borderTop: "1px solid var(--color-border)",
-          borderBottom: "1px solid var(--color-border)",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "64px 20px",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "40px",
-            textAlign: "center",
-          }}
-        >
+      <section className="cod-explainer-section">
+        <div className="cod-explainer-grid">
           {[
             {
               icon: "🛒",
@@ -522,27 +251,12 @@ export default async function HomePage() {
               desc: "Hand cash to the courier at your doorstep. Simple and safe.",
             },
           ].map((step) => (
-            <div key={step.title}>
-              <div style={{ fontSize: "36px", marginBottom: "12px" }}>{step.icon}</div>
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "var(--color-text-primary)",
-                  marginBottom: "8px",
-                }}
-              >
+            <div key={step.title} className="cod-explainer-item">
+              <div className="cod-explainer-icon">{step.icon}</div>
+              <h3 className="cod-explainer-title">
                 {step.title}
               </h3>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "var(--color-text-secondary)",
-                  lineHeight: 1.6,
-                  maxWidth: "240px",
-                  margin: "0 auto",
-                }}
-              >
+              <p className="cod-explainer-desc">
                 {step.desc}
               </p>
             </div>
@@ -551,56 +265,19 @@ export default async function HomePage() {
       </section>
 
       {/* ── BOTTOM CTA ────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          maxWidth: "720px",
-          margin: "0 auto",
-          padding: "80px 20px",
-          textAlign: "center",
-        }}
-      >
-        <h2
-          style={{
-            fontFamily: "var(--font-heading), serif",
-            fontSize: "clamp(28px, 5vw, 44px)",
-            fontWeight: 700,
-            color: "var(--color-text-primary)",
-            marginBottom: "16px",
-          }}
-        >
+      <section className="bottom-cta-section">
+        <h2 className="bottom-cta-title">
           Ready to Shop?
         </h2>
-        <p
-          style={{
-            fontSize: "16px",
-            color: "var(--color-text-secondary)",
-            lineHeight: 1.6,
-            marginBottom: "32px",
-          }}
-        >
+        <p className="bottom-cta-desc">
           Create a free account and start shopping the Stitch collection today.
-          Cash on Delivery available across Andhra Pradesh.
+          Cash on Delivery available across India.
         </p>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <Link
-            href="/signup"
-            className="btn btn-primary"
-            style={{ fontSize: "15px", padding: "12px 32px" }}
-          >
+        <div className="flex gap-3 justify-center flex-wrap">
+          <Link href="/signup" className="btn btn-primary btn-xl">
             Create Free Account
           </Link>
-          <Link
-            href="/products"
-            className="btn btn-secondary"
-            style={{ fontSize: "15px", padding: "12px 32px" }}
-          >
+          <Link href="/products" className="btn btn-secondary btn-xl">
             Browse Products
           </Link>
         </div>

@@ -7,8 +7,8 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <div style={{ flex: 1 }}>{children}</div>
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1">{children}</div>
       <Footer />
     </div>
   );

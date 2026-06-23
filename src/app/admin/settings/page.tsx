@@ -17,14 +17,16 @@ export default async function AdminSettingsPage() {
   const settings = await getAllSettings();
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <header>
-        <h1 className="text-3xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}>
-          System Settings
-        </h1>
-        <p style={{ color: "var(--color-text-secondary)" }}>
-          Manage global application parameters, boundaries, thresholds, and cutoff rules.
-        </p>
+    <div className="flex flex-col gap-5">
+      <header className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">
+            System Settings
+          </h1>
+          <p className="text-secondary">
+            Manage global application parameters, boundaries, thresholds, and cutoff rules.
+          </p>
+        </div>
       </header>
 
       <SettingsForm initialSettings={settings} />

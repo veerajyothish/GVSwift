@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 
@@ -142,21 +143,10 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
 
   if (items.length === 0) {
     return (
-      <div
-        className="card"
-        style={{
-          padding: "48px 24px",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "16px",
-          backgroundColor: "var(--color-surface)",
-        }}
-      >
-        <span style={{ fontSize: "48px" }}>🛒</span>
-        <h2 className="text-2xl font-semibold" style={{ color: "var(--color-text-primary)" }}>Your cart is empty</h2>
-        <p style={{ color: "var(--color-text-secondary)", maxWidth: "400px", fontSize: "14px" }}>
+      <div className="card cart-empty-card">
+        <span className="cart-empty-icon">🛒</span>
+        <h2 className="text-2xl font-semibold">Your cart is empty</h2>
+        <p className="text-sm footer-text-muted">
           Browse our premium catalog of high-quality fashion products and add items to your cart.
         </p>
         <Link href="/products" style={{ marginTop: "8px" }}>
@@ -167,9 +157,9 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "32px", width: "100%" }} className="md:grid-cols-3">
+    <div className="cart-grid">
       {/* Items list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }} className="md:col-span-2">
+      <div className="cart-items-column">
         {items.map((item) => {
           const itemPrice = getItemPrice(item);
           const stock = item.variant?.stock ?? 0;
@@ -180,135 +170,66 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
           return (
             <div
               key={item.id}
-              className="card"
-              style={{
-                padding: "16px",
-                display: "flex",
-                gap: "16px",
-                backgroundColor: "var(--color-surface)",
-                opacity: updatingItemId === item.id ? 0.7 : 1,
-                transition: "opacity 0.2s ease",
-              }}
+              className="card cart-item-card"
+              style={{ opacity: updatingItemId === item.id ? 0.7 : 1 }}
             >
               {/* Product Thumbnail */}
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  position: "relative",
-                  borderRadius: "var(--radius-md)",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                  backgroundColor: "var(--color-bg)",
-                  border: "1px solid var(--color-border)",
-                }}
-              >
-                <img
+              <div className="cart-item-thumb-container">
+                <Image
                   src={imageUrl}
                   alt={imageObj?.altText || item.product.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  className="cart-item-thumb-img"
+                  fill
+                  sizes="80px"
                 />
               </div>
 
               {/* Item Details */}
-              <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, minWidth: 0 }}>
+              <div className="cart-item-details-container">
                 <Link
                   href={`/products/${item.product.slug}`}
-                  className="font-medium"
-                  style={{
-                    color: "var(--color-text-primary)",
-                    fontSize: "15px",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-accent)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-primary)")}
+                  className="cart-item-title-link"
                 >
                   {item.product.name}
                 </Link>
 
                 {item.variant && (
-                  <span style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                  <span className="cart-item-sku">
                     SKU: {item.variant.sku}
                   </span>
                 )}
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginTop: "auto" }}>
+                <div className="cart-item-actions-row">
                   {/* Quantity Stepper */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      backgroundColor: "var(--color-bg)",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: "var(--radius-sm)",
-                      height: "32px",
-                      overflow: "hidden",
-                    }}
-                  >
+                  <div className="cart-quantity-stepper">
                     <button
                       type="button"
                       disabled={item.quantity <= 1 || updatingItemId === item.id}
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1, stock)}
-                      style={{
-                        width: "32px",
-                        height: "100%",
-                        border: "none",
-                        backgroundColor: "transparent",
-                        color: "var(--color-text-primary)",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "16px",
-                      }}
-                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)"; }}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      className="stepper-btn"
                     >
                       &minus;
                     </button>
-                    <span
-                      style={{
-                        padding: "0 12px",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        color: "var(--color-text-primary)",
-                        userSelect: "none",
-                      }}
-                    >
+                    <span className="cart-stepper-value">
                       {item.quantity}
                     </span>
                     <button
                       type="button"
                       disabled={item.quantity >= stock || updatingItemId === item.id}
                       onClick={() => handleQuantityChange(item.id, item.quantity + 1, stock)}
-                      style={{
-                        width: "32px",
-                        height: "100%",
-                        border: "none",
-                        backgroundColor: "transparent",
-                        color: "var(--color-text-primary)",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "16px",
-                      }}
-                      onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)"; }}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      className="stepper-btn"
                     >
                       &#43;
                     </button>
                   </div>
 
                   {/* Price */}
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--color-text-primary)" }}>
+                  <div className="cart-price-container">
+                    <div className="cart-price-total">
                       {formatRupees(itemPrice * item.quantity)}
                     </div>
                     {item.quantity > 1 && (
-                      <div style={{ fontSize: "11px", color: "var(--color-text-secondary)" }}>
+                      <div className="cart-price-each">
                         {formatRupees(itemPrice)} each
                       </div>
                     )}
@@ -317,26 +238,13 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
               </div>
 
               {/* Remove Button */}
-              <div style={{ display: "flex", alignItems: "start" }}>
+              <div className="flex" style={{ alignItems: "start" }}>
                 <button
                   type="button"
                   aria-label="Remove item"
                   disabled={updatingItemId === item.id}
                   onClick={() => handleRemoveItem(item.id)}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--color-text-secondary)",
-                    cursor: "pointer",
-                    padding: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderRadius: "4px",
-                    transition: "color 0.2s ease, background-color 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "var(--color-error)"; e.currentTarget.style.backgroundColor = "rgba(255, 92, 92, 0.08)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "var(--color-text-secondary)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+                  className="cart-remove-btn"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -344,7 +252,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
                     viewBox="0 0 24 24"
                     strokeWidth={2}
                     stroke="currentColor"
-                    style={{ width: "16px", height: "16px" }}
+                    className="icon-xs"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -357,29 +265,29 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
 
       {/* Summary Sidebar */}
       <div>
-        <div className="card p-5" style={{ display: "flex", flexDirection: "column", gap: "20px", backgroundColor: "var(--color-surface)", position: "sticky", top: "84px" }}>
-          <h2 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)", borderBottom: "1px solid var(--color-border)", paddingBottom: "12px", margin: 0 }}>
+        <div className="card p-5 cart-summary-sticky">
+          <h2 className="text-lg font-semibold cart-summary-title">
             Order Summary
           </h2>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>Subtotal</span>
+          <div className="cart-summary-rows">
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">Subtotal</span>
               <span style={{ color: "var(--color-text-primary)", fontWeight: 500 }}>{formatRupees(subtotal)}</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>Shipping</span>
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">Shipping</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>COD Fee</span>
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">COD Fee</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
           </div>
 
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+          <div className="cart-summary-total-row">
             <span style={{ fontSize: "16px", fontWeight: 600 }}>Total</span>
             <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)" }}>{formatRupees(subtotal)}</span>
           </div>
@@ -390,7 +298,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             </Button>
           </Link>
 
-          <span style={{ fontSize: "11px", color: "var(--color-text-secondary)", textAlign: "center", display: "block" }}>
+          <span className="text-xs footer-text-muted" style={{ textAlign: "center", display: "block" }}>
             Free delivery & Cash on Delivery (COD) applied.
           </span>
         </div>

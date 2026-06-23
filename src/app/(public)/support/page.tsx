@@ -44,32 +44,21 @@ export default async function SupportPage() {
   ]);
 
   return (
-    <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-default">
       <Navbar />
 
-      <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 20px" }}>
-        <header style={{ marginBottom: "32px" }}>
-          <h1
-            className="text-3xl font-semibold"
-            style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}
-          >
+      <main className="container-lg">
+        <header className="mb-32">
+          <h1 className="text-3xl font-semibold text-primary mb-8">
             Customer Support
           </h1>
-          <p style={{ color: "var(--color-text-secondary)" }}>
+          <p className="text-secondary">
             Need help? Open a support ticket or track your existing inquiries below.
           </p>
         </header>
 
         {/* 2-column layout: Form (left) + Tickets List (right) */}
-        <div
-          className="support-container"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "32px",
-            alignItems: "start",
-          }}
-        >
+        <div className="support-grid">
           {/* Create ticket form */}
           <div>
             <SupportForm orders={ordersResult.orders} />
@@ -77,27 +66,17 @@ export default async function SupportPage() {
 
           {/* User's tickets list */}
           <div>
-            <h2
-              className="text-lg font-semibold"
-              style={{ color: "var(--color-text-primary)", marginBottom: "20px" }}
-            >
+            <h2 className="text-lg font-semibold text-primary mb-20">
               Your Tickets
             </h2>
 
             {tickets.length === 0 ? (
-              <div
-                className="card"
-                style={{
-                  padding: "40px 20px",
-                  textAlign: "center",
-                  color: "var(--color-text-secondary)",
-                }}
-              >
-                <div style={{ fontSize: "40px", marginBottom: "16px" }}>💬</div>
-                <p style={{ fontSize: "15px" }}>You have not opened any support tickets yet.</p>
+              <div className="card p-5 text-center text-secondary">
+                <div className="mb-16" style={{ fontSize: "40px" }}>💬</div>
+                <p className="text-15">You have not opened any support tickets yet.</p>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div className="flex flex-col gap-4">
                 {tickets.map((ticket) => {
                   const cfg = TICKET_STATUS_CONFIG[ticket.status] || {
                     label: ticket.status,
@@ -108,76 +87,35 @@ export default async function SupportPage() {
                     <Link
                       key={ticket.id}
                       href={`/support/${ticket.id}`}
-                      className="card card-interactive"
-                      style={{
-                        padding: "20px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px",
-                        textDecoration: "none",
-                      }}
+                      className="card card-interactive ticket-card"
                       id={`ticket-${ticket.id}`}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: "16px",
-                        }}
-                      >
-                        <h3
-                          className="font-medium"
-                          style={{
-                            color: "var(--color-text-primary)",
-                            fontSize: "16px",
-                            lineHeight: "1.4",
-                          }}
-                        >
+                      <div className="flex justify-between items-start gap-4">
+                        <h3 className="font-medium text-primary text-base lh-1-4">
                           {ticket.subject}
                         </h3>
                         <span
                           className="status-badge"
                           style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            padding: "4px 8px",
-                            borderRadius: "var(--radius-sm)",
-                            border: "1px solid",
                             backgroundColor: `color-mix(in srgb, ${cfg.colorVar} 15%, transparent)`,
                             color: cfg.colorVar,
                             borderColor: `color-mix(in srgb, ${cfg.colorVar} 25%, transparent)`,
-                            textTransform: "capitalize",
                           }}
                         >
                           {cfg.label}
                         </span>
                       </div>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          gap: "12px",
-                          fontSize: "13px",
-                          color: "var(--color-text-secondary)",
-                          borderTop: "1px solid var(--color-border)",
-                          paddingTop: "12px",
-                        }}
-                      >
+                      <div className="ticket-card-footer">
                         <div>
                           <span>Opened: {formatDate(ticket.createdAt)}</span>
                           {ticket.orderId && (
-                            <span style={{ marginLeft: "12px" }}>
+                            <span className="ml-12">
                               Order: #{ticket.orderId.slice(0, 8)}
                             </span>
                           )}
                         </div>
-                        <span style={{ color: "var(--color-accent)", display: "flex", alignItems: "center" }}>
+                        <span className="text-accent flex items-center">
                           View Thread &rarr;
                         </span>
                       </div>

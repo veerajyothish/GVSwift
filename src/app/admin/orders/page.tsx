@@ -39,23 +39,16 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   });
 
   return (
-    <div
-      style={{
-        padding: "24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-      }}
-    >
-      <header style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: "16px" }}>
-        <h1 className="text-2xl font-bold" style={{ color: "var(--color-accent)" }}>
-          Order Fulfillment Management
-        </h1>
-        <p style={{ color: "var(--color-text-secondary)", fontSize: "14px", marginTop: "4px" }}>
-          Track delivery attempts, confirm orders, update manual tracking references, and view fraud risk assessments.
-        </p>
+    <div className="flex flex-col gap-5">
+      <header className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">
+            Order Fulfillment Management
+          </h1>
+          <p className="text-secondary text-sm mt-4">
+            Track delivery attempts, confirm orders, update manual tracking references, and view fraud risk assessments.
+          </p>
+        </div>
       </header>
 
       <OrderListTable

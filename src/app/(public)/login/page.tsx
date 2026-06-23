@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "/";
@@ -45,185 +45,104 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "var(--color-bg)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-      }}
-    >
+    <div className="auth-card">
+      <h1 className="text-xl font-semibold auth-card-title">
+        Welcome back
+      </h1>
+      <p className="auth-card-subtitle">
+        Sign in to your GVSwift account
+      </p>
+
+      {error && (
+        <div className="alert-banner alert-error mb-20">
+          <span>⚠</span>
+          <div>{error}</div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="input-group margin-0">
+          <label htmlFor="email" className="input-label input-required">
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="input-field"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            disabled={loading}
+          />
+        </div>
+
+        <div className="input-group margin-0">
+          <label htmlFor="password" className="input-label input-required">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            className="input-field"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            disabled={loading}
+          />
+        </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          loading={loading}
+          className="w-full mt-8"
+        >
+          Sign In
+        </Button>
+      </form>
+
+      <div className="auth-footer-divider">
+        <p className="text-sm footer-text-muted">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="auth-footer-link">
+            Create one
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div className="auth-container">
       {/* Brand header */}
-      <Link
-        href="/"
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: "2px",
-          textDecoration: "none",
-          marginBottom: "40px",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "var(--font-heading), serif",
-            fontSize: "32px",
-            fontWeight: 700,
-            color: "var(--color-accent)",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          GV
-        </span>
-        <span
-          style={{
-            fontFamily: "var(--font-heading), serif",
-            fontSize: "32px",
-            fontWeight: 400,
-            color: "var(--color-text-primary)",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          Swift
-        </span>
+      <Link href="/" className="auth-brand-link">
+        <span className="auth-brand-logo">GV</span>
+        <span className="auth-brand-name">Swift</span>
       </Link>
 
-      {/* Login card */}
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          backgroundColor: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-lg)",
-          padding: "40px 32px",
-          boxShadow: "var(--shadow-lg)",
-        }}
-      >
-        <h1
-          className="text-xl font-semibold"
-          style={{
-            color: "var(--color-text-primary)",
-            marginBottom: "8px",
-            textAlign: "center",
-          }}
-        >
-          Welcome back
-        </h1>
-        <p
-          style={{
-            color: "var(--color-text-secondary)",
-            fontSize: "14px",
-            textAlign: "center",
-            marginBottom: "32px",
-          }}
-        >
-          Sign in to your GVSwift account
-        </p>
-
-        {error && (
-          <div
-            className="alert-banner alert-error"
-            style={{ marginBottom: "20px" }}
-          >
-            <span>⚠</span>
-            <div>{error}</div>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div className="input-group" style={{ margin: 0 }}>
-            <label htmlFor="email" className="input-label input-required">
-              Email address
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="input-field"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              disabled={loading}
-            />
-          </div>
-
-          <div className="input-group" style={{ margin: 0 }}>
-            <label htmlFor="password" className="input-label input-required">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="input-field"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              disabled={loading}
-            />
-          </div>
-
-          <Button
-            type="submit"
-            variant="primary"
-            loading={loading}
-            style={{ width: "100%", marginTop: "8px" }}
-          >
-            Sign In
-          </Button>
-        </form>
-
-        <div
-          style={{
-            marginTop: "24px",
-            paddingTop: "24px",
-            borderTop: "1px solid var(--color-border)",
-            textAlign: "center",
-          }}
-        >
-          <p style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/signup"
-              style={{
-                color: "var(--color-accent)",
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
-            >
-              Create one
-            </Link>
-          </p>
+      <Suspense fallback={
+        <div className="auth-card flex flex-col items-center justify-center p-6" style={{ minHeight: "300px" }}>
+          <div className="skeleton" style={{ height: "40px", width: "200px" }} />
+          <div className="skeleton mt-4" style={{ height: "200px", width: "100%" }} />
         </div>
-      </div>
+      }>
+        <LoginForm />
+      </Suspense>
 
       {/* Footer note */}
-      <p
-        style={{
-          marginTop: "24px",
-          fontSize: "12px",
-          color: "var(--color-text-secondary)",
-          textAlign: "center",
-        }}
-      >
+      <p className="auth-disclaimer">
         By signing in you agree to our{" "}
-        <Link
-          href="/terms"
-          style={{ color: "var(--color-accent)", textDecoration: "underline" }}
-        >
+        <Link href="/terms" className="auth-footer-link underline">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link
-          href="/privacy"
-          style={{ color: "var(--color-accent)", textDecoration: "underline" }}
-        >
+        <Link href="/privacy" className="auth-footer-link underline">
           Privacy Policy
         </Link>
         .

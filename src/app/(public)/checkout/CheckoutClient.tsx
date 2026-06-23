@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
@@ -296,13 +297,13 @@ export default function CheckoutClient({
     submittingOrder;
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "32px" }} className="md:grid-cols-3">
+    <div className="checkout-grid">
       {/* Checkout Steps Form */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="md:col-span-2">
+      <div className="checkout-main-col">
         {/* Step 1: Shipping Address Selection */}
-        <Card style={{ padding: "24px", backgroundColor: "var(--color-surface)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid var(--color-border)", paddingBottom: "12px" }}>
-            <h2 className="text-xl font-semibold" style={{ color: "var(--color-text-primary)", margin: 0 }}>
+        <Card className="checkout-card">
+          <div className="checkout-card-header">
+            <h2 className="text-xl font-semibold checkout-header-title">
               1. Shipping Address
             </h2>
             <Button
@@ -312,14 +313,14 @@ export default function CheckoutClient({
                 setFieldErrors({});
                 setIsModalOpen(true);
               }}
-              style={{ minHeight: "36px", height: "36px", padding: "0 16px", fontSize: "13px" }}
+              className="checkout-add-address-btn"
             >
               + Add Address
             </Button>
           </div>
 
           {addresses.length === 0 ? (
-            <div style={{ padding: "24px", textAlign: "center", border: "1px dashed var(--color-border)", borderRadius: "var(--radius-md)" }}>
+            <div className="checkout-empty-address">
               <p style={{ color: "var(--color-text-secondary)", marginBottom: "16px" }}>
                 No shipping addresses saved yet.
               </p>
@@ -328,7 +329,7 @@ export default function CheckoutClient({
               </Button>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div className="checkout-address-list">
               {addresses.map((addr) => {
                 const isSelected = addr.id === selectedAddressId;
 
@@ -336,17 +337,7 @@ export default function CheckoutClient({
                   <div
                     key={addr.id}
                     onClick={() => setSelectedAddressId(addr.id)}
-                    style={{
-                      border: `1px solid ${isSelected ? "var(--color-accent)" : "var(--color-border)"}`,
-                      borderRadius: "var(--radius-md)",
-                      padding: "16px",
-                      cursor: "pointer",
-                      backgroundColor: isSelected ? "rgba(214, 169, 67, 0.04)" : "transparent",
-                      transition: "border-color 0.2s ease, background-color 0.2s ease",
-                      display: "flex",
-                      gap: "12px",
-                      position: "relative",
-                    }}
+                    className={`checkout-address-option ${isSelected ? "checkout-address-option-selected" : ""}`}
                   >
                     <div style={{ display: "flex", alignItems: "start", marginTop: "4px" }}>
                       <input
@@ -379,7 +370,7 @@ export default function CheckoutClient({
                       >
                         {addr.fullName}
                         {addr.isDefault && (
-                          <span style={{ fontSize: "10px", backgroundColor: "rgba(214, 169, 67, 0.15)", color: "var(--color-accent)", padding: "2px 6px", borderRadius: "2px", fontWeight: 700, textTransform: "uppercase" }}>
+                          <span className="checkout-default-badge">
                             Default
                           </span>
                         )}
@@ -417,25 +408,17 @@ export default function CheckoutClient({
         </Card>
 
         {/* Step 2: Payment Method */}
-        <Card style={{ padding: "24px", backgroundColor: "var(--color-surface)" }}>
-          <h2 className="text-xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "20px", borderBottom: "1px solid var(--color-border)", paddingBottom: "12px" }}>
-            2. Payment Method
-          </h2>
+        <Card className="checkout-card">
+          <div className="checkout-card-header">
+            <h2 className="text-xl font-semibold checkout-header-title">
+              2. Payment Method
+            </h2>
+          </div>
 
-          <div
-            style={{
-              border: "1px solid var(--color-accent)",
-              borderRadius: "var(--radius-md)",
-              padding: "20px",
-              backgroundColor: "rgba(214, 169, 67, 0.04)",
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="checkout-payment-box">
+            <div className="checkout-payment-title-row">
               <span style={{ fontSize: "20px" }}>💵</span>
-              <strong style={{ color: "var(--color-accent)", fontSize: "16px" }}>Cash on Delivery (COD)</strong>
+              <strong className="checkout-payment-title">Cash on Delivery (COD)</strong>
             </div>
             <p style={{ color: "var(--color-text-primary)", fontSize: "14px", margin: "4px 0" }}>
               Pay in cash when your order is delivered to your doorstep.
@@ -449,19 +432,8 @@ export default function CheckoutClient({
 
       {/* Sidebar Order Summary */}
       <div>
-        <div
-          className="card"
-          style={{
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            backgroundColor: "var(--color-surface)",
-            position: "sticky",
-            top: "84px",
-          }}
-        >
-          <h2 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)", borderBottom: "1px solid var(--color-border)", paddingBottom: "12px", margin: 0 }}>
+        <div className="card p-5 cart-summary-sticky">
+          <h2 className="text-lg font-semibold cart-summary-title">
             Order Summary
           </h2>
 
@@ -475,7 +447,14 @@ export default function CheckoutClient({
               return (
                 <div key={item.id} style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                   <div style={{ width: "40px", height: "40px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--color-border)", flexShrink: 0, backgroundColor: "var(--color-bg)" }}>
-                    <img src={imageUrl} alt={item.product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <Image
+                      src={imageUrl}
+                      alt={item.product.name}
+                      width={40}
+                      height={40}
+                      style={{ objectFit: "cover" }}
+                      sizes="40px"
+                    />
                   </div>
                   <div style={{ flexGrow: 1, minWidth: 0 }}>
                     <div style={{ fontSize: "13px", color: "var(--color-text-primary)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -497,24 +476,24 @@ export default function CheckoutClient({
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
 
           {/* Pricing Details */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>Subtotal</span>
+          <div className="cart-summary-rows">
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">Subtotal</span>
               <span style={{ color: "var(--color-text-primary)", fontWeight: 500 }}>{formatRupees(subtotalPaise)}</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>Shipping</span>
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">Shipping</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
-              <span style={{ color: "var(--color-text-secondary)" }}>COD Fee</span>
+            <div className="cart-summary-row">
+              <span className="footer-text-muted">COD Fee</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
           </div>
 
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+          <div className="cart-summary-total-row">
             <span style={{ fontSize: "16px", fontWeight: 600 }}>Total</span>
             <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)" }}>{formatRupees(totalPaise)}</span>
           </div>
@@ -545,7 +524,7 @@ export default function CheckoutClient({
           )}
 
           {/* Policy summary */}
-          <div style={{ backgroundColor: "rgba(255,255,255,0.02)", borderRadius: "var(--radius-md)", padding: "12px", border: "1px solid var(--color-border)", fontSize: "12px", color: "var(--color-text-secondary)", lineHeight: "1.4" }}>
+          <div className="checkout-policy-box">
             <strong>Shipping & Returns:</strong>
             <p style={{ marginTop: "4px" }}>
               Standard delivery takes 3-5 business days. We offer a 7-day hassle-free return window post delivery.

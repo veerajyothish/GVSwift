@@ -19,7 +19,7 @@ export function Navbar() {
 
         {/* Search bar (client component) */}
         <div className="site-navbar-search">
-          <Suspense fallback={<div style={{ width: "100%", height: "40px" }} />}>
+          <Suspense fallback={<div className="search-bar-fallback" />}>
             <SearchBar />
           </Suspense>
         </div>

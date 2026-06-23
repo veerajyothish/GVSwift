@@ -70,8 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
-              className="w-full"
-              style={{ width: "20px", height: "20px" }}
+              className="icon-sm"
             >
               <path
                 strokeLinecap="round"
