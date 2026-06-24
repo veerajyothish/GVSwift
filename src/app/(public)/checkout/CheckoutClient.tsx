@@ -574,7 +574,7 @@ export default function CheckoutClient({
           <div className="cart-summary-rows">
             <div className="cart-summary-row">
               <span className="footer-text-muted">Subtotal</span>
-              <span style={{ color: "var(--color-text-primary)", fontWeight: 500 }}>{formatRupees(subtotalPaise)}</span>
+              <span style={{ color: "var(--color-text-primary)", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotalPaise)}</span>
             </div>
             <div className="cart-summary-row">
               <span className="footer-text-muted">Shipping</span>
@@ -590,15 +590,15 @@ export default function CheckoutClient({
                   🎟️ {appliedCoupon.code}
                   <button onClick={handleClearCoupon} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "11px", color: "var(--color-text-secondary)", textDecoration: "underline" }}>Remove</button>
                 </span>
-                <span style={{ color: "var(--color-success)", fontWeight: 600 }}>−{formatRupees(appliedCoupon.discountPaise)}</span>
+                <span style={{ color: "var(--color-success)", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>−{formatRupees(appliedCoupon.discountPaise)}</span>
               </div>
             )}
             {usePoints && pointsDiscountPaise > 0 && (
               <div className="cart-summary-row">
                 <span style={{ color: "var(--color-success)", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
-                  ⭐ {loyaltyBalance} pts used
+                  ⭐ <span style={{ fontVariantNumeric: "tabular-nums" }}>{loyaltyBalance}</span> pts used
                 </span>
-                <span style={{ color: "var(--color-success)", fontWeight: 600 }}>−{formatRupees(pointsDiscountPaise)}</span>
+                <span style={{ color: "var(--color-success)", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>−{formatRupees(pointsDiscountPaise)}</span>
               </div>
             )}
           </div>
@@ -637,7 +637,7 @@ export default function CheckoutClient({
                 htmlFor="loyalty-points-checkbox"
                 style={{ cursor: "pointer", flexGrow: 1 }}
               >
-                Use my loyalty points ({loyaltyBalance} pts = ₹{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points} off)
+                Use my loyalty points (<span style={{ fontVariantNumeric: "tabular-nums" }}>{loyaltyBalance}</span> pts = ₹<span style={{ fontVariantNumeric: "tabular-nums" }}>{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points}</span> off)
               </label>
             </div>
           )}
@@ -646,7 +646,7 @@ export default function CheckoutClient({
 
           <div className="cart-summary-total-row">
             <span style={{ fontSize: "16px", fontWeight: 600 }}>Total</span>
-            <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)" }}>{formatRupees(totalPaise)}</span>
+            <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)", fontVariantNumeric: "tabular-nums" }}>{formatRupees(totalPaise)}</span>
           </div>
 
           {/* Coupon Input */}
