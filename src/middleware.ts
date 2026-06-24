@@ -46,8 +46,23 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session (don't check result here — guards.ts does auth enforcement)
-  await supabase.auth.getUser();
+  // Refresh session and check authentication
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+
+  // 1. Admin landing redirect
+  if (user && user.user_metadata?.role === "ADMIN" && pathname === "/") {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
+
+  // 2. Protected routes enforcement
+  const isProtectedRoute = pathname.startsWith("/admin") || pathname.startsWith("/account") || pathname.startsWith("/checkout");
+  const isLoginPage = pathname === "/login";
+
+  if (isProtectedRoute && !user && !isLoginPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   // ── 2. HTTPS redirect (production only) ───────────────────────────────
   if (

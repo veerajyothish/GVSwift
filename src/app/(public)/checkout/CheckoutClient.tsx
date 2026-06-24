@@ -338,8 +338,8 @@ export default function CheckoutClient({
           addressId: selectedAddressId,
           idempotencyKey,
           paymentMethod: "COD",
-          couponCode: appliedCoupon?.code ?? null,
-          pointsToRedeem: usePoints ? loyaltyBalance : 0,
+          couponCode: appliedCoupon?.code ?? undefined,
+          pointsToRedeem: usePoints ? (loyaltyBalance || 0) : 0,
         }),
       });
 
@@ -637,7 +637,7 @@ export default function CheckoutClient({
                 htmlFor="loyalty-points-checkbox"
                 style={{ cursor: "pointer", flexGrow: 1 }}
               >
-                Use {loyaltyBalance} points for ₹{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points} off
+                Use my loyalty points ({loyaltyBalance} pts = ₹{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points} off)
               </label>
             </div>
           )}

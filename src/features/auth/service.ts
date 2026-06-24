@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
@@ -63,6 +63,18 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
         role: "USER",
       },
     });
+  }
+
+  // Sync role to Supabase user_metadata
+  if (prismaUser) {
+    try {
+      const adminSupabase = createSupabaseAdminClient();
+      await adminSupabase.auth.admin.updateUserById(data.user.id, {
+        user_metadata: { role: prismaUser.role },
+      });
+    } catch (syncErr) {
+      logger.warn("Failed to sync role to Supabase metadata during signup", { userId: data.user.id, error: syncErr });
+    }
   }
 
   // Auto-login after signup
@@ -143,6 +155,18 @@ export async function loginUser(input: LoginInput) {
         role: "USER",
       },
     });
+  }
+
+  // Sync role to Supabase user_metadata
+  if (prismaUser) {
+    try {
+      const adminSupabase = createSupabaseAdminClient();
+      await adminSupabase.auth.admin.updateUserById(data.user.id, {
+        user_metadata: { role: prismaUser.role },
+      });
+    } catch (syncErr) {
+      logger.warn("Failed to sync role to Supabase metadata during login", { userId: data.user.id, error: syncErr });
+    }
   }
 
   return prismaUser;

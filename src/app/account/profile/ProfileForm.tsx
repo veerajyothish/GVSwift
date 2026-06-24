@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { SignOutButton } from "@/components/ui/SignOutButton";
 
 interface ProfileFormProps {
   initialUser: {
@@ -170,7 +171,21 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           <span className="text-sm font-semibold text-primary">{formattedDate}</span>
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between items-center mt-6 pt-6 border-t border-color-border" style={{ borderTop: "1px solid var(--color-border)" }}>
+          <SignOutButton
+            className="btn-secondary"
+            style={{
+              padding: "10px 20px",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 600,
+              fontSize: "14px",
+              backgroundColor: "transparent",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-text-secondary)",
+            }}
+          >
+            Sign Out
+          </SignOutButton>
           <Button
             variant="primary"
             type="submit"

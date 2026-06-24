@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { type User } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     if (!error && data?.user) {
       const supabaseUser = data.user;
       
-      let prismaUser = null;
+      let prismaUser: User | null = null;
       try {
         // Find existing user in Prisma DB by supabaseId or email
         let foundUser = await prisma.user.findUnique({
@@ -53,6 +54,18 @@ export async function GET(request: NextRequest) {
         console.error("Failed to sync user to Prisma during auth callback:", dbErr);
       }
 
+      // Sync role to Supabase metadata if user exists
+      if (prismaUser) {
+        try {
+          const adminSupabase = createSupabaseAdminClient();
+          await adminSupabase.auth.admin.updateUserById(supabaseUser.id, {
+            user_metadata: { role: prismaUser.role },
+          });
+        } catch (syncErr) {
+          console.error("Failed to sync user role to Supabase metadata during auth callback:", syncErr);
+        }
+      }
+
       // B12: Link referral for Google OAuth flow
       if (refParam && prismaUser) {
         try {
@@ -78,7 +91,8 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const response = NextResponse.redirect(`${origin}/`);
+      const redirectUrl = prismaUser?.role === "ADMIN" ? `${origin}/admin` : `${origin}/`;
+      const response = NextResponse.redirect(redirectUrl);
       // Clear the referral cookie
       if (refParam) {
         response.cookies.set("gvs_ref", "", { maxAge: 0, path: "/" });

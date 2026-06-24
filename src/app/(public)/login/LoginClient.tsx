@@ -62,7 +62,11 @@ export default function LoginClient() {
         return;
       }
 
-      router.push(redirectTo);
+      if (data.user?.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push(redirectTo);
+      }
       router.refresh();
     } catch {
       setError("Network error. Please check your connection and try again.");
