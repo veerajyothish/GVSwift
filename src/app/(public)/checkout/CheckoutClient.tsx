@@ -116,6 +116,38 @@ export default function CheckoutClient({
   const [loyaltySettings, setLoyaltySettings] = useState(initialLoyaltySettings ?? { rupeesPer100Points: 10 });
   const [usePoints, setUsePoints] = useState(false);
 
+  const [locating, setLocating] = useState(false);
+
+  const handleGeolocation = async () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+          );
+          const data = await res.json();
+          const addr = data.address;
+          if (addr) {
+            setFormData((prev) => ({
+              ...prev,
+              city: addr.city || addr.town || addr.village || '',
+              state: addr.state || '',
+              pincode: addr.postcode ? addr.postcode.replace(/\D/g, "").slice(0, 6) : '',
+            }));
+          }
+        } catch {
+          // fail silently
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => setLocating(false)
+    );
+  };
+
   useEffect(() => {
     fetch("/api/v1/loyalty/me")
       .then((res) => res.json())
@@ -859,6 +891,18 @@ export default function CheckoutClient({
               required
               onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
             />
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "-8px" }}>
+            <button
+              type="button"
+              onClick={handleGeolocation}
+              disabled={locating}
+              className="btn btn-outline btn-sm"
+              style={{ padding: "6px 12px", fontSize: "12px", minHeight: "32px" }}
+            >
+              {locating ? 'Detecting location...' : '📍 Use My Location'}
+            </button>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-3">

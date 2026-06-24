@@ -5,11 +5,13 @@
   - [x] Update `/api/v1/loyalty/me` endpoint to return `rupeesPer100Points`
   - [x] Ensure CheckoutClient always sends pointsToRedeem as a number in the fetch body
 - [x] Fix 2: Loyalty points checkbox visible at checkout
-  - [x] Fetch loyalty balance client-side on mount in `CheckoutClient.tsx`
-  - [x] Store loyalty balance and settings in component state
-  - [x] Render checkbox section `Use [X] points for ₹[Y] off` above the total row
-  - [x] Update price calculations based on state balance & checkbox status
-- [x] Fix 3: Sentry double init warning
-  - [x] Delete `sentry.client.config.ts`
-- [x] Run `npx next build` to verify zero errors and warnings
-- [x] Commit and push changes
+  - [x] Update `src/app/globals.css`
+  - [x] Add global font-variant-numeric: tabular-nums for prices and statistics
+  - [x] Add text-wrap: balance for headings and text-wrap: pretty for paragraphs
+  - [x] Add transition and scale-on-press active state for `button`, `.btn`, and `a.btn` elements
+- [x] Update `src/app/(public)/cart/CartPageClient.tsx`
+  - [x] Add tabular-nums variant to dynamic pricing displays (subtotal and total)
+- [x] Update `src/app/account/loyalty/LoyaltyPageClient.tsx`
+  - [x] Add tabular-nums variant to user statistics and points history deltas
+- [x] Verify build with `npx next build`
+- [x] Check in all modifications via git commit & push changes
