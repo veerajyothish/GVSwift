@@ -143,14 +143,16 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
 
   if (items.length === 0) {
     return (
-      <div className="card cart-empty-card">
-        <span className="cart-empty-icon">🛒</span>
-        <h2 className="text-2xl font-semibold">Your cart is empty</h2>
-        <p className="text-sm footer-text-muted">
-          Browse our premium catalog of high-quality fashion products and add items to your cart.
+      <div className="card cart-empty-card" style={{ textAlign: "center", padding: "80px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: "48px", marginBottom: "16px" }}>🛒</div>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: "8px", fontFamily: "var(--font-heading)" }}>
+          Your cart is empty
+        </h2>
+        <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", marginBottom: "24px", maxWidth: "320px" }}>
+          Looks like you haven&apos;t added anything yet. Browse our premium catalog of high-quality fashion products.
         </p>
-        <Link href="/products" style={{ marginTop: "8px" }}>
-          <Button variant="primary" style={{ padding: "10px 32px" }}>Shop Catalog</Button>
+        <Link href="/products">
+          <Button variant="primary" style={{ padding: "10px 32px" }}>Browse Products</Button>
         </Link>
       </div>
     );

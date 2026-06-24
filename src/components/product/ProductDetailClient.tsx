@@ -21,6 +21,28 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const ctaRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyBar(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+      },
+      { threshold: 0 }
+    );
+
+    const currentCtaRef = ctaRef.current;
+    if (currentCtaRef) {
+      observer.observe(currentCtaRef);
+    }
+
+    return () => {
+      if (currentCtaRef) {
+        observer.unobserve(currentCtaRef);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const getCookie = (name: string): string | null => {
@@ -203,6 +225,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           .cta-container {
             flex-direction: row !important;
           }
+          .sticky-bottom-bar {
+            display: none !important;
+          }
         }
       `}} />
 
@@ -343,7 +368,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* CTA Actions: Buy Now & Add to Cart */}
-          <div className="cta-container">
+          <div className="cta-container" ref={ctaRef}>
             <Button
               variant={isOutOfStock ? "secondary" : "primary"}
               style={{ flex: 1, minHeight: "44px" }}
@@ -416,6 +441,54 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 48px" }}>
         <RecentlyViewed excludeProductId={product.id} />
+      </div>
+
+      {/* Sticky bottom mobile purchase bar */}
+      <div
+        className="sticky-bottom-bar"
+        style={{
+          position: "fixed",
+          bottom: showStickyBar ? "0" : "-100px",
+          left: 0,
+          right: 0,
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          backdropFilter: "blur(12px)",
+          borderTop: "1px solid var(--color-border)",
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          zIndex: 50,
+          transition: "bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          boxShadow: "0 -4px 20px rgba(86, 25, 34, 0.08)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "var(--radius-sm)", overflow: "hidden", flexShrink: 0 }}>
+            <Image src={imageUrl} alt={product.name} fill style={{ objectFit: "cover" }} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--color-text-primary)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", maxWidth: "140px" }}>
+              {product.name}
+            </span>
+            <span style={{ fontSize: "11px", color: "var(--color-text-secondary)" }}>
+              {formattedPrice} • Size {parseVariantSku(selectedVariant.sku).size}
+            </span>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Button
+            variant={isOutOfStock ? "secondary" : "primary"}
+            disabled={isOutOfStock}
+            loading={isBuyingNow}
+            onClick={handleBuyNow}
+            style={{ fontSize: "12px", padding: "6px 16px", height: "36px", minWidth: "100px", transform: "scale(1)", transition: "transform 0.1s ease" }}
+            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
+            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            {isOutOfStock ? "Sold Out" : "Buy Now"}
+          </Button>
+        </div>
       </div>
     </div>
   );

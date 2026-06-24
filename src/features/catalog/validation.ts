@@ -11,6 +11,11 @@ export const ProductQuerySchema = z.object({
     .transform((val) => (val ? Math.max(1, Math.min(100, parseInt(val, 10))) : undefined)),
   categoryId: z.string().uuid("Invalid category ID").optional(),
   search: z.string().max(100, "Search query too long").optional(),
+  sort: z.string().optional(),
+  maxPrice: z
+    .string()
+    .optional()
+    .transform((val) => (val ? Math.max(0, parseInt(val, 10)) : undefined)),
 });
 
 export const CreateProductSchema = z.object({

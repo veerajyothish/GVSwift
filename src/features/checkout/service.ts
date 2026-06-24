@@ -90,7 +90,15 @@ export async function createOrder(
   // This handles double-clicks, retries, and network errors on the client.
   const existingOrder = await prisma.order.findUnique({
     where: { idempotencyKey },
-    include: { items: true },
+    include: {
+      user: { select: { email: true, name: true } },
+      address: true,
+      items: {
+        include: {
+          product: { select: { name: true } },
+        },
+      },
+    },
   });
   if (existingOrder) {
     // Ownership check — only the original user can retrieve it by idempotency key
@@ -98,7 +106,7 @@ export async function createOrder(
       throw new AppError("NOT_FOUND", "Order not found", 404);
     }
     return {
-      order: existingOrder,
+      order: existingOrder as CheckoutResult["order"],
       requiresApproval: false, // Don't re-derive approval status; order already committed
       wasIdempotent: true,
     };
@@ -434,10 +442,18 @@ export async function createOrder(
     if (prismaErr?.code === "P2002") {
       const idempotentOrder = await prisma.order.findUnique({
         where: { idempotencyKey },
-        include: { items: true },
+        include: {
+          user: { select: { email: true, name: true } },
+          address: true,
+          items: {
+            include: {
+              product: { select: { name: true } },
+            },
+          },
+        },
       });
       if (idempotentOrder && idempotentOrder.userId === userId) {
-        return { order: idempotentOrder, requiresApproval: false, wasIdempotent: true };
+        return { order: idempotentOrder as CheckoutResult["order"], requiresApproval: false, wasIdempotent: true };
       }
     }
 
@@ -487,7 +503,8 @@ export async function createOrder(
   const finalOrder = await prisma.order.findUniqueOrThrow({
     where: { id: orderId },
     include: {
-      user: { select: { email: true } },
+      user: { select: { email: true, name: true } },
+      address: true,
       items: {
         include: {
           product: { select: { name: true } },

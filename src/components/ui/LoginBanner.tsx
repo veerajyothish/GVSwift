@@ -1,80 +1,115 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { X } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+'use client';
+import { useState, useEffect } from 'react';
+import { X, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export default function LoginBanner() {
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const supabase = createSupabaseBrowserClient();
 
   useEffect(() => {
-    const checkSessionAndShow = async () => {
-      const supabase = createSupabaseBrowserClient();
+    const init = async () => {
+      const dismissed = sessionStorage.getItem('login-banner-dismissed');
+      if (dismissed) return;
       const { data: { session } } = await supabase.auth.getSession();
-      
-      // Do not show to anonymous guest visitors
       if (!session) return;
-
-      const dismissed = sessionStorage.getItem("login-banner-dismissed");
-      if (!dismissed) {
-        setVisible(true);
-      }
+      setMounted(true);
+      setTimeout(() => setVisible(true), 800); // slight delay feels natural
     };
-
-    checkSessionAndShow();
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const dismiss = () => {
-    sessionStorage.setItem("login-banner-dismissed", "1");
+    sessionStorage.setItem('login-banner-dismissed', '1');
     setVisible(false);
+    setTimeout(() => setMounted(false), 400);
   };
 
-  if (!visible) return null;
+  if (!mounted) return null;
 
   return (
-    <>
-      <div
-        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
-        onClick={dismiss}
-        aria-hidden="true"
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Welcome banner"
-        className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                   w-[calc(100%-32px)] max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl
-                   p-8 text-center border border-color-border/10 animate-fade-in"
-      >
-        <button
-          onClick={dismiss}
-          aria-label="Dismiss"
-          className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400
-                     hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-zinc-800 transition-colors"
-          style={{ border: "none", cursor: "pointer", background: "none" }}
-        >
-          <X size={18} />
-        </button>
-        <div className="text-4xl mb-3">🎉</div>
-        <h2
-          className="text-2xl font-semibold mb-2 text-primary"
-          style={{ fontFamily: "var(--font-heading)", fontStyle: "italic", fontWeight: 400 }}
-        >
-          Welcome back!
-        </h2>
-        <p className="text-secondary text-sm mb-6 leading-relaxed">
-          Check out our latest arrivals and exclusive member offers.
-        </p>
+    <div
+      role="region"
+      aria-label="Welcome offer"
+      style={{
+        position: 'fixed',
+        bottom: '24px',
+        left: '50%',
+        zIndex: 9999,
+        width: 'calc(100% - 32px)',
+        maxWidth: '560px',
+        transition: 'opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1)',
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? 'translateX(-50%) translateY(0)'
+          : 'translateX(-50%) translateY(32px)',
+        pointerEvents: visible ? 'auto' : 'none',
+      }}
+    >
+      <div style={{
+        background: 'linear-gradient(135deg, #01696f 0%, #0c4e54 100%)',
+        borderRadius: '16px',
+        padding: '20px 24px',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        color: 'white',
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.15)',
+          borderRadius: '12px',
+          padding: '10px',
+          flexShrink: 0,
+        }}>
+          <Sparkles size={22} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontWeight: 700, fontSize: '15px', margin: 0, letterSpacing: '-0.01em' }}>
+            Welcome back! 🎉
+          </p>
+          <p style={{ fontSize: '13px', opacity: 0.85, margin: '3px 0 0', lineHeight: 1.4 }}>
+            Check out our latest arrivals and exclusive member deals.
+          </p>
+        </div>
         <Link
           href="/products"
           onClick={dismiss}
-          className="btn btn-primary w-full flex items-center justify-center"
-          style={{ minHeight: "44px", borderRadius: "50px", fontWeight: 600 }}
+          style={{
+            background: 'white',
+            color: '#01696f',
+            fontWeight: 600,
+            fontSize: '13px',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
         >
           Shop Now
         </Link>
+        <button
+          onClick={dismiss}
+          aria-label="Dismiss"
+          style={{
+            background: 'rgba(255,255,255,0.15)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '6px',
+            cursor: 'pointer',
+            color: 'white',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <X size={16} />
+        </button>
       </div>
-    </>
+    </div>
   );
 }

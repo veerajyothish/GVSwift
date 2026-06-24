@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface NavbarIconsAndSearchProps {
   isLoggedIn: boolean;
@@ -11,83 +10,8 @@ interface NavbarIconsAndSearchProps {
 }
 
 export function NavbarIconsAndSearch({ isLoggedIn, cartCount, wishlistIcon }: NavbarIconsAndSearchProps) {
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Focus search input when it's opened
-  useEffect(() => {
-    if (showSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [showSearch]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = searchQuery.trim();
-    if (trimmed) {
-      router.push(`/products?search=${encodeURIComponent(trimmed)}`);
-      setShowSearch(false);
-      setSearchQuery("");
-    }
-  };
-
   return (
     <div className="navbar-right-container" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-      {/* Search Input Overlay / Slide */}
-      {showSearch && (
-        <form onSubmit={handleSearchSubmit} className="navbar-search-inline-form" style={{ display: "flex", alignItems: "center", position: "relative" }}>
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="navbar-search-inline-input"
-            onBlur={() => {
-              // Hide search bar after a short delay to allow clicks/submits
-              setTimeout(() => {
-                if (searchQuery === "") {
-                  setShowSearch(false);
-                }
-              }, 200);
-            }}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "50px",
-              border: "1px solid var(--color-border)",
-              backgroundColor: "var(--color-surface)",
-              color: "var(--color-text-primary)",
-              fontSize: "14px",
-              width: "160px",
-              outline: "none",
-            }}
-          />
-        </form>
-      )}
-
-      {/* Search Icon Trigger */}
-      <button
-        onClick={() => setShowSearch(!showSearch)}
-        className="navbar-icon-btn"
-        aria-label="Search"
-        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-primary)", padding: "4px" }}
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-      </button>
 
       {/* Wishlist Link (Heart Icon) */}
       {wishlistIcon}

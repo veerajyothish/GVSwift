@@ -43,6 +43,19 @@ export async function listProducts(
     where.variants = { some: { stock: { lt: threshold } } };
   }
 
+  // Filter by price
+  if (params.maxPrice !== undefined) {
+    where.basePricePaise = { lte: params.maxPrice * 100 };
+  }
+
+  // Dynamic sorting
+  let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: "desc" };
+  if (params.sort === "price-asc") {
+    orderBy = { basePricePaise: "asc" };
+  } else if (params.sort === "price-desc") {
+    orderBy = { basePricePaise: "desc" };
+  }
+
   // Run count and query in parallel
   const [totalCount, products] = await Promise.all([
     prisma.product.count({ where }),
@@ -59,7 +72,7 @@ export async function listProducts(
           ],
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy,
     }) as Promise<ProductWithVariantsAndImages[]>,
   ]);
 
@@ -113,6 +126,7 @@ export async function getProductBySlug(
           { sortOrder: "asc" },
         ],
       },
+      category: true,
     },
   })) as ProductWithVariantsAndImages | null;
 
@@ -143,6 +157,7 @@ export async function getProductById(
           { sortOrder: "asc" },
         ],
       },
+      category: true,
     },
   })) as ProductWithVariantsAndImages | null;
 
@@ -243,4 +258,52 @@ export async function softDeleteProduct(id: string): Promise<ProductWithVariants
       images: true,
     },
   })) as ProductWithVariantsAndImages;
+}
+
+/**
+ * Fetches active products in the same category, excluding the current one, capped at limit.
+ */
+export async function getRelatedProducts(
+  categoryId: string,
+  excludeProductId: string,
+  limit = 4
+): Promise<ProductWithVariantsAndImages[]> {
+  const products = (await prisma.product.findMany({
+    where: {
+      categoryId,
+      id: { not: excludeProductId },
+      isActive: true,
+    },
+    take: limit,
+    include: {
+      variants: true,
+      images: {
+        orderBy: [
+          { isPrimary: "desc" },
+          { sortOrder: "asc" },
+        ],
+      },
+      category: true,
+    },
+  })) as ProductWithVariantsAndImages[];
+
+  if (products.length === 0) return [];
+
+  const ratingAggregates = await prisma.productReview.groupBy({
+    by: ["productId"],
+    where: {
+      productId: { in: products.map((p) => p.id) },
+    },
+    _avg: {
+      rating: true,
+    },
+  });
+
+  return products.map((product) => {
+    const match = ratingAggregates.find((r) => r.productId === product.id);
+    return {
+      ...product,
+      avgRating: match?._avg.rating ?? null,
+    };
+  });
 }

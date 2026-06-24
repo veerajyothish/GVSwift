@@ -7,16 +7,19 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 interface WishlistContextType {
   wishlistIds: Set<string>;
+  wishlistedIds: string[];
   loading: boolean;
   isWishlisted: (productId: string) => boolean;
   toggleWishlist: (productId: string) => Promise<void>;
   refreshWishlist: () => Promise<void>;
+  refresh: () => Promise<void>;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
+  const wishlistedIds = Array.from(wishlistIds);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -77,10 +80,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     <WishlistContext.Provider
       value={{
         wishlistIds,
+        wishlistedIds,
         loading,
         isWishlisted,
         toggleWishlist,
         refreshWishlist: fetchWishlist,
+        refresh: fetchWishlist,
       }}
     >
       {children}

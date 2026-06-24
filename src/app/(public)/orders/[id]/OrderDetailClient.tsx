@@ -322,11 +322,34 @@ export default function OrderDetailClient({
               )}
             </div>
           ) : (
-            <div className="timeline-card mb-24" style={{ padding: "24px" }}>
-              <h3 className="text-md font-semibold text-primary mb-16" style={{ fontFamily: "var(--font-heading)", margin: "0 0 16px 0" }}>
+            <div className="timeline-card mb-24" style={{ padding: "24px", overflowX: "auto" }}>
+              <h3 className="text-md font-semibold text-primary mb-24" style={{ fontFamily: "var(--font-heading)", margin: "0 0 24px 0" }}>
                 Order Tracking
               </h3>
-              <div className="timeline-steps-container">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", minWidth: "500px", padding: "0 10px" }}>
+                {/* Horizontal progress background line */}
+                <div style={{
+                  position: "absolute",
+                  top: "14px",
+                  left: "40px",
+                  right: "40px",
+                  height: "2px",
+                  backgroundColor: "var(--color-border)",
+                  zIndex: 0,
+                }} />
+                
+                {/* Active progress colored line */}
+                <div style={{
+                  position: "absolute",
+                  top: "14px",
+                  left: "40px",
+                  width: `${activeStepIndex > 0 ? (activeStepIndex / (timelineSteps.length - 1)) * 100 : 0}%`,
+                  transition: "width 0.5s ease",
+                  height: "2px",
+                  backgroundColor: "var(--color-accent)",
+                  zIndex: 0,
+                }} />
+
                 {timelineSteps.map((step, idx) => {
                   const isCompleted = activeStepIndex >= idx;
                   const isCurrent = activeStepIndex === idx;
@@ -335,22 +358,60 @@ export default function OrderDetailClient({
                   return (
                     <div
                       key={step.status}
-                      className={`timeline-step ${isCompleted ? "completed" : ""} ${isCurrent ? "current" : ""}`}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        position: "relative",
+                        zIndex: 1,
+                        flex: 1,
+                      }}
                     >
-                      <div className="timeline-step-icon-wrapper">
-                        <div className="timeline-step-icon">
-                          {isCompleted ? "✓" : idx + 1}
-                        </div>
-                        {idx < timelineSteps.length - 1 && <div className="timeline-step-line" />}
+                      {/* Step Circle */}
+                      <div
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "50%",
+                          backgroundColor: isCompleted ? "var(--color-accent)" : "var(--color-surface)",
+                          border: `2px solid ${isCompleted ? "var(--color-accent)" : "var(--color-border)"}`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: isCompleted ? "var(--color-accent-text)" : "var(--color-text-secondary)",
+                          fontSize: "12px",
+                          fontWeight: "700",
+                          boxShadow: isCurrent ? "0 0 0 4px rgba(86, 25, 34, 0.15)" : "none",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        {isCompleted ? "✓" : idx + 1}
                       </div>
-                      <div className="timeline-step-info">
-                        <span className="timeline-step-label">{step.label}</span>
-                        {timestamp && (
-                          <span className="timeline-step-time">
-                            {formatDate(timestamp)}
-                          </span>
-                        )}
-                      </div>
+
+                      {/* Step Labels */}
+                      <span
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: isCurrent ? "600" : "500",
+                          color: isCompleted ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+                          marginTop: "8px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {step.label}
+                      </span>
+                      {timestamp && (
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            color: "var(--color-text-secondary)",
+                            marginTop: "2px",
+                            opacity: 0.8,
+                          }}
+                        >
+                          {formatDate(timestamp)}
+                        </span>
+                      )}
                     </div>
                   );
                 })}

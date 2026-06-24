@@ -24,6 +24,8 @@ const SearchQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(12),
   categoryId: z.string().uuid("Invalid category ID").optional(),
+  sort: z.string().optional(),
+  maxPrice: z.coerce.number().int().positive().optional(),
 });
 
 export type SearchParams = z.input<typeof SearchQuerySchema>;
@@ -53,13 +55,15 @@ export async function searchProducts(
     );
   }
 
-  const { query, page, limit, categoryId } = parsed.data;
+  const { query, page, limit, categoryId, sort, maxPrice } = parsed.data;
 
   return repository.listProducts({
     search: query,
     page,
     limit,
     categoryId,
+    sort,
+    maxPrice,
   });
 }
 

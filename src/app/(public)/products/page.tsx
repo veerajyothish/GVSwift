@@ -15,6 +15,8 @@ interface ProductsPageProps {
     category?: string;
     page?: string;
     search?: string;
+    sort?: string;
+    maxPrice?: string;
   }>;
 }
 
@@ -50,6 +52,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   const currentPage = Math.max(1, params.page ? parseInt(params.page, 10) : 1);
   const currentSearch = params.search ?? "";
+  const currentSort = params.sort ?? "newest";
+  const currentMaxPrice = params.maxPrice ?? "";
 
   // Fetch data in parallel
   // When a search query is present, delegate to the search abstraction
@@ -62,18 +66,27 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           page: currentPage,
           limit: 12,
           categoryId: currentCategoryId || undefined,
+          sort: currentSort,
+          maxPrice: currentMaxPrice ? parseInt(currentMaxPrice, 10) : undefined,
         })
       : getProducts({
           page: currentPage.toString(),
           categoryId: currentCategoryId || undefined,
           limit: "12",
+          sort: currentSort,
+          maxPrice: currentMaxPrice || undefined,
         }),
   ]);
 
   const { products, totalPages } = productsResult;
 
   // Helper to build URLs preserving other parameters
-  const buildUrl = (updates: { categoryId?: string | null; page?: number | null }) => {
+  const buildUrl = (updates: {
+    categoryId?: string | null;
+    page?: number | null;
+    sort?: string | null;
+    maxPrice?: string | null;
+  }) => {
     const urlParams = new URLSearchParams();
     
     // Preserve category unless explicitly cleared
@@ -91,6 +104,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     // Preserve search
     if (currentSearch) {
       urlParams.set("search", currentSearch);
+    }
+
+    // Preserve sort
+    const s = updates.sort !== undefined ? updates.sort : currentSort;
+    if (s && s !== "newest") {
+      urlParams.set("sort", s);
+    }
+
+    // Preserve maxPrice
+    const mp = updates.maxPrice !== undefined ? updates.maxPrice : currentMaxPrice;
+    if (mp) {
+      urlParams.set("maxPrice", mp);
     }
 
     const queryString = urlParams.toString();
@@ -137,6 +162,80 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             );
           })}
         </nav>
+
+        {/* ── Sort & Price Filters ── */}
+        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", paddingBottom: "16px", borderBottom: "1px solid var(--color-border)" }}>
+          {/* Sort options */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-secondary)" }}>SORT BY:</span>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {[
+                { label: 'Newest', value: 'newest' },
+                { label: 'Price: Low → High', value: 'price-asc' },
+                { label: 'Price: High → Low', value: 'price-desc' },
+              ].map((opt) => {
+                const isActive = currentSort === opt.value;
+                return (
+                  <Link
+                    key={opt.value}
+                    href={buildUrl({ sort: opt.value, page: 1 })}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "6px 12px",
+                      borderRadius: "20px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      textDecoration: "none",
+                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
+                      backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
+                      color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {opt.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Price Range options */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-secondary)" }}>PRICE RANGE:</span>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {[
+                { label: 'All Prices', value: '' },
+                { label: 'Under ₹500', value: '500' },
+                { label: 'Under ₹1000', value: '1000' },
+                { label: 'Under ₹2000', value: '2000' },
+              ].map((opt) => {
+                const isActive = currentMaxPrice === opt.value;
+                return (
+                  <Link
+                    key={opt.value}
+                    href={buildUrl({ maxPrice: opt.value || null, page: 1 })}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "6px 12px",
+                      borderRadius: "20px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      textDecoration: "none",
+                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
+                      backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
+                      color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
+                      transition: "all 0.2s ease"
+                    }}
+                  >
+                    {opt.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* ── Search Indicator (if active) ── */}
         {currentSearch && (

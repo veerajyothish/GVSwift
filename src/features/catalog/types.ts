@@ -1,9 +1,10 @@
-import { Product, ProductVariant, ProductImage } from "@prisma/client";
+import { Product, ProductVariant, ProductImage, Category } from "@prisma/client";
 
 export type ProductWithVariantsAndImages = Product & {
   variants: ProductVariant[];
   images: ProductImage[];
   avgRating?: number | null;
+  category?: Category | null;
 };
 
 export interface ListProductsParams {
@@ -14,6 +15,8 @@ export interface ListProductsParams {
   search?: string;
   lowStockOnly?: boolean;
   lowStockThreshold?: number;
+  sort?: string;
+  maxPrice?: number;
 }
 
 export interface PaginatedProductsResult {

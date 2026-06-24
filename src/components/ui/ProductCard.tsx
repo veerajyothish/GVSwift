@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
-import { toggleWishlist } from "@/lib/wishlist";
 import { useWishlist } from "@/context/WishlistContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
@@ -47,10 +46,10 @@ export default function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { isWishlisted, refreshWishlist } = useWishlist();
+  const { wishlistedIds, refresh, toggleWishlist } = useWishlist();
   
   // Resolve wishlisted status from context, with fallback to initialWishlisted
-  const isCurrentlyWishlisted = isWishlisted ? isWishlisted(product.id) : initialWishlisted;
+  const isCurrentlyWishlisted = wishlistedIds.includes(product.id) || initialWishlisted;
   const [wishlisted, setWishlisted] = useState(isCurrentlyWishlisted);
 
   // Sync state with context value if it changes
@@ -76,9 +75,7 @@ export default function ProductCard({
     setWishlisted((prev) => !prev);
     try {
       await toggleWishlist(product.id);
-      if (refreshWishlist) {
-        await refreshWishlist();
-      }
+      await refresh();
     } catch {
       // Revert on error
       setWishlisted(isCurrentlyWishlisted);
@@ -198,14 +195,14 @@ export default function ProductCard({
         <button
           onClick={handleWishlist}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute top-3 right-3 z-10 p-2.5 rounded-full bg-white/90 dark:bg-zinc-800/90
-                     backdrop-blur-sm shadow-md transition-transform duration-200
+          className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/80
+                     backdrop-blur-sm shadow-sm transition-transform duration-200
                      hover:scale-110 active:scale-95"
           style={{ border: "none", cursor: "pointer" }}
         >
           <Heart
             size={18}
-            className={wishlisted ? "fill-red-500 stroke-red-500" : "stroke-gray-500 dark:stroke-gray-400"}
+            className={wishlisted ? "fill-red-500 stroke-red-500" : "fill-none stroke-gray-400"}
           />
         </button>
 
@@ -298,6 +295,16 @@ export default function ProductCard({
               </div>
             )}
           </div>
+          {totalStock <= 10 && totalStock > 0 && (
+            <p style={{ fontSize: '12px', color: '#a12c7b', fontWeight: 600, margin: '6px 0 0' }}>
+              ⚡ Only {totalStock} left
+            </p>
+          )}
+          {totalStock === 0 && (
+            <p style={{ fontSize: '12px', color: '#7a7974', fontWeight: 600, margin: '6px 0 0' }}>
+              Out of Stock
+            </p>
+          )}
         </div>
 
         {/* Action CTAs */}

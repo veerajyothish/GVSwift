@@ -21,6 +21,8 @@ export async function getProducts(query: unknown) {
     limit: parsed.data.limit,
     categoryId: parsed.data.categoryId,
     search: parsed.data.search,
+    sort: parsed.data.sort,
+    maxPrice: parsed.data.maxPrice,
   };
 
   return repository.listProducts(params);
@@ -143,4 +145,12 @@ export async function adminDeleteProduct(id: string) {
   }
 
   return repository.softDeleteProduct(id);
+}
+
+/**
+ * Returns active related products in the same category.
+ */
+export async function getRelatedProducts(categoryId: string, excludeProductId: string, limit = 4) {
+  if (!categoryId) return [];
+  return repository.getRelatedProducts(categoryId, excludeProductId, limit);
 }

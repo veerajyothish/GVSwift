@@ -7,7 +7,11 @@ import type { Order, OrderItem, Address } from "@prisma/client";
 /** Result returned by createOrder() */
 export interface CheckoutResult {
   /** The newly created (or idempotently retrieved) order with its items */
-  order: Order & { items: OrderItem[] };
+  order: Order & {
+    items: (OrderItem & { product: { name: string } })[];
+    user: { email: string; name: string | null };
+    address: Address;
+  };
   /**
    * True when any risk entity for this order is HIGH level — the order
    * is created as PLACED but needs manual admin approval before CONFIRMED.

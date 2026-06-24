@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { MobileMenu } from "./MobileMenu";
 import { NavbarIconsAndSearch } from "./NavbarIconsAndSearch";
 import BannerBar from "./BannerBar";
+import SearchBar from "./SearchBar";
 
 export async function Navbar() {
   const session = await getServerSession();
@@ -76,6 +77,7 @@ export async function Navbar() {
               <Link href="/support" className="navbar-center-link">
                 SUPPORT
               </Link>
+              <SearchBar />
             </div>
             
             {/* Mobile Hamburger Drawer */}

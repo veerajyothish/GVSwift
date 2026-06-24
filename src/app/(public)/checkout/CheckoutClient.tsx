@@ -889,6 +889,34 @@ export default function CheckoutClient({
             </label>
           </div>
 
+          {/* Trust Badges */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "8px",
+            padding: "16px 0",
+            borderTop: "1px solid var(--color-border)",
+            borderBottom: "1px solid var(--color-border)",
+            margin: "16px 0 20px 0",
+            textAlign: "center",
+          }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "20px" }}>🛡️</span>
+              <span style={{ fontSize: "11px", fontWeight: "600", color: "var(--color-text-primary)" }}>Secure Checkout</span>
+              <span style={{ fontSize: "9px", color: "var(--color-text-secondary)" }}>100% Encrypted</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "20px" }}>🔄</span>
+              <span style={{ fontSize: "11px", fontWeight: "600", color: "var(--color-text-primary)" }}>Easy Returns</span>
+              <span style={{ fontSize: "9px", color: "var(--color-text-secondary)" }}>7-day Window</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+              <span style={{ fontSize: "20px" }}>🚚</span>
+              <span style={{ fontSize: "11px", fontWeight: "600", color: "var(--color-text-primary)" }}>Fast Delivery</span>
+              <span style={{ fontSize: "9px", color: "var(--color-text-secondary)" }}>3-5 Days COD</span>
+            </div>
+          </div>
+
           {/* Action CTA Button */}
           <Button
             variant="primary"
