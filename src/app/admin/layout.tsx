@@ -72,8 +72,8 @@ export default async function AdminLayout({
 
           {/* Right side: user info + sign out */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="site-navbar-link text-secondary text-13">
-              Back to Store
+            <Link href="/account/profile" className="site-navbar-link text-secondary text-13">
+              Profile
             </Link>
 
             {/* Admin user badge */}

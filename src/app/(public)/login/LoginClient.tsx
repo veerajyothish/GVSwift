@@ -48,6 +48,9 @@ export default function LoginClient() {
     setLoading(true);
 
     try {
+      const supabase = createSupabaseBrowserClient();
+      await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+
       const res = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -18,17 +18,14 @@ export function SignOutButton({ className, style, children }: SignOutButtonProps
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
-    if (loading) return;
     setLoading(true);
     try {
       const supabase = createSupabaseBrowserClient();
-      await supabase.auth.signOut();
-      window.location.href = "/login";
+      await supabase.auth.signOut({ scope: 'local' });
     } catch {
-      // Even on error, redirect to login
-      window.location.href = "/login";
+      // ignore errors — always redirect
     } finally {
-      setLoading(false);
+      window.location.href = '/login';
     }
   };
 

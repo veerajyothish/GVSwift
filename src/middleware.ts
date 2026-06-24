@@ -50,18 +50,30 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+  const isProtectedRoute = pathname.startsWith("/admin") || pathname.startsWith("/account") || pathname.startsWith("/checkout");
+  const isLoginPage = pathname === "/login";
+
+  // If no valid user, treat as logged out and clear stale cookies
+  if (!user) {
+    const sbCookies = request.cookies.getAll().filter(c => c.name.startsWith("sb-"));
+    if (sbCookies.length > 0) {
+      sbCookies.forEach(c => {
+        response.cookies.delete(c.name);
+      });
+    }
+
+    if (isProtectedRoute && !isLoginPage) {
+      const redirectResponse = NextResponse.redirect(new URL("/login", request.url));
+      sbCookies.forEach(c => {
+        redirectResponse.cookies.delete(c.name);
+      });
+      return redirectResponse;
+    }
+  }
 
   // 1. Admin landing redirect
   if (user && user.user_metadata?.role === "ADMIN" && pathname === "/") {
     return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  // 2. Protected routes enforcement
-  const isProtectedRoute = pathname.startsWith("/admin") || pathname.startsWith("/account") || pathname.startsWith("/checkout");
-  const isLoginPage = pathname === "/login";
-
-  if (isProtectedRoute && !user && !isLoginPage) {
-    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // ── 2. HTTPS redirect (production only) ───────────────────────────────
