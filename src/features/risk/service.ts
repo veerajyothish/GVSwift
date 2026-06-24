@@ -46,15 +46,15 @@ function resolveBehavior(
 ): RiskLookupResult {
   // No row exists
   if (riskLevel === null) {
-    // For PINCODE: absence means "not serviceable"
+    // For PINCODE: absence means "serviceable" by default (accept all by default)
     if (entityType === RiskEntityType.PINCODE) {
       return {
         found: false,
         riskLevel: null,
-        serviceable: false,
-        codAllowed: false,
+        serviceable: true,
+        codAllowed: true,
         requiresApproval: false,
-        description: "We don't currently ship to this pincode.",
+        description: "Serviceable by default.",
       };
     }
 

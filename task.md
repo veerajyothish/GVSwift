@@ -1,34 +1,10 @@
-# B12 — Task List
+# Bug Fixes Task List
 
-- [x] Part 1: Database Schema + Migration
-  - [x] Add relation fields to User model
-  - [x] Add 5 new models
-  - [x] Run npx prisma migrate dev --name add_loyalty
-- [x] Part 2: src/lib/loyalty.ts helper library
-- [x] Part 3: API Routes
-  - [x] GET/POST /api/v1/loyalty/me
-  - [x] POST /api/v1/loyalty/redeem
-  - [x] POST /api/v1/loyalty/ref-capture
-  - [x] GET/PATCH /api/v1/admin/loyalty/settings
-  - [x] GET /api/v1/admin/loyalty/users
-- [x] Part 4: Checkout Integration
-  - [x] validation.ts (add pointsToRedeem field)
-  - [x] service.ts (earn + redeem + referral bonus)
-- [x] Part 5: Signup Referral Capture
-  - [x] SignupClient.tsx (read ?ref= param, call ref-capture)
-  - [x] auth/service.ts (accept referralCode param)
-  - [x] signup route.ts (read gvs_ref cookie)
-  - [x] auth/callback/route.ts (read gvs_ref cookie for OAuth)
-- [x] Part 6: Customer Loyalty Page
-  - [x] /account/loyalty/page.tsx
-  - [x] /account/loyalty/LoyaltyPageClient.tsx
-  - [x] AccountSidebar.tsx (add Loyalty link)
-- [x] Part 7: Checkout Redeem UI
-  - [x] checkout/page.tsx (pass loyalty data as props)
-  - [x] CheckoutClient.tsx (points toggle UI)
-- [x] Part 8: Admin Loyalty Settings Page
-  - [x] /admin/loyalty/page.tsx
-  - [x] /admin/loyalty/AdminLoyaltyClient.tsx
-  - [x] admin/layout.tsx (add Loyalty nav link)
-- [x] npm run build — 0 errors
-- [x] git commit + push
+- [x] Bug Fix 1: Sign out redirection
+  - [x] Update `SignOutButton.tsx` to use `window.location.href = '/login'`
+  - [x] Double-check `middleware.ts` for `getUser` usage
+- [x] Bug Fix 2: Shipping pincode rejection
+  - [x] Update `resolveBehavior` in `src/features/risk/service.ts` to make missing pincodes serviceable and COD eligible by default
+  - [x] Modify `CheckoutClient.tsx` to add "Back to Address Input" button for non-serviceable addresses and pincode-related server errors
+- [x] Run `npm run build` to verify 0 errors
+- [ ] Commit and push changes

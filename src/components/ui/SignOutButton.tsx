@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 interface SignOutButtonProps {
   className?: string;
@@ -17,7 +16,6 @@ interface SignOutButtonProps {
  */
 export function SignOutButton({ className, style, children }: SignOutButtonProps) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSignOut = async () => {
     if (loading) return;
@@ -25,11 +23,10 @@ export function SignOutButton({ className, style, children }: SignOutButtonProps
     try {
       const supabase = createSupabaseBrowserClient();
       await supabase.auth.signOut();
-      router.push("/login");
-      router.refresh();
+      window.location.href = "/login";
     } catch {
       // Even on error, redirect to login
-      router.push("/login");
+      window.location.href = "/login";
     } finally {
       setLoading(false);
     }

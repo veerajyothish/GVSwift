@@ -445,8 +445,29 @@ export default function CheckoutClient({
 
                       {/* Serviceability Warnings */}
                       {!addr.isServiceable && (
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-error)", fontSize: "12px", fontWeight: 600, marginTop: "12px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", color: "var(--color-error)", fontSize: "12px", fontWeight: 600, marginTop: "12px" }}>
                           <span>❌ This pincode is not serviceable. Please select a different address.</span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFormData({
+                                fullName: addr.fullName,
+                                phone: addr.phone,
+                                pincode: addr.pincode,
+                                line1: addr.line1,
+                                line2: addr.line2 ?? "",
+                                city: addr.city,
+                                state: addr.state,
+                                isDefault: addr.isDefault,
+                              });
+                              setFieldErrors({});
+                              setIsModalOpen(true);
+                            }}
+                            className="btn btn-secondary"
+                            style={{ alignSelf: "flex-start", padding: "4px 8px", fontSize: "11px", marginTop: "2px" }}
+                          >
+                            ← Back to Address Input
+                          </button>
                         </div>
                       )}
                       {addr.isServiceable && addr.isCodBlocked && (
@@ -657,8 +678,30 @@ export default function CheckoutClient({
 
           {/* Error / Warning Alert Banners */}
           {serverError && (
-            <div style={{ backgroundColor: "var(--color-error-bg)", border: "1px solid var(--color-error)", borderRadius: "var(--radius-md)", padding: "12px", fontSize: "13px", color: "var(--color-error)", fontWeight: 500 }}>
-              {serverError}
+            <div style={{ backgroundColor: "var(--color-error-bg)", border: "1px solid var(--color-error)", borderRadius: "var(--radius-md)", padding: "12px", fontSize: "13px", color: "var(--color-error)", fontWeight: 500, display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div>{serverError}</div>
+              {(serverError.toLowerCase().includes("pincode") || serverError.toLowerCase().includes("serviceable")) && selectedAddress && (
+                <button
+                  onClick={() => {
+                    setFormData({
+                      fullName: selectedAddress.fullName,
+                      phone: selectedAddress.phone,
+                      pincode: selectedAddress.pincode,
+                      line1: selectedAddress.line1,
+                      line2: selectedAddress.line2 ?? "",
+                      city: selectedAddress.city,
+                      state: selectedAddress.state,
+                      isDefault: selectedAddress.isDefault,
+                    });
+                    setFieldErrors({});
+                    setIsModalOpen(true);
+                  }}
+                  className="btn btn-secondary"
+                  style={{ alignSelf: "flex-start", padding: "4px 8px", fontSize: "12px" }}
+                >
+                  ← Back to Address Input
+                </button>
+              )}
             </div>
           )}
 
@@ -675,8 +718,28 @@ export default function CheckoutClient({
           )}
 
           {selectedAddress && !selectedAddress.isServiceable && (
-            <div style={{ backgroundColor: "var(--color-error-bg)", border: "1px solid var(--color-error)", borderRadius: "var(--radius-md)", padding: "12px", fontSize: "13px", color: "var(--color-error)", fontWeight: 500 }}>
-              ❌ The selected address is not serviceable.
+            <div style={{ backgroundColor: "var(--color-error-bg)", border: "1px solid var(--color-error)", borderRadius: "var(--radius-md)", padding: "12px", fontSize: "13px", color: "var(--color-error)", fontWeight: 500, display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div>❌ The selected address is not serviceable.</div>
+              <button
+                onClick={() => {
+                  setFormData({
+                    fullName: selectedAddress.fullName,
+                    phone: selectedAddress.phone,
+                    pincode: selectedAddress.pincode,
+                    line1: selectedAddress.line1,
+                    line2: selectedAddress.line2 ?? "",
+                    city: selectedAddress.city,
+                    state: selectedAddress.state,
+                    isDefault: selectedAddress.isDefault,
+                  });
+                  setFieldErrors({});
+                  setIsModalOpen(true);
+                }}
+                className="btn btn-secondary"
+                style={{ alignSelf: "flex-start", padding: "4px 8px", fontSize: "12px" }}
+              >
+                ← Back to Address Input
+              </button>
             </div>
           )}
 
