@@ -88,6 +88,7 @@ model User {
   phone      String?    @unique
   role       Role       @default(USER)
   riskStatus RiskStatus @default(NORMAL)
+  blocked    Boolean    @default(false)
 
   addresses          Address[]
   carts              Cart[]
@@ -106,7 +107,7 @@ model User {
 
 model Address {
   id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String @db.Uuid
+  userId String
   user   User   @relation(fields: [userId], references: [id])
 
   fullName  String
@@ -153,7 +154,7 @@ model Product {
   basePricePaise Int
   isActive       Boolean @default(true)
 
-  categoryId String? @db.Uuid
+  categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   variants   ProductVariant[]
@@ -170,7 +171,7 @@ model Product {
 
 model ProductVariant {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String  @db.Uuid
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   sku             String @unique
@@ -188,7 +189,7 @@ model ProductVariant {
 
 model ProductImage {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String  @db.Uuid
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   url       String
@@ -204,7 +205,7 @@ model ProductImage {
 
 model Cart {
   id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String? @db.Uuid
+  userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
   items CartItem[]
@@ -217,13 +218,13 @@ model Cart {
 
 model CartItem {
   id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cartId String @db.Uuid
+  cartId String
   cart   Cart   @relation(fields: [cartId], references: [id])
 
-  productId String  @db.Uuid
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
-  variantId String? @db.Uuid
+  variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   quantity Int
@@ -238,10 +239,10 @@ model CartItem {
 
 model Order {
   id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String @db.Uuid
+  userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  addressId String @db.Uuid
+  addressId String
   address   Address @relation(fields: [addressId], references: [id], onDelete: Restrict) // CONFIRMED Phase 4
 
   status        OrderStatus   @default(PLACED)
@@ -276,13 +277,13 @@ model Order {
 
 model OrderItem {
   id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId String @db.Uuid
+  orderId String
   order   Order  @relation(fields: [orderId], references: [id])
 
-  productId String  @db.Uuid
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
-  variantId String? @db.Uuid
+  variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   quantity       Int
@@ -299,13 +300,13 @@ model OrderItem {
 
 model OrderStatusHistory {
   id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId String @db.Uuid
+  orderId String
   order   Order  @relation(fields: [orderId], references: [id])
 
   fromStatus  OrderStatus?
   toStatus    OrderStatus
   reason      String?
-  changedById String? @db.Uuid // null = system-triggered (e.g. auto-cancel on out-of-stock)
+  changedById String? // null = system-triggered (e.g. auto-cancel on out-of-stock)
   changedBy   User?   @relation("OrderStatusHistoryChangedBy", fields: [changedById], references: [id])
 
   createdAt DateTime @default(now())
@@ -316,10 +317,10 @@ model OrderStatusHistory {
 
 model SupportTicket {
   id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String? @db.Uuid
+  userId String?
   user   User?   @relation(fields: [userId], references: [id])
 
-  orderId String? @db.Uuid
+  orderId String?
   order   Order?  @relation(fields: [orderId], references: [id])
 
   subject     String
@@ -338,10 +339,10 @@ model SupportTicket {
 
 model TicketMessage {
   id       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ticketId String        @db.Uuid
+  ticketId String
   ticket   SupportTicket @relation(fields: [ticketId], references: [id])
 
-  authorId String?       @db.Uuid
+  authorId String?
   author   User?   @relation("TicketMessageAuthor", fields: [authorId], references: [id])
 
   message    String
@@ -355,10 +356,10 @@ model TicketMessage {
 
 model AuditLog {
   id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  actorId String? @db.Uuid
+  actorId String?
   actor   User?   @relation("AuditLogActor", fields: [actorId], references: [id])
 
-  orderId String? @db.Uuid
+  orderId String?
   order   Order?  @relation(fields: [orderId], references: [id])
 
   action  String // e.g. "ORDER_STATUS_CHANGE", "PRODUCT_UPDATED", "RISK_FLAG_SET"
