@@ -19,6 +19,7 @@ import { getCodLimitPaise } from "@/features/settings/service";
 import { Navbar } from "@/components/ui/Navbar";
 import CheckoutClient from "./CheckoutClient";
 import { Metadata } from "next";
+import { getOrCreateLoyaltyAccount, getLoyaltySettings } from "@/lib/loyalty";
 
 import { getServerSession } from "@/lib/auth/session";
 import { VerificationBanner } from "@/components/ui/VerificationBanner";
@@ -156,6 +157,13 @@ export default async function CheckoutPage() {
   // Get the current COD limit
   const codLimitPaise = await getCodLimitPaise();
 
+  // B12: Fetch loyalty balance and settings for the redeem toggle
+  const [loyaltyAccount, loyaltySettings] = await Promise.all([
+    getOrCreateLoyaltyAccount(user.id),
+    getLoyaltySettings(),
+  ]);
+  const loyaltyBalance = loyaltyAccount.balance;
+
   return (
     <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
       <Navbar />
@@ -174,6 +182,8 @@ export default async function CheckoutPage() {
           initialCart={cart}
           initialAddresses={addressesWithRisk}
           codLimitPaise={codLimitPaise}
+          loyaltyBalance={loyaltyBalance}
+          loyaltySettings={{ rupeesPer100Points: loyaltySettings.rupeesPer100Points }}
         />
       </main>
     </div>

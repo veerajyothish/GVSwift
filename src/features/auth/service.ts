@@ -20,7 +20,7 @@ export const LoginSchema = z.object({
 export type SignupInput = z.infer<typeof SignupSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 
-export async function signupUser(input: SignupInput) {
+export async function signupUser(input: SignupInput, referralCode?: string) {
   const parsed = SignupSchema.safeParse(input);
   if (!parsed.success) {
     throw new AppError(
@@ -73,6 +73,32 @@ export async function signupUser(input: SignupInput) {
 
   if (loginError) {
     logger.warn("Auto-login after signup failed", { code: loginError.code, message: loginError.message });
+  }
+
+  // B12: Link referral if a valid code was provided
+  if (referralCode && prismaUser) {
+    try {
+      const refCodeRow = await prisma.referralCode.findUnique({
+        where: { code: referralCode.toUpperCase() },
+      });
+      if (refCodeRow && refCodeRow.userId !== prismaUser.id) {
+        // Only create if not already referred (unique constraint on referredUserId)
+        const existing = await prisma.referralUse.findUnique({
+          where: { referredUserId: prismaUser.id },
+        });
+        if (!existing) {
+          await prisma.referralUse.create({
+            data: {
+              referralCodeId: refCodeRow.id,
+              referredUserId: prismaUser.id,
+              pointsAwarded: 0,
+            },
+          });
+        }
+      }
+    } catch (refErr) {
+      logger.warn("Failed to record referral during signup", { referralCode, error: refErr });
+    }
   }
 
   return prismaUser;

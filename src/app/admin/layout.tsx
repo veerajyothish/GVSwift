@@ -61,6 +61,9 @@ export default async function AdminLayout({
               <Link href="/admin/banners" className="site-navbar-link">
                 Banners
               </Link>
+              <Link href="/admin/loyalty" className="site-navbar-link">
+                Loyalty
+              </Link>
               <Link href="/admin/settings" className="site-navbar-link">
                 Settings
               </Link>

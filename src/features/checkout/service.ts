@@ -40,6 +40,11 @@ import {
 import { getCodLimitPaise } from "@/features/settings/service";
 import { sendOrderPlacedEmail } from "@/features/notifications/service";
 import { RiskEntityType, RiskLevel, PaymentMethod } from "@prisma/client";
+import {
+  getOrCreateLoyaltyAccount,
+  awardPoints,
+  getLoyaltySettings,
+} from "@/lib/loyalty";
 
 /* ── helpers ──────────────────────────────────────────────────────────── */
 
@@ -78,7 +83,7 @@ export async function createOrder(
       400
     );
   }
-  const { cartId, addressId, idempotencyKey, paymentMethod, couponCode } = parsed.data;
+  const { cartId, addressId, idempotencyKey, paymentMethod, couponCode, pointsToRedeem } = parsed.data;
 
   // ── 2. Idempotency check ───────────────────────────────────────────────
   // If this key was already used, return the original order immediately.
@@ -245,7 +250,27 @@ export async function createOrder(
   // Shipping and COD fee are ₹0 at MVP
   const shippingPaise = 0;
   const codFeePaise = 0;
-  const totalPaise = Math.max(0, subtotalPaise - discountPaise) + shippingPaise + codFeePaise;
+
+  // ── B12: Points redemption validation ─────────────────────────────────
+  let loyaltySettings = null;
+  let pointsDiscountPaise = 0;
+  const redeemPoints = pointsToRedeem ?? 0;
+
+  if (redeemPoints > 0) {
+    loyaltySettings = await getLoyaltySettings();
+    const account = await getOrCreateLoyaltyAccount(userId);
+    if (account.balance < redeemPoints) {
+      throw new AppError(
+        "VALIDATION_ERROR",
+        `Insufficient points. You have ${account.balance} points but tried to redeem ${redeemPoints}.`,
+        400
+      );
+    }
+    // Calculate discount: rupeesPer100Points per 100 points
+    pointsDiscountPaise = Math.floor((redeemPoints / 100) * loyaltySettings.rupeesPer100Points * 100);
+  }
+
+  const totalPaise = Math.max(0, subtotalPaise - discountPaise - pointsDiscountPaise) + shippingPaise + codFeePaise;
 
   const codLimit = await getCodLimitPaise();
   if (totalPaise > codLimit) {
@@ -378,6 +403,23 @@ export async function createOrder(
         },
       });
 
+      // ── B12: Deduct redeemed points inside transaction ─────────────────
+      if (redeemPoints > 0) {
+        const account = await getOrCreateLoyaltyAccount(userId);
+        await tx.pointsLedger.create({
+          data: {
+            loyaltyAccountId: account.id,
+            delta: -redeemPoints,
+            reason: `Redeemed at checkout — Order #${newOrder.id.slice(-8).toUpperCase()}`,
+            orderId: newOrder.id,
+          },
+        });
+        await tx.loyaltyAccount.update({
+          where: { id: account.id },
+          data: { balance: { increment: -redeemPoints } },
+        });
+      }
+
       return newOrder.id;
     });
   } catch (err) {
@@ -455,6 +497,48 @@ export async function createOrder(
   });
 
   sendOrderPlacedEmail(finalOrder);
+
+  // ── B12: Award purchase points (best-effort, post-transaction) ────────
+  try {
+    if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
+    // Points earned on the amount actually paid (post all discounts)
+    const amountPaidRupees = Math.floor(totalPaise / 100);
+    const pointsEarned = amountPaidRupees * loyaltySettings.pointsPerRupee;
+    if (pointsEarned > 0) {
+      await awardPoints(
+        userId,
+        pointsEarned,
+        `Purchase — Order #${orderId.slice(-8).toUpperCase()}`,
+        orderId
+      );
+    }
+  } catch (err) {
+    console.error("[Checkout] Failed to award purchase points:", err);
+  }
+
+  // ── B12: Award referral bonus to referrer on first order ──────────────
+  try {
+    const referralUse = await prisma.referralUse.findUnique({
+      where: { referredUserId: userId },
+      include: { referralCode: { select: { userId: true } } },
+    });
+    if (referralUse && referralUse.pointsAwarded === 0) {
+      const referrerId = referralUse.referralCode.userId;
+      if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
+      await awardPoints(
+        referrerId,
+        loyaltySettings.referralBonus,
+        `Referral bonus — friend placed their first order`,
+        orderId
+      );
+      await prisma.referralUse.update({
+        where: { id: referralUse.id },
+        data: { pointsAwarded: loyaltySettings.referralBonus },
+      });
+    }
+  } catch (err) {
+    console.error("[Checkout] Failed to award referral bonus:", err);
+  }
 
   return {
     order: finalOrder,

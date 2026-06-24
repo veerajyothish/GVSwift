@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -16,15 +16,32 @@ export default function SignupClient() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // B12: Capture referral code from ?ref= URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      fetch("/api/v1/loyalty/ref-capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: ref }),
+      }).catch(() => {}); // best-effort, never block signup
+    }
+  }, []);
+
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     setError(null);
     try {
       const supabase = createSupabaseBrowserClient();
+      // Preserve ?ref= param in the callback URL so OAuth flow captures referral
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      const callbackUrl = window.location.origin + "/auth/callback" + (ref ? `?ref=${ref}` : "");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin + "/auth/callback",
+          redirectTo: callbackUrl,
         },
       });
       if (error) {

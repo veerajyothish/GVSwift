@@ -31,6 +31,9 @@ export const CheckoutInputSchema = z.object({
 
   /** Optional coupon code applied */
   couponCode: z.string().max(100).optional(),
+
+  /** Optional points to redeem at checkout (B12: Loyalty) */
+  pointsToRedeem: z.number().int().min(0).optional().default(0),
 });
 
 export type CheckoutInputRaw = z.input<typeof CheckoutInputSchema>;

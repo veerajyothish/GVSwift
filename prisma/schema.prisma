@@ -105,6 +105,9 @@ model User {
   orderStatusChanges OrderStatusHistory[] @relation("OrderStatusHistoryChangedBy")
   wishlistItems      WishlistItem[]
   reviews            ProductReview[]
+  referralCode       ReferralCode?
+  referredBy         ReferralUse?    @relation("ReferredBy")
+  loyaltyAccount     LoyaltyAccount?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -473,3 +476,62 @@ model Banner {
   updatedAt DateTime   @updatedAt
 }
 
+/// B12: Referral & Loyalty
+
+model ReferralCode {
+  id        String        @id @default(cuid())
+  code      String        @unique
+  userId    String        @unique @db.Uuid
+  user      User          @relation(fields: [userId], references: [id])
+  usedBy    ReferralUse[]
+  createdAt DateTime      @default(now())
+
+  @@index([userId])
+}
+
+model ReferralUse {
+  id             String       @id @default(cuid())
+  referralCodeId String
+  referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id])
+  referredUserId String       @unique @db.Uuid
+  referredUser   User         @relation("ReferredBy", fields: [referredUserId], references: [id])
+  pointsAwarded  Int          @default(0)
+  createdAt      DateTime     @default(now())
+
+  @@index([referralCodeId])
+  @@index([referredUserId])
+}
+
+model LoyaltyAccount {
+  id        String         @id @default(cuid())
+  userId    String         @unique @db.Uuid
+  user      User           @relation(fields: [userId], references: [id])
+  balance   Int            @default(0)
+  ledger    PointsLedger[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([userId])
+}
+
+model PointsLedger {
+  id               String         @id @default(cuid())
+  loyaltyAccountId String
+  loyaltyAccount   LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id])
+  delta            Int
+  reason           String
+  orderId          String?        @db.Uuid
+  createdAt        DateTime       @default(now())
+
+  @@index([loyaltyAccountId])
+  @@index([orderId])
+}
+
+model LoyaltySettings {
+  id                 String   @id @default(cuid())
+  pointsPerRupee     Int      @default(1)
+  rupeesPer100Points Int      @default(10)
+  referralBonus      Int      @default(500)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

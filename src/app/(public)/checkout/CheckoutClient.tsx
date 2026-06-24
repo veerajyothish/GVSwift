@@ -56,6 +56,8 @@ interface CheckoutClientProps {
   initialCart: Cart;
   initialAddresses: Address[];
   codLimitPaise: number;
+  loyaltyBalance: number;
+  loyaltySettings: { rupeesPer100Points: number };
 }
 
 const defaultFormData = {
@@ -80,6 +82,8 @@ export default function CheckoutClient({
   initialCart,
   initialAddresses,
   codLimitPaise,
+  loyaltyBalance,
+  loyaltySettings,
 }: CheckoutClientProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -106,6 +110,12 @@ export default function CheckoutClient({
   
   // Stable idempotency key per checkout session
   const [idempotencyKey] = useState(() => generateIdempotencyKey());
+
+  // B12: Loyalty points redemption toggle
+  const [usePoints, setUsePoints] = useState(false);
+  const pointsDiscountPaise = usePoints
+    ? Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100)
+    : 0;
 
   // Keep addresses in sync with page props (router.refresh() updates this)
   useEffect(() => {
@@ -146,7 +156,7 @@ export default function CheckoutClient({
   const shippingPaise = 0;
   const codFeePaise = 0;
   const discountPaise = appliedCoupon?.discountPaise ?? 0;
-  const totalPaise = Math.max(0, subtotalPaise + shippingPaise + codFeePaise - discountPaise);
+  const totalPaise = Math.max(0, subtotalPaise + shippingPaise + codFeePaise - discountPaise - pointsDiscountPaise);
 
   const handleApplyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
@@ -310,6 +320,7 @@ export default function CheckoutClient({
           idempotencyKey,
           paymentMethod: "COD",
           couponCode: appliedCoupon?.code ?? null,
+          pointsToRedeem: usePoints ? loyaltyBalance : 0,
         }),
       });
 
@@ -542,6 +553,14 @@ export default function CheckoutClient({
                 <span style={{ color: "var(--color-success)", fontWeight: 600 }}>−{formatRupees(appliedCoupon.discountPaise)}</span>
               </div>
             )}
+            {usePoints && pointsDiscountPaise > 0 && (
+              <div className="cart-summary-row">
+                <span style={{ color: "var(--color-success)", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  ⭐ {loyaltyBalance} pts used
+                </span>
+                <span style={{ color: "var(--color-success)", fontWeight: 600 }}>−{formatRupees(pointsDiscountPaise)}</span>
+              </div>
+            )}
           </div>
 
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
@@ -579,6 +598,61 @@ export default function CheckoutClient({
           )}
           {couponError && (
             <div style={{ fontSize: "12px", color: "var(--color-error)", fontWeight: 500 }}>{couponError}</div>
+          )}
+
+          {/* B12: Loyalty Points Toggle */}
+          {loyaltyBalance > 0 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "12px",
+                padding: "10px 12px",
+                borderRadius: "var(--radius-sm)",
+                background: usePoints
+                  ? "color-mix(in oklch, var(--color-success) 10%, var(--color-surface))"
+                  : "color-mix(in oklch, var(--color-primary) 5%, var(--color-surface))",
+                border: `1px solid ${usePoints ? "var(--color-success)" : "var(--color-border)"}`,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onClick={() => setUsePoints((v) => !v)}
+            >
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-primary)" }}>
+                  ⭐ Use {loyaltyBalance.toLocaleString("en-IN")} Points
+                </div>
+                <div style={{ fontSize: "11px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                  Save {formatRupees(Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100))}
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "36px",
+                  height: "20px",
+                  borderRadius: "10px",
+                  background: usePoints ? "var(--color-success)" : "var(--color-border)",
+                  position: "relative",
+                  transition: "background 0.2s",
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "2px",
+                    left: usePoints ? "18px" : "2px",
+                    width: "16px",
+                    height: "16px",
+                    borderRadius: "50%",
+                    background: "#fff",
+                    transition: "left 0.2s",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           {/* Error / Warning Alert Banners */}
