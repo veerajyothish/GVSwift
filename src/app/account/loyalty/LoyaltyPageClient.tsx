@@ -65,13 +65,13 @@ export default function LoyaltyPageClient({
         <p style={{ fontSize: "13px", opacity: 0.8, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
           Your Points Balance
         </p>
-        <p style={{ fontSize: "56px", fontWeight: 800, lineHeight: 1, fontFamily: "var(--font-heading)", margin: "8px 0" }}>
+        <p style={{ fontSize: "56px", fontWeight: 800, lineHeight: 1, fontFamily: "var(--font-heading)", margin: "8px 0", fontVariantNumeric: "tabular-nums" }}>
           {balance.toLocaleString("en-IN")}
         </p>
         <p style={{ fontSize: "14px", opacity: 0.85, marginTop: "6px" }}>
           pts
           {balance > 0 && (
-            <span style={{ marginLeft: "12px", fontWeight: 600 }}>
+            <span style={{ marginLeft: "12px", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
               ≈ ₹{discountValue} off at checkout
             </span>
           )}
@@ -197,6 +197,7 @@ export default function LoyaltyPageClient({
                     color: entry.delta > 0 ? "var(--color-success)" : "var(--color-error)",
                     textAlign: "right",
                     fontFamily: "var(--font-heading)",
+                    fontVariantNumeric: "tabular-nums",
                   }}
                 >
                   {entry.delta > 0 ? "+" : ""}{entry.delta.toLocaleString("en-IN")} pts

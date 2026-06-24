@@ -273,7 +273,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
           <div className="cart-summary-rows">
             <div className="cart-summary-row">
               <span className="footer-text-muted">Subtotal</span>
-              <span style={{ color: "var(--color-text-primary)", fontWeight: 500 }}>{formatRupees(subtotal)}</span>
+              <span style={{ color: "var(--color-text-primary)", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotal)}</span>
             </div>
             <div className="cart-summary-row">
               <span className="footer-text-muted">Shipping</span>
@@ -289,7 +289,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
 
           <div className="cart-summary-total-row">
             <span style={{ fontSize: "16px", fontWeight: 600 }}>Total</span>
-            <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)" }}>{formatRupees(subtotal)}</span>
+            <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)", fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotal)}</span>
           </div>
 
           <Link href="/checkout" style={{ display: "block", marginTop: "8px" }}>
