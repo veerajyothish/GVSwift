@@ -7,4 +7,4 @@
   - [x] Update `resolveBehavior` in `src/features/risk/service.ts` to make missing pincodes serviceable and COD eligible by default
   - [x] Modify `CheckoutClient.tsx` to add "Back to Address Input" button for non-serviceable addresses and pincode-related server errors
 - [x] Run `npm run build` to verify 0 errors
-- [ ] Commit and push changes
+- [x] Commit and push changes
