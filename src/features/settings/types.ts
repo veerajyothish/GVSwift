@@ -47,6 +47,9 @@ export interface SettingsMap {
    * that flags the user/entity for manual review.
    */
   cancellation_risk_threshold: number;
+
+  /** Stock quantity below which a product variant is considered low stock. Default: 10 */
+  low_stock_threshold: number;
 }
 
 /** All valid setting keys */
@@ -70,6 +73,7 @@ export const SETTINGS_DEFAULTS: Readonly<SettingsMap> = {
   failed_delivery_watchlist_threshold: 1,            // 1 failure in 90 days → MEDIUM/WATCHLIST
   failed_delivery_high_risk_threshold: 2,            // 2 failures in 90 days → HIGH/HIGH_RISK
   cancellation_risk_threshold: 3,                    // 3 post-CONFIRMED cancellations in 30 days
+  low_stock_threshold: 10,                           // Units below which a variant is low stock
 };
 
 /* ── Metadata for admin UI (TICKET-602) ───────────────────────────────── */
@@ -122,6 +126,12 @@ export const SETTINGS_META: readonly SettingMeta[] = [
     key: "cancellation_risk_threshold",
     label: "Cancellation Risk Threshold",
     description: "Post-CONFIRMED cancellations in 30 days before flagging for review",
+    type: "number",
+  },
+  {
+    key: "low_stock_threshold",
+    label: "Low Stock Threshold",
+    description: "Product variants with stock below this number are flagged as low stock. Default: 10.",
     type: "number",
   },
 ] as const;

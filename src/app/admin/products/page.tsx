@@ -2,12 +2,14 @@ import React from "react";
 import Link from "next/link";
 import { listProducts, listCategories } from "@/features/catalog/repository";
 import ProductListTable from "./components/ProductListTable";
+import { getLowStockThreshold } from "@/features/settings/service";
 
 interface PageProps {
   searchParams: Promise<{
     page?: string;
     search?: string;
     categoryId?: string;
+    filter?: string;
   }>;
 }
 
@@ -16,6 +18,10 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
   const page = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
   const search = resolvedParams.search || undefined;
   const categoryId = resolvedParams.categoryId || undefined;
+  const filterLowStock = resolvedParams.filter === "lowstock";
+
+  // Fetch threshold from settings (falls back to 10 if not set)
+  const lowStockThreshold = await getLowStockThreshold();
 
   // Fetch paginated products (including inactive) and all categories
   const [productsResult, categories] = await Promise.all([
@@ -25,6 +31,8 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
       search,
       categoryId,
       includeInactive: true, // admin sees both active and inactive
+      lowStockOnly: filterLowStock,
+      lowStockThreshold,
     }),
     listCategories(),
   ]);
@@ -57,6 +65,8 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
         categories={categories}
         totalPages={productsResult.totalPages}
         currentPage={productsResult.page}
+        lowStockThreshold={lowStockThreshold}
+        isLowStockFilter={filterLowStock}
       />
     </div>
   );

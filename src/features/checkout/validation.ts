@@ -28,6 +28,9 @@ export const CheckoutInputSchema = z.object({
   paymentMethod: z.literal("COD").refine((v) => v === "COD", {
     message: "Only COD (Cash on Delivery) is supported at this time.",
   }),
+
+  /** Optional coupon code applied */
+  couponCode: z.string().max(100).optional(),
 });
 
 export type CheckoutInputRaw = z.input<typeof CheckoutInputSchema>;

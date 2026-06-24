@@ -135,6 +135,11 @@ export async function getCancellationRiskThreshold(): Promise<number> {
   return getSetting("cancellation_risk_threshold");
 }
 
+/** Stock quantity below which a product variant is flagged as low stock. Default: 10 */
+export async function getLowStockThreshold(): Promise<number> {
+  return getSetting("low_stock_threshold");
+}
+
 /* ── Validated setter (used by admin settings UI — TICKET-602) ────────── */
 
 /**

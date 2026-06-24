@@ -16,6 +16,7 @@ export async function listProducts(
   const page = Math.max(1, params.page ?? 1);
   const limit = Math.max(1, Math.min(100, params.limit ?? 20)); // Cap limit at 100
   const skip = (page - 1) * limit;
+  const threshold = params.lowStockThreshold ?? 10;
 
   const where: Prisma.ProductWhereInput = {};
 
@@ -35,6 +36,11 @@ export async function listProducts(
       { name: { contains: params.search, mode: "insensitive" } },
       { description: { contains: params.search, mode: "insensitive" } },
     ];
+  }
+
+  // Low stock filter: at least one variant below threshold
+  if (params.lowStockOnly) {
+    where.variants = { some: { stock: { lt: threshold } } };
   }
 
   // Run count and query in parallel

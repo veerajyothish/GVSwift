@@ -33,6 +33,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [cancellationRiskThreshold, setCancellationRiskThreshold] = useState<number>(
     initialSettings.cancellation_risk_threshold
   );
+  const [lowStockThreshold, setLowStockThreshold] = useState<number>(
+    initialSettings.low_stock_threshold
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +61,9 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
       if (cancellationRiskThreshold < 1 || !Number.isInteger(cancellationRiskThreshold)) {
         throw new Error("Cancellation risk threshold must be at least 1");
       }
+      if (lowStockThreshold < 1 || !Number.isInteger(lowStockThreshold)) {
+        throw new Error("Low stock threshold must be at least 1");
+      }
 
       const res = await fetch("/api/v1/admin/settings", {
         method: "PUT",
@@ -71,6 +77,7 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
             failed_delivery_watchlist_threshold: failedDeliveryWatchlistThreshold,
             failed_delivery_high_risk_threshold: failedDeliveryHighRiskThreshold,
             cancellation_risk_threshold: cancellationRiskThreshold,
+            low_stock_threshold: lowStockThreshold,
           },
         }),
       });
@@ -264,6 +271,28 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
               className="input-field"
               value={cancellationRiskThreshold}
               onChange={(e) => setCancellationRiskThreshold(parseInt(e.target.value) || 0)}
+              min="1"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="admin-divider-mute" />
+
+        {/* Low Stock Threshold */}
+        <div className="admin-settings-row">
+          <div>
+            <label className="admin-settings-label">Low Stock Threshold</label>
+            <span className="admin-settings-help">
+              Product variants with stock below this number are flagged as low stock on the dashboard and products page. Recommended: 10.
+            </span>
+          </div>
+          <div className="input-group margin-0">
+            <input
+              type="number"
+              className="input-field"
+              value={lowStockThreshold}
+              onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 1)}
               min="1"
               required
             />

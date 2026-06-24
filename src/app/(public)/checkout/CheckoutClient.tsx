@@ -94,6 +94,15 @@ export default function CheckoutClient({
   const [isTcChecked, setIsTcChecked] = useState(false);
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountPaise: number;
+  } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
   
   // Stable idempotency key per checkout session
   const [idempotencyKey] = useState(() => generateIdempotencyKey());
@@ -136,7 +145,41 @@ export default function CheckoutClient({
   const subtotalPaise = getSubtotal();
   const shippingPaise = 0;
   const codFeePaise = 0;
-  const totalPaise = subtotalPaise + shippingPaise + codFeePaise;
+  const discountPaise = appliedCoupon?.discountPaise ?? 0;
+  const totalPaise = Math.max(0, subtotalPaise + shippingPaise + codFeePaise - discountPaise);
+
+  const handleApplyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) { setCouponError("Please enter a coupon code."); return; }
+    setCouponLoading(true);
+    setCouponError(null);
+    try {
+      const res = await fetch("/api/v1/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, cartTotalPaise: subtotalPaise }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCouponError(data.error ?? "Invalid coupon code.");
+        setAppliedCoupon(null);
+        return;
+      }
+      setAppliedCoupon({ code: data.code, discountPaise: data.discountPaise });
+      setCouponError(null);
+      setCouponInput("");
+    } catch {
+      setCouponError("Network error. Please try again.");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleClearCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError(null);
+    setCouponInput("");
+  };
 
   const isOverCodLimit = totalPaise > codLimitPaise;
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
@@ -266,6 +309,7 @@ export default function CheckoutClient({
           addressId: selectedAddressId,
           idempotencyKey,
           paymentMethod: "COD",
+          couponCode: appliedCoupon?.code ?? null,
         }),
       });
 
@@ -489,6 +533,15 @@ export default function CheckoutClient({
               <span className="footer-text-muted">COD Fee</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
+            {appliedCoupon && (
+              <div className="cart-summary-row">
+                <span style={{ color: "var(--color-success)", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  🎟️ {appliedCoupon.code}
+                  <button onClick={handleClearCoupon} style={{ background: "none", border: "none", cursor: "pointer", fontSize: "11px", color: "var(--color-text-secondary)", textDecoration: "underline" }}>Remove</button>
+                </span>
+                <span style={{ color: "var(--color-success)", fontWeight: 600 }}>−{formatRupees(appliedCoupon.discountPaise)}</span>
+              </div>
+            )}
           </div>
 
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
@@ -497,6 +550,36 @@ export default function CheckoutClient({
             <span style={{ fontSize: "16px", fontWeight: 600 }}>Total</span>
             <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)" }}>{formatRupees(totalPaise)}</span>
           </div>
+
+          {/* Coupon Input */}
+          {!appliedCoupon && (
+            <div style={{ display: "flex", gap: "8px" }}>
+              <input
+                id="coupon-code-input"
+                type="text"
+                className="input-field"
+                style={{ flex: 1, fontSize: "13px" }}
+                placeholder="Coupon code"
+                value={couponInput}
+                onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(null); }}
+                onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                disabled={couponLoading}
+              />
+              <button
+                type="button"
+                id="apply-coupon-btn"
+                onClick={handleApplyCoupon}
+                disabled={couponLoading || !couponInput.trim()}
+                className="btn btn-secondary"
+                style={{ fontSize: "13px", padding: "8px 14px", flexShrink: 0 }}
+              >
+                {couponLoading ? "…" : "Apply"}
+              </button>
+            </div>
+          )}
+          {couponError && (
+            <div style={{ fontSize: "12px", color: "var(--color-error)", fontWeight: 500 }}>{couponError}</div>
+          )}
 
           {/* Error / Warning Alert Banners */}
           {serverError && (

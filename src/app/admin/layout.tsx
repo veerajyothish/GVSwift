@@ -30,6 +30,12 @@ export default async function AdminLayout({
               <Link href="/admin/customers" className="site-navbar-link">
                 Customers
               </Link>
+              <Link href="/admin/categories" className="site-navbar-link">
+                Categories
+              </Link>
+              <Link href="/admin/coupons" className="site-navbar-link">
+                Coupons
+              </Link>
               <Link href="/admin/risk" className="site-navbar-link">
                 Risk Rules
               </Link>

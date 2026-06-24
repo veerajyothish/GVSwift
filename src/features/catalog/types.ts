@@ -11,6 +11,8 @@ export interface ListProductsParams {
   categoryId?: string;
   includeInactive?: boolean;
   search?: string;
+  lowStockOnly?: boolean;
+  lowStockThreshold?: number;
 }
 
 export interface PaginatedProductsResult {

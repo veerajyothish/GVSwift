@@ -3507,3 +3507,138 @@ select.input-field {
   background: var(--color-bg);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
+
+/* Order Tracking Timeline (B5) */
+.timeline-card {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.timeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.timeline-step-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+
+.timeline-step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.timeline-step-line {
+  position: absolute;
+  top: 32px;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background-color: var(--color-border);
+  z-index: 1;
+}
+
+.timeline-step.completed .timeline-step-icon {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-accent-text);
+}
+
+.timeline-step.completed .timeline-step-line {
+  background-color: var(--color-primary);
+}
+
+.timeline-step.current .timeline-step-icon {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.timeline-step-info {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-1);
+}
+
+.timeline-step-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.timeline-step.completed .timeline-step-label,
+.timeline-step.current .timeline-step-label {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.timeline-step-time {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* Desktop Styles (Horizontal layout) */
+@media (min-width: 768px) {
+  .timeline-steps-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-2) 0;
+  }
+
+  .timeline-step {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+  }
+
+  .timeline-step-icon-wrapper {
+    width: 100%;
+    height: auto;
+  }
+
+  .timeline-step-line {
+    top: 16px;
+    left: calc(50% + 16px);
+    right: calc(-50% + 16px);
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    transform: none;
+  }
+
+  .timeline-step-info {
+    padding-top: 0;
+    align-items: center;
+  }
+}

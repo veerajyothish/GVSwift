@@ -125,6 +125,27 @@ export default function OrderDetailClient({
     colorVar: "var(--color-text-secondary)",
   };
 
+  const isCancelled = order.status === "CANCELLED";
+
+  // 5-step status timeline mapping
+  const timelineSteps = [
+    { status: "PLACED", label: "Order Placed" },
+    { status: "CONFIRMED", label: "Confirmed" },
+    { status: "SHIPPED", label: "Shipped" },
+    { status: "OUT_FOR_DELIVERY", label: "Out for Delivery" },
+    { status: "DELIVERED", label: "Delivered" },
+  ];
+
+  const statusDates = order.statusHistory.reduce((acc, entry) => {
+    acc[entry.toStatus] = entry.createdAt;
+    return acc;
+  }, {} as Record<string, string>);
+
+  const currentStepIndex = timelineSteps.findIndex(s => s.status === order.status);
+  const activeStepIndex = currentStepIndex !== -1 ? currentStepIndex : timelineSteps.reduce((highest, step, idx) => {
+    return statusDates[step.status] ? idx : highest;
+  }, -1);
+
   // Cancel flow state
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
@@ -286,6 +307,57 @@ export default function OrderDetailClient({
       <div className="order-detail-grid">
         {/* Left column: items + summary */}
         <div className="order-detail-main">
+          {isCancelled ? (
+            <div className="card mb-24 border-error" style={{ backgroundColor: "rgba(204, 36, 36, 0.04)", borderLeft: "4px solid var(--color-error)", padding: "20px" }}>
+              <h3 style={{ fontFamily: "var(--font-heading)", color: "var(--color-error)", fontSize: "18px", margin: "0 0 8px 0" }}>
+                Order Cancelled
+              </h3>
+              <p className="text-sm text-secondary" style={{ margin: 0 }}>
+                This order has been cancelled.
+              </p>
+              {order.statusHistory.find(h => h.toStatus === "CANCELLED")?.reason && (
+                <p className="text-sm text-secondary mt-8 italic" style={{ margin: "8px 0 0 0" }}>
+                  Reason: &quot;{order.statusHistory.find(h => h.toStatus === "CANCELLED")?.reason}&quot;
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="timeline-card mb-24" style={{ padding: "24px" }}>
+              <h3 className="text-md font-semibold text-primary mb-16" style={{ fontFamily: "var(--font-heading)", margin: "0 0 16px 0" }}>
+                Order Tracking
+              </h3>
+              <div className="timeline-steps-container">
+                {timelineSteps.map((step, idx) => {
+                  const isCompleted = activeStepIndex >= idx;
+                  const isCurrent = activeStepIndex === idx;
+                  const timestamp = statusDates[step.status];
+
+                  return (
+                    <div
+                      key={step.status}
+                      className={`timeline-step ${isCompleted ? "completed" : ""} ${isCurrent ? "current" : ""}`}
+                    >
+                      <div className="timeline-step-icon-wrapper">
+                        <div className="timeline-step-icon">
+                          {isCompleted ? "✓" : idx + 1}
+                        </div>
+                        {idx < timelineSteps.length - 1 && <div className="timeline-step-line" />}
+                      </div>
+                      <div className="timeline-step-info">
+                        <span className="timeline-step-label">{step.label}</span>
+                        {timestamp && (
+                          <span className="timeline-step-time">
+                            {formatDate(timestamp)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Order Items */}
           <section className="card mb-24">
             <div className="order-section-header">

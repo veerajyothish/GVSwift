@@ -11,6 +11,8 @@ interface ProductListTableProps {
   categories: Array<{ id: string; name: string }>;
   totalPages: number;
   currentPage: number;
+  lowStockThreshold: number;
+  isLowStockFilter: boolean;
 }
 
 export default function ProductListTable({
@@ -18,6 +20,8 @@ export default function ProductListTable({
   categories,
   totalPages,
   currentPage,
+  lowStockThreshold,
+  isLowStockFilter,
 }: ProductListTableProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -79,6 +83,16 @@ export default function ProductListTable({
     setCategoryIdVal("");
     startTransition(() => {
       router.push(pathname);
+    });
+  };
+
+  const handleToggleLowStock = () => {
+    const params = new URLSearchParams();
+    if (!isLowStockFilter) {
+      params.set("filter", "lowstock");
+    }
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
     });
   };
 
@@ -159,7 +173,20 @@ export default function ProductListTable({
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap items-center">
+          {/* Low Stock filter pill */}
+          <button
+            type="button"
+            id="low-stock-filter-toggle"
+            onClick={handleToggleLowStock}
+            disabled={isPending}
+            className={isLowStockFilter ? "btn btn-danger btn-sm" : "btn btn-secondary btn-sm"}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+          >
+            <span>⚠️</span>
+            {isLowStockFilter ? `Low Stock (threshold: ${lowStockThreshold}) — Clear Filter` : `Low Stock Only`}
+          </button>
+
           {(searchParams.has("search") || searchParams.has("categoryId") || searchVal || categoryIdVal) && (
             <button
               type="button"
@@ -255,7 +282,26 @@ export default function ProductListTable({
 
                     {/* Total Stock */}
                     <td className="font-medium">
-                      {totalStock} units
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <span>{totalStock} units</span>
+                        {product.variants.some((v) => v.stock < lowStockThreshold) && (
+                          <span
+                            style={{
+                              display: "inline-block",
+                              background: "var(--color-primary)",
+                              color: "var(--color-accent-text)",
+                              fontSize: "10px",
+                              fontWeight: 700,
+                              letterSpacing: "0.04em",
+                              padding: "2px 7px",
+                              borderRadius: "9999px",
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            ⚠ Low Stock
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Status */}

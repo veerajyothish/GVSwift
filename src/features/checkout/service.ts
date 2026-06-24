@@ -78,7 +78,7 @@ export async function createOrder(
       400
     );
   }
-  const { cartId, addressId, idempotencyKey, paymentMethod } = parsed.data;
+  const { cartId, addressId, idempotencyKey, paymentMethod, couponCode } = parsed.data;
 
   // ── 2. Idempotency check ───────────────────────────────────────────────
   // If this key was already used, return the original order immediately.
@@ -207,10 +207,45 @@ export async function createOrder(
     return sum + unitPrice * item.quantity;
   }, 0);
 
+  // Validate coupon and compute discount if couponCode is provided
+  let discountPaise = 0;
+  if (couponCode) {
+    const coupon = await prisma.coupon.findUnique({
+      where: { code: couponCode },
+    });
+    if (!coupon || !coupon.isActive) {
+      throw new AppError("VALIDATION_ERROR", "Coupon is not valid or active", 400);
+    }
+    const now = new Date();
+    if (coupon.validFrom && now < coupon.validFrom) {
+      throw new AppError("VALIDATION_ERROR", "Coupon is not active yet", 400);
+    }
+    if (coupon.validUntil && now > coupon.validUntil) {
+      throw new AppError("VALIDATION_ERROR", "Coupon has expired", 400);
+    }
+    if (coupon.maxUsage > 0 && coupon.usageCount >= coupon.maxUsage) {
+      throw new AppError("VALIDATION_ERROR", "Coupon usage limit has been reached", 400);
+    }
+    if (subtotalPaise < coupon.minOrderPaise) {
+      throw new AppError(
+        "VALIDATION_ERROR",
+        `Coupon requires a minimum order of ${formatRupees(coupon.minOrderPaise)}`,
+        400
+      );
+    }
+
+    if (coupon.discountType === "PERCENTAGE") {
+      discountPaise = Math.round((subtotalPaise * coupon.discountValue) / 100);
+    } else {
+      discountPaise = coupon.discountValue;
+    }
+    discountPaise = Math.min(discountPaise, subtotalPaise);
+  }
+
   // Shipping and COD fee are ₹0 at MVP
   const shippingPaise = 0;
   const codFeePaise = 0;
-  const totalPaise = subtotalPaise + shippingPaise + codFeePaise;
+  const totalPaise = Math.max(0, subtotalPaise - discountPaise) + shippingPaise + codFeePaise;
 
   const codLimit = await getCodLimitPaise();
   if (totalPaise > codLimit) {
@@ -266,6 +301,34 @@ export async function createOrder(
         `;
       }
 
+      // Increment coupon usage count inside transaction if couponCode was used
+      if (couponCode) {
+        const coupon = await tx.coupon.findUnique({
+          where: { code: couponCode },
+        });
+        if (!coupon || !coupon.isActive) {
+          throw new AppError("VALIDATION_ERROR", "Coupon is no longer active", 400);
+        }
+        const now = new Date();
+        if (coupon.validFrom && now < coupon.validFrom) {
+          throw new AppError("VALIDATION_ERROR", "Coupon is not active yet", 400);
+        }
+        if (coupon.validUntil && now > coupon.validUntil) {
+          throw new AppError("VALIDATION_ERROR", "Coupon has expired", 400);
+        }
+        if (coupon.maxUsage > 0 && coupon.usageCount >= coupon.maxUsage) {
+          throw new AppError("VALIDATION_ERROR", "Coupon usage limit reached", 400);
+        }
+        if (subtotalPaise < coupon.minOrderPaise) {
+          throw new AppError("VALIDATION_ERROR", "Coupon minimum order not met", 400);
+        }
+
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: { usageCount: { increment: 1 } },
+        });
+      }
+
       // --- Create the Order ---
       const newOrder = await tx.order.create({
         data: {
@@ -278,6 +341,8 @@ export async function createOrder(
           codFeePaise,
           totalPaise,
           idempotencyKey,
+          couponCode,
+          discountPaise,
         },
       });
 

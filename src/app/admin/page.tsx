@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import RevenueCharts from "./RevenueCharts";
+import { getLowStockThreshold } from "@/features/settings/service";
 
 export default async function AdminPage() {
   // 1. Total revenue — sum of all orders with status DELIVERED
@@ -47,11 +48,12 @@ export default async function AdminPage() {
   // 5. Total products — count of all products
   const totalProducts = await prisma.product.count();
 
-  // 6. Low stock products — count distinct products where at least one variant has stock < 10
+  // 6. Low stock products — count distinct products where at least one variant has stock < threshold
+  const lowStockThreshold = await getLowStockThreshold();
   const lowStockVariants = await prisma.productVariant.findMany({
     where: {
       stock: {
-        lt: 10,
+        lt: lowStockThreshold,
       },
     },
     select: {
@@ -328,7 +330,7 @@ export default async function AdminPage() {
             borderRadius: "var(--radius-lg, 12px)",
             backgroundColor: "var(--color-bg-card, #fcf9f8)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderLeft: `4px solid ${lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)"}`,
             display: "flex",
             flexDirection: "column",
             gap: "6px",
@@ -342,11 +344,17 @@ export default async function AdminPage() {
               fontFamily: "var(--font-heading, 'EB Garamond', serif)",
               fontSize: "26px",
               fontWeight: "600",
-              color: "var(--color-primary)",
+              color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)",
             }}
           >
             {lowStockProductsCount.toLocaleString("en-IN")}
           </span>
+          <Link
+            href="/admin/products?filter=lowstock"
+            style={{ fontSize: "12px", color: "var(--color-primary)", textDecoration: "underline", marginTop: "2px" }}
+          >
+            View low stock items →
+          </Link>
         </div>
       </div>
 
