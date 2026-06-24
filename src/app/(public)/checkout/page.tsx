@@ -20,6 +20,9 @@ import { Navbar } from "@/components/ui/Navbar";
 import CheckoutClient from "./CheckoutClient";
 import { Metadata } from "next";
 
+import { getServerSession } from "@/lib/auth/session";
+import { VerificationBanner } from "@/components/ui/VerificationBanner";
+
 export const metadata: Metadata = {
   title: "Secure Checkout",
 };
@@ -27,6 +30,70 @@ export const metadata: Metadata = {
 export default async function CheckoutPage() {
   // Ensure the user is logged in
   const user = await requireUser();
+  
+  // Check email verification status
+  const session = await getServerSession();
+  const isVerified = !!session?.email_confirmed_at;
+
+  if (!isVerified) {
+    return (
+      <div style={{ backgroundColor: "var(--color-bg)", minHeight: "100vh" }}>
+        <Navbar />
+        <main style={{ maxWidth: "600px", margin: "80px auto 40px", padding: "0 20px" }}>
+          <div
+            className="card"
+            style={{
+              padding: "40px",
+              textAlign: "center",
+              borderRadius: "var(--radius-lg, 12px)",
+              border: "1px solid var(--color-border)",
+              backgroundColor: "var(--color-bg-card)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "24px",
+            }}
+          >
+            <div style={{ fontSize: "48px" }}>🔒</div>
+            <div>
+              <h1
+                style={{
+                  fontFamily: "var(--font-heading, 'EB Garamond', serif)",
+                  fontSize: "28px",
+                  color: "var(--color-primary)",
+                  marginBottom: "12px",
+                }}
+              >
+                Checkout is Locked
+              </h1>
+              <p style={{ color: "var(--color-text-secondary)", lineHeight: "1.6", fontSize: "15px" }}>
+                To proceed with your order, please verify your email address. This helps us secure your account and send order tracking updates.
+              </p>
+            </div>
+            
+            <div style={{ width: "100%", textAlign: "left" }}>
+              <VerificationBanner email={user.email} isVerified={false} />
+            </div>
+
+            <a
+              href="/cart"
+              className="btn btn-secondary"
+              style={{
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                minHeight: "44px",
+              }}
+            >
+              ← Return to Cart
+            </a>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // Load user's cart from database
   const cart = await getCart(user.id);

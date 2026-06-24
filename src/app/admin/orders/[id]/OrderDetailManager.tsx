@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { downloadInvoicePdf } from "@/lib/invoice";
 
 interface OrderItem {
   id: string;
@@ -335,16 +336,37 @@ export default function OrderDetailManager({
           </p>
         </div>
 
-        <span
-          className="order-status-badge order-status-badge-lg"
-          style={{
-            backgroundColor: `color-mix(in srgb, ${currentStatusCfg.colorVar} 15%, transparent)`,
-            color: currentStatusCfg.colorVar,
-            borderColor: `color-mix(in srgb, ${currentStatusCfg.colorVar} 25%, transparent)`,
-          }}
-        >
-          {currentStatusCfg.label}
-        </span>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <button
+            onClick={() => downloadInvoicePdf({
+              ...order,
+              customerEmail: order.customer.email
+            })}
+            className="btn btn-secondary"
+            id="download-invoice-btn"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              fontSize: "13px",
+              minHeight: "34px",
+            }}
+          >
+            📥 Download Invoice
+          </button>
+
+          <span
+            className="order-status-badge order-status-badge-lg"
+            style={{
+              backgroundColor: `color-mix(in srgb, ${currentStatusCfg.colorVar} 15%, transparent)`,
+              color: currentStatusCfg.colorVar,
+              borderColor: `color-mix(in srgb, ${currentStatusCfg.colorVar} 25%, transparent)`,
+            }}
+          >
+            {currentStatusCfg.label}
+          </span>
+        </div>
       </div>
 
       {/* Alert Banners */}

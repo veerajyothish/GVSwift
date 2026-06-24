@@ -18,11 +18,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireUserForApi } from "@/lib/auth/guards";
 import { createOrder } from "@/features/checkout/service";
 import { toSafeError } from "@/lib/errors";
+import { getServerSession } from "@/lib/auth/session";
 
 export async function POST(request: NextRequest) {
   try {
     const { user, errorResponse } = await requireUserForApi();
     if (errorResponse) return errorResponse;
+
+    const session = await getServerSession();
+    if (!session || !session.email_confirmed_at) {
+      return NextResponse.json(
+        { error: "Email verification required before placing an order.", code: "UNVERIFIED_EMAIL" },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {

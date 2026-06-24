@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { downloadInvoicePdf } from "@/lib/invoice";
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 
@@ -251,16 +252,34 @@ export default function OrderDetailClient({
           </p>
         </div>
 
-        <span
-          className="order-status-badge order-status-badge-lg"
-          style={{
-            backgroundColor: `color-mix(in srgb, ${statusCfg.colorVar} 15%, transparent)`,
-            color: statusCfg.colorVar,
-            borderColor: `color-mix(in srgb, ${statusCfg.colorVar} 25%, transparent)`,
-          }}
-        >
-          {statusCfg.label}
-        </span>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <button
+            onClick={() => downloadInvoicePdf(order)}
+            className="btn btn-secondary"
+            id="download-invoice-btn"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 12px",
+              fontSize: "13px",
+              minHeight: "34px",
+            }}
+          >
+            📥 Download Invoice
+          </button>
+          
+          <span
+            className="order-status-badge order-status-badge-lg"
+            style={{
+              backgroundColor: `color-mix(in srgb, ${statusCfg.colorVar} 15%, transparent)`,
+              color: statusCfg.colorVar,
+              borderColor: `color-mix(in srgb, ${statusCfg.colorVar} 25%, transparent)`,
+            }}
+          >
+            {statusCfg.label}
+          </span>
+        </div>
       </div>
 
       {/* Two-column layout on desktop */}

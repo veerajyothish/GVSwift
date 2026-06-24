@@ -57,10 +57,10 @@ export async function Navbar() {
           {/* Desktop Nav Links */}
           <div className="navbar-desktop-links" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
             <Link href="/products" className="navbar-center-link">
-              NEW ARRIVALS
+              SHOP
             </Link>
-            <Link href="/products" className="navbar-center-link">
-              COLLECTIONS
+            <Link href="/categories" className="navbar-center-link">
+              CATEGORIES
             </Link>
             <Link href="/faq" className="navbar-center-link">
               FAQ

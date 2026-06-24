@@ -6,10 +6,12 @@ import { searchProducts } from "@/features/catalog/search";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/ui/Navbar";
+import { prisma } from "@/lib/prisma";
 
 interface ProductsPageProps {
   searchParams: Promise<{
     categoryId?: string;
+    category?: string;
     page?: string;
     search?: string;
   }>;
@@ -17,7 +19,19 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const params = await searchParams;
-  const currentCategoryId = params.categoryId ?? "";
+  let currentCategoryId = params.categoryId ?? "";
+  const categorySlug = params.category ?? "";
+
+  if (categorySlug && !currentCategoryId) {
+    const matchedCategory = await prisma.category.findUnique({
+      where: { slug: categorySlug },
+      select: { id: true },
+    });
+    if (matchedCategory) {
+      currentCategoryId = matchedCategory.id;
+    }
+  }
+
   const currentPage = Math.max(1, params.page ? parseInt(params.page, 10) : 1);
   const currentSearch = params.search ?? "";
 
