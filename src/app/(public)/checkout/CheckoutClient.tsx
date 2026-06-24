@@ -82,8 +82,8 @@ export default function CheckoutClient({
   initialCart,
   initialAddresses,
   codLimitPaise,
-  loyaltyBalance,
-  loyaltySettings,
+  loyaltyBalance: initialLoyaltyBalance,
+  loyaltySettings: initialLoyaltySettings,
 }: CheckoutClientProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -111,8 +111,27 @@ export default function CheckoutClient({
   // Stable idempotency key per checkout session
   const [idempotencyKey] = useState(() => generateIdempotencyKey());
 
-  // B12: Loyalty points redemption toggle
+  // B12: Loyalty points states
+  const [loyaltyBalance, setLoyaltyBalance] = useState(initialLoyaltyBalance ?? 0);
+  const [loyaltySettings, setLoyaltySettings] = useState(initialLoyaltySettings ?? { rupeesPer100Points: 10 });
   const [usePoints, setUsePoints] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/v1/loyalty/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          if (typeof data.balance === "number") {
+            setLoyaltyBalance(data.balance);
+          }
+          if (typeof data.rupeesPer100Points === "number") {
+            setLoyaltySettings({ rupeesPer100Points: data.rupeesPer100Points });
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const pointsDiscountPaise = usePoints
     ? Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100)
     : 0;
@@ -584,6 +603,45 @@ export default function CheckoutClient({
             )}
           </div>
 
+          {/* B12: Loyalty Points Checkbox */}
+          {loyaltyBalance > 0 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 0",
+                fontSize: "13px",
+                color: "var(--color-text-primary)",
+                fontWeight: 500,
+                userSelect: "none",
+                cursor: "pointer",
+                marginTop: "4px",
+              }}
+              onClick={() => setUsePoints((v) => !v)}
+            >
+              <input
+                type="checkbox"
+                id="loyalty-points-checkbox"
+                checked={usePoints}
+                onChange={(e) => setUsePoints(e.target.checked)}
+                style={{
+                  accentColor: "var(--color-accent)",
+                  width: "16px",
+                  height: "16px",
+                  cursor: "pointer",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <label
+                htmlFor="loyalty-points-checkbox"
+                style={{ cursor: "pointer", flexGrow: 1 }}
+              >
+                Use {loyaltyBalance} points for ₹{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points} off
+              </label>
+            </div>
+          )}
+
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
 
           <div className="cart-summary-total-row">
@@ -621,60 +679,7 @@ export default function CheckoutClient({
             <div style={{ fontSize: "12px", color: "var(--color-error)", fontWeight: 500 }}>{couponError}</div>
           )}
 
-          {/* B12: Loyalty Points Toggle */}
-          {loyaltyBalance > 0 && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "12px",
-                padding: "10px 12px",
-                borderRadius: "var(--radius-sm)",
-                background: usePoints
-                  ? "color-mix(in oklch, var(--color-success) 10%, var(--color-surface))"
-                  : "color-mix(in oklch, var(--color-primary) 5%, var(--color-surface))",
-                border: `1px solid ${usePoints ? "var(--color-success)" : "var(--color-border)"}`,
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-              onClick={() => setUsePoints((v) => !v)}
-            >
-              <div>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-primary)" }}>
-                  ⭐ Use {loyaltyBalance.toLocaleString("en-IN")} Points
-                </div>
-                <div style={{ fontSize: "11px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                  Save {formatRupees(Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100))}
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "36px",
-                  height: "20px",
-                  borderRadius: "10px",
-                  background: usePoints ? "var(--color-success)" : "var(--color-border)",
-                  position: "relative",
-                  transition: "background 0.2s",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "2px",
-                    left: usePoints ? "18px" : "2px",
-                    width: "16px",
-                    height: "16px",
-                    borderRadius: "50%",
-                    background: "#fff",
-                    transition: "left 0.2s",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                  }}
-                />
-              </div>
-            </div>
-          )}
+
 
           {/* Error / Warning Alert Banners */}
           {serverError && (

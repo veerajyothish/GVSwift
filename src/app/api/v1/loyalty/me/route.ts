@@ -7,7 +7,7 @@
 
 import { NextResponse } from "next/server";
 import { requireUserForApi } from "@/lib/auth/guards";
-import { getOrCreateLoyaltyAccount, getOrCreateReferralCode } from "@/lib/loyalty";
+import { getOrCreateLoyaltyAccount, getOrCreateReferralCode, getLoyaltySettings } from "@/lib/loyalty";
 import { prisma } from "@/lib/prisma";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app";
@@ -16,9 +16,10 @@ export async function GET() {
   const { user, errorResponse } = await requireUserForApi();
   if (errorResponse) return errorResponse;
 
-  const [account, referralCodeRow] = await Promise.all([
+  const [account, referralCodeRow, settings] = await Promise.all([
     getOrCreateLoyaltyAccount(user.id),
     getOrCreateReferralCode(user.id),
+    getLoyaltySettings(),
   ]);
 
   // Fetch last 50 ledger entries, newest first
@@ -39,6 +40,7 @@ export async function GET() {
     balance: account.balance,
     referralCode: referralCodeRow.code,
     referralLink: `${SITE_URL}/signup?ref=${referralCodeRow.code}`,
+    rupeesPer100Points: settings.rupeesPer100Points,
     ledger: ledger.map((e) => ({
       ...e,
       createdAt: e.createdAt.toISOString(),

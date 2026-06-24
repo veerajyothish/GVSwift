@@ -1,10 +1,15 @@
-# Bug Fixes Task List
+# Checkout & Loyalty UI Task List
 
-- [x] Bug Fix 1: Sign out redirection
-  - [x] Update `SignOutButton.tsx` to use `window.location.href = '/login'`
-  - [x] Double-check `middleware.ts` for `getUser` usage
-- [x] Bug Fix 2: Shipping pincode rejection
-  - [x] Update `resolveBehavior` in `src/features/risk/service.ts` to make missing pincodes serviceable and COD eligible by default
-  - [x] Modify `CheckoutClient.tsx` to add "Back to Address Input" button for non-serviceable addresses and pincode-related server errors
-- [x] Run `npm run build` to verify 0 errors
-- [x] Commit and push changes
+- [x] Fix 1: Checkout 400 Bad Request
+  - [x] Verify `src/features/checkout/validation.ts` schema defaults pointsToRedeem
+  - [x] Update `/api/v1/loyalty/me` endpoint to return `rupeesPer100Points`
+  - [x] Ensure CheckoutClient always sends pointsToRedeem as a number in the fetch body
+- [x] Fix 2: Loyalty points checkbox visible at checkout
+  - [x] Fetch loyalty balance client-side on mount in `CheckoutClient.tsx`
+  - [x] Store loyalty balance and settings in component state
+  - [x] Render checkbox section `Use [X] points for ₹[Y] off` above the total row
+  - [x] Update price calculations based on state balance & checkbox status
+- [x] Fix 3: Sentry double init warning
+  - [x] Delete `sentry.client.config.ts`
+- [x] Run `npx next build` to verify zero errors and warnings
+- [ ] Commit and push changes
