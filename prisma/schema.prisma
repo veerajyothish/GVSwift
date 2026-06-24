@@ -83,6 +83,7 @@ enum PaymentMethod {
 model User {
   id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   supabaseId String     @unique
+  name       String?
   email      String     @unique
   phone      String?    @unique
   role       Role       @default(USER)

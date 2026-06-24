@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
-import { getProducts, getCategories } from "@/features/catalog/service";
+import { getProducts } from "@/features/catalog/service";
 import { getServerSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 
@@ -12,21 +12,7 @@ export const metadata = {
     "Premium fashion with Cash on Delivery across India. Free shipping. 7-day returns.",
 };
 
-// ── Reusable stat badge ──────────────────────────────────────────────────────
-function StatBadge({ icon, label, sub }: { icon: string; label: string; sub: string }) {
-  return (
-    <div className="stat-badge">
-      <span className="stat-badge-icon">{icon}</span>
-      <div>
-        <div className="stat-badge-label">{label}</div>
-        <div className="stat-badge-sub">{sub}</div>
-      </div>
-    </div>
-  );
-}
-
 export default async function HomePage() {
-  // Fetch session, products, and categories
   const session = await getServerSession();
   
   let isAdmin = false;
@@ -42,288 +28,267 @@ export default async function HomePage() {
     }
   }
 
-  const [productsResult, categories] = await Promise.all([
-    getProducts({ limit: "8" }),
-    getCategories(),
-  ]);
-
+  // Preserve the existing database data fetching logic
+  const productsResult = await getProducts({ limit: "8" });
   const { products } = productsResult;
 
   return (
-    <div className="homepage-wrapper">
+    <div className="homepage-wrapper bg-default min-h-screen flex flex-col">
       <Navbar />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section className="hero-section">
-        {/* Wine red/cream gradient background */}
-        <div className="hero-overlay" />
+      <section className="hero-section" style={{ position: "relative", padding: "100px 20px", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "80vh" }}>
+        <div className="hero-overlay" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(circle, rgba(252,249,248,0.7) 0%, rgba(252,249,248,0.95) 100%)", zIndex: 1 }} />
+        
+        {/* Background Image */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
+          <Image
+            src="/silks_satins.png"
+            alt="Background Texture"
+            fill
+            style={{ objectFit: "cover", opacity: 0.15 }}
+            priority
+          />
+        </div>
 
-        <div className="hero-container hero-grid">
-          {/* Left — copy */}
-          <div>
-            <span className="hero-badge">
-              Shop with Confidence
-            </span>
+        <div className="container-lg" style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: "800px" }}>
+          <span className="hero-badge" style={{ color: "var(--color-primary)", letterSpacing: "0.2em", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", display: "inline-block", marginBottom: "16px" }}>
+            Shop with Confidence
+          </span>
 
-            <h1 className="hero-title">
-              Premium Fashion,{" "}
-              <span style={{ color: "var(--color-accent)" }}>
-                Delivered to Your Door
-              </span>
-            </h1>
+          <h1 className="hero-title" style={{ fontFamily: "var(--font-heading)", fontSize: "56px", color: "var(--color-primary)", fontStyle: "italic", fontWeight: 400, lineHeight: 1.1, marginBottom: "24px" }}>
+            Premium Fashion, <br />Delivered to Your Door
+          </h1>
 
-            <p className="hero-desc">
-              Exclusive styles with Cash on Delivery across India. No
-              prepayment required — pay when you receive your order.
-            </p>
+          <p className="hero-desc" style={{ fontSize: "16px", color: "var(--color-text-secondary)", maxWidth: "600px", margin: "0 auto 40px auto", lineHeight: "1.7" }}>
+            Exclusive styles with Cash on Delivery across India. No prepayment required &mdash; pay when you receive your order.
+          </p>
 
-            <div className="hero-buttons">
-              <Link href="/products" className="btn btn-primary btn-lg">
-                Shop Collection →
-              </Link>
-              {session ? (
-                isAdmin ? (
-                  <Link href="/admin" className="btn btn-secondary btn-lg">
-                    Admin Dashboard
-                  </Link>
-                ) : (
-                  <Link href="/account" className="btn btn-secondary btn-lg">
-                    My Account
-                  </Link>
-                )
-              ) : (
-                <Link href="/signup" className="btn btn-secondary btn-lg">
-                  Create Account
+          <div className="hero-buttons" style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/products" className="btn btn-primary" style={{ borderRadius: "50px", padding: "12px 36px", fontWeight: 600 }}>
+              Shop Collection →
+            </Link>
+            {session ? (
+              isAdmin ? (
+                <Link href="/admin" className="btn btn-secondary" style={{ borderRadius: "50px", padding: "12px 36px" }}>
+                  Admin Dashboard
                 </Link>
-              )}
-            </div>
+              ) : (
+                <Link href="/account" className="btn btn-secondary" style={{ borderRadius: "50px", padding: "12px 36px" }}>
+                  My Account
+                </Link>
+              )
+            ) : (
+              <Link href="/signup" className="btn btn-secondary" style={{ borderRadius: "50px", padding: "12px 36px" }}>
+                Create Account
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── THE AUTUMN EDIT ────────────────────────────────────────────────── */}
+      <section className="section-container" style={{ padding: "80px 20px" }}>
+        <div className="container-lg">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "32px" }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "36px", fontStyle: "italic", fontWeight: 400, color: "var(--color-primary)" }}>
+              The Autumn Edit
+            </h2>
+            <Link href="/products" style={{ fontSize: "13px", letterSpacing: "0.05em", color: "var(--color-text-secondary)", borderBottom: "1px solid var(--color-text-secondary)", paddingBottom: "2px" }}>
+              EXPLORE ALL
+            </Link>
           </div>
 
-          {/* Right — hero image / showcase card */}
-          <div className="hero-image-col">
-            <div className="hero-image-card">
+          {/* Grid Layout matching reference 5 */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }} className="autumn-edit-grid">
+            {/* Left tall card */}
+            <div className="card" style={{ position: "relative", height: "600px", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "40px", overflow: "hidden" }}>
               <Image
-                src="/fashion_product_mockup.png"
-                alt="GVSwift Premium Fashion"
+                src="/structured_wool_blazer.png"
+                alt="Structured Wool Blazers"
                 fill
-                style={{ objectFit: "cover" }}
-                priority
+                style={{ objectFit: "cover", zIndex: 0 }}
               />
-              {/* Shimmer overlay */}
-              <div className="hero-shimmer" />
-              <div className="hero-shimmer-content">
-                <div className="hero-shimmer-tag">
-                  New Arrival
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "linear-gradient(to top, rgba(42, 12, 16, 0.8) 0%, rgba(42, 12, 16, 0) 60%)", zIndex: 1 }} />
+              <div style={{ position: "relative", zIndex: 2 }}>
+                <span style={{ color: "#dfd2d0", letterSpacing: "0.15em", fontSize: "11px", fontWeight: 600, textTransform: "uppercase" }}>HERITAGE LINE</span>
+                <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "28px", color: "#fff", margin: "8px 0 20px 0" }}>Structured Wool Blazers</h3>
+                <Link href="/products" className="btn btn-secondary" style={{ color: "#fff", borderColor: "#fff", display: "inline-flex", borderRadius: "0", minHeight: "40px", padding: "8px 24px" }}>
+                  SHOP NOW
+                </Link>
+              </div>
+            </div>
+
+            {/* Right stacked cards */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="autumn-edit-sidebar">
+              {/* Top card */}
+              <div className="card" style={{ position: "relative", height: "288px", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "30px", overflow: "hidden" }}>
+                <Image
+                  src="/silks_satins.png"
+                  alt="Silks & Satins"
+                  fill
+                  style={{ objectFit: "cover", zIndex: 0 }}
+                />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "linear-gradient(to top, rgba(42, 12, 16, 0.7) 0%, rgba(42, 12, 16, 0) 70%)", zIndex: 1 }} />
+                <div style={{ position: "relative", zIndex: 2 }}>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", color: "#fff", margin: 0 }}>Silks &amp; Satins</h3>
                 </div>
-                <div className="hero-shimmer-title">
-                  Vintage Reserve Collection
+              </div>
+
+              {/* Bottom card */}
+              <div className="card" style={{ position: "relative", height: "288px", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "30px", overflow: "hidden" }}>
+                <Image
+                  src="/accessory_suite.png"
+                  alt="The Accessory Suite"
+                  fill
+                  style={{ objectFit: "cover", zIndex: 0 }}
+                />
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "linear-gradient(to top, rgba(42, 12, 16, 0.7) 0%, rgba(42, 12, 16, 0) 70%)", zIndex: 1 }} />
+                <div style={{ position: "relative", zIndex: 2 }}>
+                  <span style={{ color: "#dfd2d0", letterSpacing: "0.1em", fontSize: "10px", fontWeight: 600, textTransform: "uppercase" }}>ARTISAN LEATHER GOODS</span>
+                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", color: "#fff", margin: "4px 0 0 0" }}>The Accessory Suite</h3>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <style>{`
-          @media (min-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr 1fr !important; }
-          }
-          @media (max-width: 767px) {
-            .hero-image-col { display: none !important; }
-          }
-        `}</style>
       </section>
 
-      {/* ── TRUST BADGES ──────────────────────────────────────────────────── */}
-      <section className="section-container">
-        <div className="flex gap-4 flex-wrap">
-          <StatBadge icon="💵" label="Cash on Delivery" sub="No prepayment required" />
-          <StatBadge icon="🚚" label="Free Shipping" sub="On all orders" />
-          <StatBadge icon="↩️" label="7-Day Returns" sub="Hassle-free returns" />
-          <StatBadge icon="🛡️" label="Secure Orders" sub="4-tier risk protection" />
+      {/* ── QUOTE SECTION ─────────────────────────────────────────────────── */}
+      <section className="homepage-quote-section" style={{ padding: "100px 20px", textAlign: "center", backgroundColor: "var(--color-bg)", borderTop: "1px solid var(--color-border)", borderBottom: "1px solid var(--color-border)" }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <span style={{ fontSize: "48px", color: "var(--color-primary)", display: "block", marginBottom: "20px", fontFamily: "var(--font-heading)", fontStyle: "italic" }}>”</span>
+          <blockquote style={{ fontSize: "26px", fontStyle: "italic", fontFamily: "var(--font-heading)", color: "var(--color-text-primary)", lineHeight: "1.5", marginBottom: "24px" }}>
+            &ldquo;GVSwift isn&apos;t just about clothing; it&apos;s an architectural approach to movement and elegance. The Wine Red collection has become my signature silhouette for every gallery opening.&rdquo;
+          </blockquote>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+            <span style={{ height: "1px", width: "40px", backgroundColor: "var(--color-border)" }} />
+            <cite style={{ fontSize: "11px", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--color-text-secondary)", fontWeight: 600, fontStyle: "normal" }}>
+              ELENA MORETTI, CREATIVE DIRECTOR
+            </cite>
+            <span style={{ height: "1px", width: "40px", backgroundColor: "var(--color-border)" }} />
+          </div>
         </div>
       </section>
 
-      {/* ── CATEGORY SHORTCUTS ────────────────────────────────────────────── */}
-      {categories.length > 0 && (
-        <section className="section-container-small">
-          <h2 className="text-xl font-semibold section-title">
-            Shop by Category
-          </h2>
-          <div className="category-list">
-            <Link href="/products" className="category-link-active">
-              All Products
-            </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/products?categoryId=${cat.id}`}
-                className="category-link"
-              >
-                {cat.name}
-              </Link>
-            ))}
+      {/* ── TRENDING NOW (FEATURED COLLECTION) ────────────────────────────── */}
+      <section className="section-container" style={{ padding: "80px 20px" }}>
+        <div className="container-lg">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+            <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "36px", fontStyle: "italic", fontWeight: 400, color: "var(--color-primary)" }}>
+              Trending Now
+            </h2>
+            {/* Custom arrow controls */}
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button className="carousel-control-btn" style={{ width: "40px", height: "40px", border: "1px solid var(--color-border)", background: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                &lt;
+              </button>
+              <button className="carousel-control-btn" style={{ width: "40px", height: "40px", border: "1px solid var(--color-border)", background: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                &gt;
+              </button>
+            </div>
           </div>
-        </section>
-      )}
 
-      {/* ── FEATURED PRODUCTS ─────────────────────────────────────────────── */}
-      <section className="section-container-small pb-64">
-        <div className="featured-header">
-          <h2 className="text-xl font-semibold section-title margin-0">
-            Featured Collection
-          </h2>
-          <Link href="/products" className="featured-view-all">
-            View all →
-          </Link>
-        </div>
+          {products.length === 0 ? (
+            <div className="featured-empty" style={{ textAlign: "center", padding: "40px 0" }}>
+              <p className="featured-empty-text">Products coming soon. Check back shortly!</p>
+            </div>
+          ) : (
+            <div className="product-grid">
+              {products.map((product) => {
+                const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
+                const imageUrl = primaryImage?.url || "/structured_wool_blazer.png";
+                const totalStock = product.variants.reduce((acc, v) => acc + v.stock, 0);
+                const isOutOfStock = totalStock === 0;
+                const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
 
-        {products.length === 0 ? (
-          <div className="featured-empty">
-            <p className="featured-empty-text">
-              Products coming soon. Check back shortly!
-            </p>
-          </div>
-        ) : (
-          <div className="product-grid">
-            {products.map((product) => {
-              const primaryImage =
-                product.images.find((img) => img.isPrimary) || product.images[0];
-              const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
-              const totalStock = product.variants.reduce(
-                (acc, v) => acc + v.stock,
-                0
-              );
-              const isOutOfStock = totalStock === 0;
-              const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
+                return (
+                  <Link key={product.id} href={`/products/${product.slug}`} className="product-card-link">
+                    <div className="card card-interactive card-product" style={{ display: "flex", flexDirection: "column", height: "100%", border: "none", background: "none", boxShadow: "none" }}>
+                      <div className="card-product-image-container" style={{ position: "relative", width: "100%", aspectRatio: "3/4", overflow: "hidden", backgroundColor: "var(--color-surface)", borderRadius: "0" }}>
+                        <Image
+                          src={imageUrl}
+                          alt={primaryImage?.altText || product.name}
+                          fill
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                          style={{ objectFit: "cover" }}
+                          className="card-product-image"
+                        />
+                        {isOutOfStock ? (
+                          <span className="product-card-badge-error" style={{ position: "absolute", top: "12px", left: "12px" }}>
+                            Out of Stock
+                          </span>
+                        ) : totalStock <= 5 ? (
+                          <span className="product-card-badge-warning" style={{ position: "absolute", top: "12px", left: "12px" }}>
+                            Only {totalStock} left
+                          </span>
+                        ) : null}
+                      </div>
 
-              return (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.slug}`}
-                  className="product-card-link"
-                >
-                  <div className="card card-interactive card-product">
-                    {/* Image */}
-                    <div
-                      className="card-product-image-container"
-                      style={{ opacity: isOutOfStock ? 0.65 : 1 }}
-                    >
-                      <Image
-                        src={imageUrl}
-                        alt={primaryImage?.altText || product.name}
-                        fill
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        style={{ objectFit: "cover" }}
-                        className="card-product-image"
-                      />
-                      {isOutOfStock ? (
-                        <span className="product-card-badge-error">
-                          Out of Stock
-                        </span>
-                      ) : totalStock <= 5 ? (
-                        <span className="product-card-badge-warning">
-                          Only {totalStock} left
-                        </span>
-                      ) : null}
-                    </div>
-
-                    {/* Info */}
-                    <div className="card-product-content">
-                      <h3 className="card-product-title">
-                        {product.name}
-                      </h3>
-                      <span className="card-product-price">
-                        {formattedPrice}
-                      </span>
-                      <div className="product-card-btn-container">
-                        <div
-                          className="btn btn-primary product-card-btn"
-                          style={{
-                            opacity: isOutOfStock ? 0.5 : 1,
-                            pointerEvents: "none",
-                          }}
-                        >
-                          {isOutOfStock ? "Out of Stock" : "Select Options"}
+                      <div className="card-product-content" style={{ padding: "16px 0", flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                        <div>
+                          <h3 style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: 400, color: "var(--color-text-primary)", marginBottom: "4px" }}>
+                            {product.name}
+                          </h3>
+                          <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-primary)" }}>
+                            {formattedPrice}
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* ── COD EXPLAINER ─────────────────────────────────────────────────── */}
-      <section className="cod-explainer-section">
-        <div className="cod-explainer-grid">
-          {[
-            {
-              icon: "🛒",
-              title: "Add to Cart",
-              desc: "Browse and select your items. No prepayment needed to start shopping.",
-            },
-            {
-              icon: "📍",
-              title: "Enter Address",
-              desc: "We verify your pincode in real-time to confirm COD availability.",
-            },
-            {
-              icon: "📦",
-              title: "We Dispatch",
-              desc: "Orders confirmed within 24 hours and dispatched in 1–2 business days.",
-            },
-            {
-              icon: "💵",
-              title: "Pay on Delivery",
-              desc: "Hand cash to the courier at your doorstep. Simple and safe.",
-            },
-          ].map((step) => (
-            <div key={step.title} className="cod-explainer-item">
-              <div className="cod-explainer-icon">{step.icon}</div>
-              <h3 className="cod-explainer-title">
-                {step.title}
-              </h3>
-              <p className="cod-explainer-desc">
-                {step.desc}
-              </p>
+                  </Link>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
       </section>
 
+      {/* Inline styles for custom grid responsive behaviour */}
+      <style>{`
+        @media (min-width: 768px) {
+          .autumn-edit-grid {
+            grid-template-columns: 1.5fr 1fr !important;
+          }
+        }
+      `}</style>
+
       {/* ── BOTTOM CTA ────────────────────────────────────────────────────── */}
-      <section className="bottom-cta-section">
-        <h2 className="bottom-cta-title">
+      <section className="bottom-cta-section" style={{ padding: "80px 20px", textAlign: "center", backgroundColor: "var(--color-surface)", borderTop: "1px solid var(--color-border)" }}>
+        <h2 className="bottom-cta-title" style={{ fontFamily: "var(--font-heading)", fontSize: "36px", color: "var(--color-primary)", marginBottom: "16px" }}>
           Ready to Shop?
         </h2>
-        <p className="bottom-cta-desc">
+        <p className="bottom-cta-desc" style={{ fontSize: "15px", color: "var(--color-text-secondary)", maxWidth: "500px", margin: "0 auto 32px auto", lineHeight: "1.6" }}>
           {session
             ? "Explore the full collection and manage your orders instantly from your dashboard."
-            : "Create a free account and start shopping the Stitch collection today. Cash on Delivery available across India."}
+            : "Create a free account and start shopping the GVSwift collection today. Cash on Delivery available across India."}
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           {session ? (
             isAdmin ? (
-              <Link href="/admin" className="btn btn-primary btn-xl">
+              <Link href="/admin" className="btn btn-primary btn-xl" style={{ borderRadius: "50px" }}>
                 Admin Dashboard
               </Link>
             ) : (
-              <Link href="/account" className="btn btn-primary btn-xl">
+              <Link href="/account" className="btn btn-primary btn-xl" style={{ borderRadius: "50px" }}>
                 My Account
               </Link>
             )
           ) : (
-            <Link href="/signup" className="btn btn-primary btn-xl">
+            <Link href="/signup" className="btn btn-primary btn-xl" style={{ borderRadius: "50px" }}>
               Create Free Account
             </Link>
           )}
-          <Link href="/products" className="btn btn-secondary btn-xl">
+          <Link href="/products" className="btn btn-secondary btn-xl" style={{ borderRadius: "50px" }}>
             Browse Products
           </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <div style={{ marginTop: "auto" }}>
+        <footer style={{ borderTop: "1px solid var(--color-border)" }} />
+      </div>
     </div>
   );
 }
