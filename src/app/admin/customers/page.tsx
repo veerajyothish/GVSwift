@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import CustomerTable from "./CustomerTable";
+import CustomerExportButton from "./components/CustomerExportButton";
 
 const PAGE_SIZE = 20;
 
@@ -81,6 +82,7 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
             {totalCount} customer{totalCount !== 1 ? "s" : ""} total
           </p>
         </div>
+        <CustomerExportButton />
       </div>
 
       <CustomerTable

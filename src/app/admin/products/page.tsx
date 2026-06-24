@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { listProducts, listCategories } from "@/features/catalog/repository";
 import ProductListTable from "./components/ProductListTable";
+import ProductExportButton from "./components/ProductExportButton";
 import { getLowStockThreshold } from "@/features/settings/service";
 
 interface PageProps {
@@ -48,15 +49,18 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
           </p>
         </div>
 
-        <Link
-          href="/admin/products/new"
-          className="btn btn-primary"
-        >
-          <svg className="icon-sm" style={{ marginRight: "6px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Add Product
-        </Link>
+        <div className="flex items-center gap-3">
+          <ProductExportButton />
+          <Link
+            href="/admin/products/new"
+            className="btn btn-primary"
+          >
+            <svg className="icon-sm" style={{ marginRight: "6px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Add Product
+          </Link>
+        </div>
       </div>
 
       {/* Main product table */}

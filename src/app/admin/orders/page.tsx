@@ -2,6 +2,7 @@ import React from "react";
 import { requireAdmin } from "@/lib/auth/guards";
 import { listAdminOrders } from "@/features/orders/service";
 import OrderListTable from "./OrderListTable";
+import OrderExportButton from "./components/OrderExportButton";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
             Track delivery attempts, confirm orders, update manual tracking references, and view fraud risk assessments.
           </p>
         </div>
+        <OrderExportButton />
       </header>
 
       <OrderListTable
