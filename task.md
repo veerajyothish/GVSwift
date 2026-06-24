@@ -31,4 +31,4 @@
   - [x] /admin/loyalty/AdminLoyaltyClient.tsx
   - [x] admin/layout.tsx (add Loyalty nav link)
 - [x] npm run build — 0 errors
-- [ ] git commit + push
+- [x] git commit + push
