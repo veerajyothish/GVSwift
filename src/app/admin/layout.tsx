@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth/guards";
 import Link from "next/link";
+import { SignOutButton } from "@/components/ui/SignOutButton";
 
 export default async function AdminLayout({
   children,
@@ -7,7 +8,22 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   // This will redirect or throw before rendering if not authorized.
-  await requireAdmin();
+  const adminUser = await requireAdmin();
+
+  // Build a display name: prefer real name, fall back to email prefix
+  const displayName =
+    adminUser.name?.trim() ||
+    (adminUser.email ? adminUser.email.split("@")[0] : "Admin");
+
+  // Build initials for avatar
+  const getInitials = (n: string) => {
+    const parts = n.split(/[\s._-]+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    if (parts.length === 1 && parts[0].length >= 2)
+      return (parts[0][0] + parts[0][1]).toUpperCase();
+    return (n[0] || "A").toUpperCase();
+  };
+  const initials = getInitials(displayName);
 
   return (
     <div className="min-h-screen flex flex-col bg-default">
@@ -51,10 +67,59 @@ export default async function AdminLayout({
             </nav>
           </div>
 
-          <div>
+          {/* Right side: user info + sign out */}
+          <div className="flex items-center gap-3">
             <Link href="/" className="site-navbar-link text-secondary text-13">
               Back to Store
             </Link>
+
+            {/* Admin user badge */}
+            <div className="flex items-center gap-2" style={{ borderLeft: "1px solid var(--color-border)", paddingLeft: "12px" }}>
+              <div
+                aria-hidden="true"
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--color-primary)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  flexShrink: 0,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {initials}
+              </div>
+              <div className="flex flex-col" style={{ lineHeight: 1.2 }}>
+                <span
+                  className="text-primary font-semibold"
+                  style={{ fontSize: "13px", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                  title={displayName}
+                >
+                  {displayName}
+                </span>
+                <span className="admin-badge" style={{ fontSize: "10px" }}>
+                  Admin
+                </span>
+              </div>
+              <SignOutButton
+                className="site-navbar-link text-secondary"
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  padding: "4px 8px",
+                  borderRadius: "var(--radius-sm)",
+                }}
+              >
+                Sign Out
+              </SignOutButton>
+            </div>
           </div>
         </div>
       </header>

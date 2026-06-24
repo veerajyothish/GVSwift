@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignOutButton } from "@/components/ui/SignOutButton";
 
 export default function AccountSidebar() {
   const pathname = usePathname();
@@ -41,6 +42,13 @@ export default function AccountSidebar() {
         <Link href="/" className="account-nav-link">
           ← Back to Store
         </Link>
+        <div className="admin-divider-mute" style={{ margin: "8px 0" }} />
+        <SignOutButton
+          className="account-nav-link w-full text-left"
+          style={{ background: "none", border: "none", padding: 0, font: "inherit", color: "var(--color-text-secondary)" }}
+        >
+          Sign Out
+        </SignOutButton>
       </div>
     </aside>
   );
