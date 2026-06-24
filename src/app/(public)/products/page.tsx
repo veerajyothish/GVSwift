@@ -193,6 +193,20 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     {/* Details section */}
                     <div className="card-product-content">
                       <h3 className="card-product-title">{product.name}</h3>
+                      {product.avgRating && (
+                        <div
+                          className="product-rating"
+                          style={{
+                            fontFamily: "var(--font-body), sans-serif",
+                            color: "var(--color-primary)",
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            marginTop: "4px",
+                          }}
+                        >
+                          {product.avgRating.toFixed(1)} ★
+                        </div>
+                      )}
                       
                       {/* Category Label */}
                       {product.categoryId && (

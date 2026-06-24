@@ -37,6 +37,7 @@ export const metadata: Metadata = {
 
 import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -55,8 +56,10 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <ToastProvider>
-          {children}
-          <CookieConsentBanner />
+          <WishlistProvider>
+            {children}
+            <CookieConsentBanner />
+          </WishlistProvider>
         </ToastProvider>
       </body>
     </html>

@@ -63,10 +63,31 @@ export async function listProducts(
     }) as Promise<ProductWithVariantsAndImages[]>,
   ]);
 
+  let productsWithRatings = products;
+  if (products.length > 0) {
+    const ratingAggregates = await prisma.productReview.groupBy({
+      by: ["productId"],
+      where: {
+        productId: { in: products.map((p) => p.id) },
+      },
+      _avg: {
+        rating: true,
+      },
+    });
+
+    productsWithRatings = products.map((product) => {
+      const match = ratingAggregates.find((r) => r.productId === product.id);
+      return {
+        ...product,
+        avgRating: match?._avg.rating ?? null,
+      };
+    });
+  }
+
   const totalPages = Math.ceil(totalCount / limit);
 
   return {
-    products,
+    products: productsWithRatings,
     totalCount,
     page,
     limit,

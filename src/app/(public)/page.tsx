@@ -230,6 +230,19 @@ export default async function HomePage() {
                           <h3 style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: 400, color: "var(--color-text-primary)", marginBottom: "4px" }}>
                             {product.name}
                           </h3>
+                          {product.avgRating && (
+                            <div
+                              style={{
+                                fontFamily: "var(--font-body), sans-serif",
+                                color: "var(--color-primary)",
+                                fontSize: "13px",
+                                fontWeight: 500,
+                                marginBottom: "4px",
+                              }}
+                            >
+                              {product.avgRating.toFixed(1)} ★
+                            </div>
+                          )}
                           <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-primary)" }}>
                             {formattedPrice}
                           </span>

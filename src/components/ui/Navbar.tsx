@@ -11,6 +11,7 @@ export async function Navbar() {
   let isLoggedIn = false;
   let isAdmin = false;
   let cartCount = 0;
+  let wishlistCount = 0;
 
   if (session) {
     isLoggedIn = true;
@@ -35,9 +36,13 @@ export async function Navbar() {
         if (cart) {
           cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         }
+
+        wishlistCount = await prisma.wishlistItem.count({
+          where: { userId: user.id },
+        });
       }
     } catch (e) {
-      console.error("Failed to query auth/cart data for navbar:", e);
+      console.error("Failed to query auth/cart/wishlist data for navbar:", e);
     }
   }
 
@@ -76,7 +81,53 @@ export async function Navbar() {
 
         {/* Right Zone: Icons (Search, Wishlist, Profile, Cart) */}
         <div className="navbar-right-zone">
-          <NavbarIconsAndSearch isLoggedIn={isLoggedIn} cartCount={cartCount} />
+          <NavbarIconsAndSearch 
+            isLoggedIn={isLoggedIn} 
+            cartCount={cartCount} 
+            wishlistIcon={
+              <Link
+                href="/account/wishlist"
+                className="navbar-icon-btn relative"
+                aria-label="Wishlist"
+                style={{ color: "var(--color-primary)", padding: "4px", display: "inline-flex", alignItems: "center", position: "relative" }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                {wishlistCount > 0 && (
+                  <span
+                    className="wishlist-badge"
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      right: "-4px",
+                      backgroundColor: "var(--color-primary)",
+                      color: "#fff",
+                      borderRadius: "50%",
+                      width: "16px",
+                      height: "16px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "10px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+            }
+          />
         </div>
 
       </div>

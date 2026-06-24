@@ -15,10 +15,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProducts } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    
+    // Check if ids query param is present
+    const idsParam = searchParams.get("ids");
+    if (idsParam) {
+      const ids = idsParam.split(",").map(id => id.trim()).filter(Boolean);
+      if (ids.length > 0) {
+        const products = await prisma.product.findMany({
+          where: { id: { in: ids } },
+          include: {
+            images: {
+              orderBy: [
+                { isPrimary: "desc" },
+                { sortOrder: "asc" },
+              ],
+            },
+            variants: true,
+          },
+        });
+
+        // Fetch aggregate rating for these products
+        const ratingAggregates = await prisma.productReview.groupBy({
+          by: ["productId"],
+          where: { productId: { in: products.map(p => p.id) } },
+          _avg: { rating: true },
+        });
+
+        const productsWithRatings = products.map((product) => {
+          const match = ratingAggregates.find((r) => r.productId === product.id);
+          return {
+            ...product,
+            avgRating: match?._avg.rating ?? null,
+          };
+        });
+
+        return NextResponse.json({ products: productsWithRatings }, { status: 200 });
+      }
+    }
+
     const query = {
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,

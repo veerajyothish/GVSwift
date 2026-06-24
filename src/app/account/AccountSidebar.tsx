@@ -11,8 +11,10 @@ export default function AccountSidebar() {
     { href: "/account/profile", label: "Profile" },
     { href: "/account", label: "Profile Dashboard" },
     { href: "/account/addresses", label: "Address Book" },
+    { href: "/account/wishlist", label: "My Wishlist" },
     { href: "/orders", label: "My Orders" },
     { href: "/support", label: "Support Tickets" },
+    { href: "/account/settings", label: "Settings" },
   ];
 
   return (

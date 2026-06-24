@@ -3,6 +3,7 @@ import { Product, ProductVariant, ProductImage } from "@prisma/client";
 export type ProductWithVariantsAndImages = Product & {
   variants: ProductVariant[];
   images: ProductImage[];
+  avgRating?: number | null;
 };
 
 export interface ListProductsParams {

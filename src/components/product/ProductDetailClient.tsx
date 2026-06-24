@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ProductWithVariantsAndImages } from "@/features/catalog/types";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useRouter } from "next/navigation";
+import { RecentlyViewed } from "./RecentlyViewed";
 
 interface ProductDetailClientProps {
   product: ProductWithVariantsAndImages;
@@ -20,6 +21,45 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   );
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+
+  useEffect(() => {
+    const getCookie = (name: string): string | null => {
+      if (typeof document === 'undefined') return null;
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for(let i=0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    };
+
+    const setCookie = (name: string, value: string, days: number = 30) => {
+      if (typeof document === 'undefined') return;
+      let expires = "";
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "")  + expires + "; path=/; SameSite=Lax";
+    };
+
+    const addRecentlyViewed = (productId: string) => {
+      const current = getCookie("recently_viewed");
+      let ids: string[] = [];
+      if (current) {
+        ids = current.split(",").filter(Boolean);
+      }
+      ids = ids.filter(id => id !== productId);
+      ids.unshift(productId);
+      ids = ids.slice(0, 8); // Store last 8 items
+      setCookie("recently_viewed", ids.join(","), 30);
+    };
+
+    addRecentlyViewed(product.id);
+  }, [product.id]);
 
   const selectedVariant =
     product.variants.find((v) => v.id === selectedVariantId) ||
@@ -373,6 +413,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
         </div>
       </main>
+
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 48px" }}>
+        <RecentlyViewed excludeProductId={product.id} />
+      </div>
     </div>
   );
 }
