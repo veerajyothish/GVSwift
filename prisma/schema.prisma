@@ -454,3 +454,22 @@ model ProductReview {
   @@index([productId])
   @@index([userId])
 }
+
+enum BannerType {
+  INFO
+  SUCCESS
+  WARNING
+  PROMO
+}
+
+model Banner {
+  id        String     @id @default(cuid())
+  message   String
+  type      BannerType @default(INFO)
+  isActive  Boolean    @default(false)
+  linkText  String?
+  linkUrl   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+

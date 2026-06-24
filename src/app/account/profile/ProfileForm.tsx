@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/Input";
 
 interface ProfileFormProps {
   initialUser: {
-    name: string;
+    name: string | null;
     email: string;
-    phone: string;
+    phone: string | null;
     createdAt: string;
   };
 }
@@ -18,11 +18,27 @@ interface ProfileFormProps {
 export default function ProfileForm({ initialUser }: ProfileFormProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    name: initialUser.name,
-    phone: initialUser.phone,
+    name: initialUser.name || "",
+    phone: initialUser.phone || "",
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  const displayName = formData.name.trim() || initialUser.email;
+  
+  const getInitials = () => {
+    const nameToUse = formData.name.trim() ? formData.name.trim() : initialUser.email.split("@")[0];
+    const parts = nameToUse.split(/[\s._-]+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    if (parts.length === 1 && parts[0].length >= 2) {
+      return (parts[0][0] + parts[0][1]).toUpperCase();
+    }
+    return (nameToUse[0] || "?").toUpperCase();
+  };
+
+  const initials = getInitials();
 
   const formattedDate = new Date(initialUser.createdAt).toLocaleDateString("en-IN", {
     year: "numeric",
@@ -82,6 +98,31 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
   return (
     <Card className="p-6 bg-surface border border-color-border rounded-lg shadow-sm">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Profile Header Block */}
+        <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: "color-mix(in oklch, var(--color-primary) 4%, var(--color-surface))", border: "1px solid var(--color-border)" }}>
+          <div
+            className="flex items-center justify-center rounded-full font-bold text-white shadow-sm"
+            style={{
+              width: "60px",
+              height: "60px",
+              fontSize: "22px",
+              backgroundColor: "var(--color-primary)",
+              letterSpacing: "0.05em",
+              flexShrink: 0,
+            }}
+          >
+            {initials}
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-primary animate-fade-in" style={{ margin: 0 }}>
+              {displayName}
+            </h2>
+            <p className="text-13 text-secondary" style={{ margin: "2px 0 0 0" }}>
+              GVSwift Member
+            </p>
+          </div>
+        </div>
+
         {/* Email - Read-Only */}
         <div className="input-group">
           <label className="input-label">Email Address</label>
