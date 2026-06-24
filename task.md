@@ -12,4 +12,4 @@
 - [x] Fix 3: Sentry double init warning
   - [x] Delete `sentry.client.config.ts`
 - [x] Run `npx next build` to verify zero errors and warnings
-- [ ] Commit and push changes
+- [x] Commit and push changes
