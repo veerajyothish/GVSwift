@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { getWishlist, toggleWishlist as toggleWishlistApi } from "@/lib/wishlist";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 interface WishlistContextType {
   wishlistIds: Set<string>;
@@ -21,17 +23,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   async function fetchWishlist() {
     try {
-      const res = await fetch("/api/v1/wishlist");
-      if (res.status === 401) {
-        setWishlistIds(new Set());
-        setLoading(false);
-        return;
-      }
-      if (res.ok) {
-        const data = await res.json();
-        const ids = new Set<string>(data.items.map((item: { productId: string }) => item.productId));
-        setWishlistIds(ids);
-      }
+      const idsList = await getWishlist();
+      setWishlistIds(new Set(idsList));
     } catch {
       console.warn("Failed to fetch wishlist client-side");
     } finally {
@@ -48,6 +41,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function toggleWishlist(productId: string) {
+    const supabase = createSupabaseBrowserClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      router.push(`/login?next=${returnUrl}`);
+      return;
+    }
+
     // Optimistic update
     const isCurrentlyAdded = wishlistIds.has(productId);
     const newIds = new Set(wishlistIds);
@@ -60,32 +61,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     setWishlistIds(newIds);
 
     try {
-      const method = isCurrentlyAdded ? "DELETE" : "POST";
-      const res = await fetch("/api/v1/wishlist", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
-      });
-
-      if (res.status === 401) {
-        // Revert optimistic update
-        const revertedIds = new Set(wishlistIds);
-        setWishlistIds(revertedIds);
-        
-        // Redirect to login with return URL
-        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-        router.push(`/login?next=${returnUrl}`);
-        return;
-      }
-
-      if (!res.ok) {
-        // Revert optimistic update on failure
-        const revertedIds = new Set(wishlistIds);
-        setWishlistIds(revertedIds);
-        console.error("Failed to update wishlist on server");
+      const added = await toggleWishlistApi(productId);
+      if (added !== !isCurrentlyAdded) {
+        // Reconcile if server state is different
+        await fetchWishlist();
       }
     } catch {
-      // Revert optimistic update on network error
+      // Revert optimistic update
       const revertedIds = new Set(wishlistIds);
       setWishlistIds(revertedIds);
     }

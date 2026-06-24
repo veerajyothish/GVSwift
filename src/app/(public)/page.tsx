@@ -5,6 +5,8 @@ import { Navbar } from "@/components/ui/Navbar";
 import { getProducts } from "@/features/catalog/service";
 import { getServerSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import ProductCard from "@/components/ui/ProductCard";
 
 export const metadata = {
   title: "GVSwift — Shop with Confidence",
@@ -16,6 +18,7 @@ export default async function HomePage() {
   const session = await getServerSession();
   
   let isAdmin = false;
+  let wishlistedIds: string[] = [];
   if (session) {
     try {
       const dbUser = await prisma.user.findUnique({
@@ -25,6 +28,17 @@ export default async function HomePage() {
       isAdmin = dbUser?.role === "ADMIN";
     } catch (e) {
       console.error("Failed to check admin status:", e);
+    }
+
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data: wishlistItems } = await supabase
+        .from("wishlists")
+        .select("product_id")
+        .eq("user_id", session.id);
+      wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
+    } catch (e) {
+      console.error("Failed to fetch wishlisted IDs on server:", e);
     }
   }
 
@@ -195,63 +209,13 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="product-grid">
-              {products.map((product) => {
-                const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
-                const imageUrl = primaryImage?.url || "/structured_wool_blazer.png";
-                const totalStock = product.variants.reduce((acc, v) => acc + v.stock, 0);
-                const isOutOfStock = totalStock === 0;
-                const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
-
-                return (
-                  <Link key={product.id} href={`/products/${product.slug}`} className="product-card-link">
-                    <div className="card card-interactive card-product" style={{ display: "flex", flexDirection: "column", height: "100%", border: "none", background: "none", boxShadow: "none" }}>
-                      <div className="card-product-image-container" style={{ position: "relative", width: "100%", aspectRatio: "3/4", overflow: "hidden", backgroundColor: "var(--color-surface)", borderRadius: "0" }}>
-                        <Image
-                          src={imageUrl}
-                          alt={primaryImage?.altText || product.name}
-                          fill
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          style={{ objectFit: "cover" }}
-                          className="card-product-image"
-                        />
-                        {isOutOfStock ? (
-                          <span className="product-card-badge-error" style={{ position: "absolute", top: "12px", left: "12px" }}>
-                            Out of Stock
-                          </span>
-                        ) : totalStock <= 5 ? (
-                          <span className="product-card-badge-warning" style={{ position: "absolute", top: "12px", left: "12px" }}>
-                            Only {totalStock} left
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <div className="card-product-content" style={{ padding: "16px 0", flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                        <div>
-                          <h3 style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: 400, color: "var(--color-text-primary)", marginBottom: "4px" }}>
-                            {product.name}
-                          </h3>
-                          {product.avgRating && (
-                            <div
-                              style={{
-                                fontFamily: "var(--font-body), sans-serif",
-                                color: "var(--color-primary)",
-                                fontSize: "13px",
-                                fontWeight: 500,
-                                marginBottom: "4px",
-                              }}
-                            >
-                              {product.avgRating.toFixed(1)} ★
-                            </div>
-                          )}
-                          <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--color-primary)" }}>
-                            {formattedPrice}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  initialWishlisted={wishlistedIds.includes(product.id)}
+                />
+              ))}
             </div>
           )}
         </div>

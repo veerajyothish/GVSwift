@@ -119,32 +119,91 @@ export default function CheckoutClient({
   const [locating, setLocating] = useState(false);
 
   const handleGeolocation = async () => {
-    if (!navigator.geolocation) return;
     setLocating(true);
+
+    interface NominatimAddress {
+      city?: string;
+      town?: string;
+      village?: string;
+      suburb?: string;
+      county?: string;
+      state?: string;
+      postcode?: string;
+    }
+
+    const applyAddress = (addr: NominatimAddress) => {
+      const city =
+        addr.city ||
+        addr.town ||
+        addr.village ||
+        addr.suburb ||
+        addr.county ||
+        "";
+      const state = addr.state || "";
+      const pincode = (addr.postcode || "").replace(/\D/g, "").slice(0, 6);
+
+      setFormData((prev) => ({
+        ...prev,
+        city,
+        state,
+        pincode,
+      }));
+      setLocating(false);
+    };
+
+    const fetchByCoords = async (lat: number, lon: number) => {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`,
+        { headers: { "Accept-Language": "en" } }
+      );
+      if (!res.ok) throw new Error("Nominatim failed");
+      const data = await res.json();
+      applyAddress(data.address);
+    };
+
+    const fetchByIP = async () => {
+      const res = await fetch("https://ipapi.co/json/");
+      if (!res.ok) throw new Error("IP API failed");
+      const data = await res.json();
+      const pincode = (data.postal || "").replace(/\D/g, "").slice(0, 6);
+      setFormData((prev) => ({
+        ...prev,
+        city: data.city || "",
+        state: data.region || "",
+        pincode,
+      }));
+      setLocating(false);
+    };
+
+    if (!navigator.geolocation) {
+      try {
+        await fetchByIP();
+      } catch {
+        setLocating(false);
+      }
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const { latitude, longitude } = position.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-          );
-          const data = await res.json();
-          const addr = data.address;
-          if (addr) {
-            setFormData((prev) => ({
-              ...prev,
-              city: addr.city || addr.town || addr.village || '',
-              state: addr.state || '',
-              pincode: addr.postcode ? addr.postcode.replace(/\D/g, "").slice(0, 6) : '',
-            }));
-          }
+          await fetchByCoords(position.coords.latitude, position.coords.longitude);
         } catch {
-          // fail silently
-        } finally {
+          try {
+            await fetchByIP();
+          } catch {
+            setLocating(false);
+          }
+        }
+      },
+      async () => {
+        try {
+          await fetchByIP();
+        } catch {
           setLocating(false);
         }
       },
-      () => setLocating(false)
+      { timeout: 8000, maximumAge: 60000 }
     );
   };
 
@@ -898,10 +957,16 @@ export default function CheckoutClient({
               type="button"
               onClick={handleGeolocation}
               disabled={locating}
-              className="btn btn-outline btn-sm"
+              className="btn btn-outline btn-sm flex items-center gap-2"
               style={{ padding: "6px 12px", fontSize: "12px", minHeight: "32px" }}
             >
-              {locating ? 'Detecting location...' : '📍 Use My Location'}
+              {locating ? (
+                <>
+                  <span className="animate-spin">⏳</span> Detecting location...
+                </>
+              ) : (
+                <>📍 Use My Location</>
+              )}
             </button>
           </div>
 

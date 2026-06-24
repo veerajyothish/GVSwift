@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { getProducts, getCategories } from "@/features/catalog/service";
 import { searchProducts } from "@/features/catalog/search";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import ProductCard from "@/components/ui/ProductCard";
+import { getServerSession } from "@/lib/auth/session";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -18,6 +19,21 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const session = await getServerSession();
+  let wishlistedIds: string[] = [];
+  if (session) {
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data: wishlistItems } = await supabase
+        .from("wishlists")
+        .select("product_id")
+        .eq("user_id", session.id);
+      wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
+    } catch (e) {
+      console.error("Failed to fetch wishlisted IDs on server:", e);
+    }
+  }
+
   const params = await searchParams;
   let currentCategoryId = params.categoryId ?? "";
   const categorySlug = params.category ?? "";
@@ -155,89 +171,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           <>
             <div className="product-grid">
               {products.map((product) => {
-                const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
-                const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
-                
-                // Calculate stock
-                const totalStock = product.variants.reduce((acc, v) => acc + v.stock, 0);
-                const isOutOfStock = totalStock === 0;
-
-                // Format price
-                const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
-
+                const categoryName = categories.find((c) => c.id === product.categoryId)?.name || "Apparel";
                 return (
-                  <Card key={product.id} interactive className="card-product">
-                    {/* Image section */}
-                    <div className="card-product-image-container">
-                      <Image
-                        src={imageUrl}
-                        alt={primaryImage?.altText || product.name}
-                        className="card-product-image"
-                        width={300}
-                        height={300}
-                        style={{ objectFit: "cover" }}
-                      />
-                      
-                      {/* Out of Stock Badge */}
-                      {isOutOfStock ? (
-                        <span className="product-card-badge-error">
-                          OUT OF STOCK
-                        </span>
-                      ) : totalStock <= 5 ? (
-                        <span className="product-card-badge-warning">
-                          ONLY {totalStock} LEFT
-                        </span>
-                      ) : null}
-                    </div>
-
-                    {/* Details section */}
-                    <div className="card-product-content">
-                      <h3 className="card-product-title">{product.name}</h3>
-                      {product.avgRating && (
-                        <div
-                          className="product-rating"
-                          style={{
-                            fontFamily: "var(--font-body), sans-serif",
-                            color: "var(--color-primary)",
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            marginTop: "4px",
-                          }}
-                        >
-                          {product.avgRating.toFixed(1)} ★
-                        </div>
-                      )}
-                      
-                      {/* Category Label */}
-                      {product.categoryId && (
-                        <span className="card-product-category">
-                          {categories.find((c) => c.id === product.categoryId)?.name || "Apparel"}
-                        </span>
-                      )}
-
-                      <div className="card-product-price-row">
-                        <span className="card-product-price">
-                          {formattedPrice}
-                        </span>
-                      </div>
-
-                      <div className="card-product-btn-row">
-                        <Link
-                          href={`/products/${product.slug}`}
-                          className="w-full"
-                          style={{ display: "block" }}
-                        >
-                          <Button
-                            variant={isOutOfStock ? "secondary" : "primary"}
-                            style={{ width: "100%" }}
-                            disabled={isOutOfStock}
-                          >
-                            {isOutOfStock ? "View Out of Stock" : "Select Options"}
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </Card>
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    categoryName={categoryName}
+                    initialWishlisted={wishlistedIds.includes(product.id)}
+                  />
                 );
               })}
             </div>
