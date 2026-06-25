@@ -9,9 +9,9 @@ export default function AccountSidebar() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/account/profile", label: "Profile" },
+    { href: "/account/profile", label: "My Profile" },
     { href: "/account", label: "Profile Dashboard" },
-    { href: "/account/addresses", label: "Address Book" },
+    { href: "/account/addresses", label: "Addresses" },
     { href: "/account/wishlist", label: "My Wishlist" },
     { href: "/account/loyalty", label: "Loyalty & Referrals" },
     { href: "/account/orders", label: "My Orders" },

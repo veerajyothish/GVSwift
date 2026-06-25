@@ -36,7 +36,7 @@ export default async function AddressesPage() {
   return (
     <div className="flex flex-col gap-5">
       <header className="mb-24">
-        <h1 className="text-3xl font-semibold mb-4 text-primary">
+        <h1 className="text-3xl font-semibold mb-4 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
           Address Book
         </h1>
         <p className="text-secondary">

@@ -113,7 +113,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
       {addresses.length === 0 ? (
         <Card className="p-8 flex flex-col items-center text-center gap-4" style={{ border: "1px solid var(--color-border)" }}>
           <span style={{ fontSize: "48px" }}>📍</span>
-          <h2 className="text-xl font-semibold text-primary">No addresses found</h2>
+          <h2 className="text-xl font-semibold text-primary" style={{ fontFamily: "var(--font-heading)" }}>No addresses found</h2>
           <p className="text-sm text-secondary max-w-md">
             Add a shipping address to enable quick checkout for your premium orders.
           </p>

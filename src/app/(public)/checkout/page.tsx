@@ -165,7 +165,7 @@ export default async function CheckoutPage() {
 
       <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
         <header style={{ marginBottom: "32px" }}>
-          <h1 className="text-3xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}>
+          <h1 className="text-3xl font-semibold mb-4 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
             Secure Checkout
           </h1>
           <p style={{ color: "var(--color-text-secondary)" }}>
