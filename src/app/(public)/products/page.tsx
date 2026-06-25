@@ -123,29 +123,30 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   };
 
   return (
-    <div className="homepage-wrapper">
-      {/* ── Navbar with Search ── */}
+    <div className="homepage-wrapper bg-default min-h-screen flex flex-col">
       <Navbar />
 
-      {/* ── Page Header ── */}
-      <header className="products-header">
-        <div className="products-header-inner">
-          <h1 className="text-2xl margin-0 font-semibold">
-            Shop Collection
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-12 pb-24 w-full">
+        {/* ── Page Header ── */}
+        <header className="text-center mb-16 py-8">
+          <h1 className="text-primary mb-4" style={{ fontFamily: "var(--font-heading)", fontSize: "48px", fontStyle: "italic", fontWeight: 400 }}>
+            {categorySlug ? categories.find(c => c.id === currentCategoryId)?.name : "The Heritage Collection"}
           </h1>
-          <p className="text-sm footer-text-muted" style={{ marginTop: "4px" }}>
-            Explore fast fashion with secure Cash on Delivery (COD) services.
+          <p className="text-secondary max-w-2xl mx-auto text-base" style={{ lineHeight: 1.6 }}>
+            A curated selection of archival pieces and artisanal garments, embodying the unhurried craftsmanship and timeless elegance of our Visakhapatnam legacy.
           </p>
-        </div>
-      </header>
+        </header>
 
-      <main className="products-main">
-        
         {/* ── Category Filters ── */}
-        <nav className="products-filter-nav" aria-label="Product categories">
+        <nav className="flex flex-wrap justify-center gap-3 mb-12" aria-label="Product categories">
           <Link
             href={buildUrl({ categoryId: null, page: 1 })}
-            className={!currentCategoryId ? "category-link-active" : "category-link"}
+            className={`font-semibold text-xs px-4 py-2 border rounded-full transition-colors ${
+              !currentCategoryId
+                ? "bg-primary border-primary text-on-primary"
+                : "bg-transparent border-border text-secondary hover:border-primary/50 hover:text-primary"
+            }`}
+            style={{ fontFamily: "var(--font-body)", letterSpacing: "0.08em", textTransform: "uppercase" }}
           >
             All Products
           </Link>
@@ -155,7 +156,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               <Link
                 key={category.id}
                 href={buildUrl({ categoryId: category.id, page: 1 })}
-                className={isActive ? "category-link-active" : "category-link"}
+                className={`font-semibold text-xs px-4 py-2 border rounded-full transition-colors ${
+                  isActive
+                    ? "bg-primary border-primary text-on-primary"
+                    : "bg-transparent border-border text-secondary hover:border-primary/50 hover:text-primary"
+                }`}
+                style={{ fontFamily: "var(--font-body)", letterSpacing: "0.08em", textTransform: "uppercase" }}
               >
                 {category.name}
               </Link>
@@ -163,12 +169,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           })}
         </nav>
 
-        {/* ── Sort & Price Filters ── */}
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", paddingBottom: "16px", borderBottom: "1px solid var(--color-border)" }}>
+        {/* ── Sort & Price Filters Panel ── */}
+        <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center py-6 border-b border-border mb-12 w-full">
           {/* Sort options */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-secondary)" }}>SORT BY:</span>
-            <div style={{ display: "flex", gap: "8px" }}>
+          <div className="flex flex-wrap items-center gap-3">
+            <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em", color: "var(--color-text-secondary)", textTransform: "uppercase" }}>
+              Sort by:
+            </span>
+            <div className="flex flex-wrap gap-2">
               {[
                 { label: 'Newest', value: 'newest' },
                 { label: 'Price: Low → High', value: 'price-asc' },
@@ -179,19 +187,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <Link
                     key={opt.value}
                     href={buildUrl({ sort: opt.value, page: 1 })}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "6px 12px",
-                      borderRadius: "20px",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      textDecoration: "none",
-                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
-                      backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
-                      color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                      transition: "all 0.2s ease"
-                    }}
+                    className={`text-xs px-3 py-1.5 border rounded-full transition-all ${
+                      isActive
+                        ? "bg-primary/5 border-primary text-primary font-semibold"
+                        : "bg-surface border-border text-primary hover:border-primary/30"
+                    }`}
                   >
                     {opt.label}
                   </Link>
@@ -201,9 +201,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </div>
 
           {/* Price Range options */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-secondary)" }}>PRICE RANGE:</span>
-            <div style={{ display: "flex", gap: "8px" }}>
+          <div className="flex flex-wrap items-center gap-3">
+            <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.05em", color: "var(--color-text-secondary)", textTransform: "uppercase" }}>
+              Price Range:
+            </span>
+            <div className="flex flex-wrap gap-2">
               {[
                 { label: 'All Prices', value: '' },
                 { label: 'Under ₹500', value: '500' },
@@ -215,19 +217,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <Link
                     key={opt.value}
                     href={buildUrl({ maxPrice: opt.value || null, page: 1 })}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      padding: "6px 12px",
-                      borderRadius: "20px",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      textDecoration: "none",
-                      border: `1px solid ${isActive ? "var(--color-accent)" : "var(--color-border)"}`,
-                      backgroundColor: isActive ? "var(--color-accent)" : "var(--color-surface)",
-                      color: isActive ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                      transition: "all 0.2s ease"
-                    }}
+                    className={`text-xs px-3 py-1.5 border rounded-full transition-all ${
+                      isActive
+                        ? "bg-primary/5 border-primary text-primary font-semibold"
+                        : "bg-surface border-border text-primary hover:border-primary/30"
+                    }`}
                   >
                     {opt.label}
                   </Link>
@@ -239,14 +233,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
         {/* ── Search Indicator (if active) ── */}
         {currentSearch && (
-          <div className="search-indicator-row">
-            <span className="text-sm footer-text-muted">
-              Search results for:
-            </span>
-            <strong className="text-sm">&ldquo;{currentSearch}&rdquo;</strong>
+          <div className="flex items-center gap-2 mb-8 bg-surface p-4 border border-border rounded-md text-sm">
+            <span className="text-secondary">Search results for:</span>
+            <strong className="text-primary">&ldquo;{currentSearch}&rdquo;</strong>
             <Link
               href={buildUrl({ page: 1 })}
-              className="search-indicator-clear"
+              className="text-accent underline font-medium ml-auto"
             >
               Clear search
             </Link>
@@ -255,14 +247,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
         {/* ── Products Grid ── */}
         {products.length === 0 ? (
-          <div className="products-empty-container">
-            <h3 className="text-lg" style={{ marginBottom: "8px" }}>
+          <div className="text-center py-20 bg-surface border border-border rounded-lg max-w-md mx-auto px-6">
+            <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", color: "var(--color-primary)", marginBottom: "8px" }}>
               No products found
             </h3>
-            <p className="text-sm footer-text-muted" style={{ marginBottom: "20px" }}>
+            <p className="text-sm text-secondary mb-8">
               We couldn&apos;t find any products matching your selection.
             </p>
-            <Link href="/products" className="btn btn-primary">
+            <Link href="/products" className="btn btn-primary btn-premium" style={{ display: "inline-flex" }}>
               View All Products
             </Link>
           </div>
@@ -284,28 +276,28 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
             {/* ── Pagination Controls ── */}
             {totalPages > 1 && (
-              <div className="pagination-container">
+              <div className="flex justify-center items-center gap-4 mt-16 pt-8 border-t border-border w-full">
                 {currentPage > 1 ? (
-                  <Link href={buildUrl({ page: currentPage - 1 })} className="btn btn-secondary">
-                    Previous
+                  <Link href={buildUrl({ page: currentPage - 1 })} className="btn btn-secondary btn-premium" style={{ minWidth: "120px" }}>
+                    &larr; Previous
                   </Link>
                 ) : (
-                  <Button variant="secondary" disabled>
-                    Previous
+                  <Button variant="secondary" className="btn-premium" style={{ minWidth: "120px" }} disabled>
+                    &larr; Previous
                   </Button>
                 )}
 
-                <span className="text-sm footer-text-muted">
-                  Page <strong>{currentPage}</strong> of {totalPages}
+                <span className="text-sm text-secondary font-medium">
+                  Page <strong className="text-primary">{currentPage}</strong> of {totalPages}
                 </span>
 
                 {currentPage < totalPages ? (
-                  <Link href={buildUrl({ page: currentPage + 1 })} className="btn btn-secondary">
-                    Next
+                  <Link href={buildUrl({ page: currentPage + 1 })} className="btn btn-secondary btn-premium" style={{ minWidth: "120px" }}>
+                    Next &rarr;
                   </Link>
                 ) : (
-                  <Button variant="secondary" disabled>
-                    Next
+                  <Button variant="secondary" className="btn-premium" style={{ minWidth: "120px" }} disabled>
+                    Next &rarr;
                   </Button>
                 )}
               </div>

@@ -157,204 +157,275 @@ export default async function AdminPage() {
   }));
 
   return (
-    <div className="flex flex-col gap-5">
-      <header>
-        <h1 className="text-3xl font-semibold mb-8 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
-          GVSwift Admin Console
+    <div className="flex flex-col gap-6">
+      <header className="mb-8 pb-6 border-b border-color-border" style={{ borderBottom: "1px solid var(--color-border)" }}>
+        <h1 className="text-3xl font-semibold mb-2 text-primary font-heading" style={{ fontFamily: "var(--font-heading)" }}>
+          Overview
         </h1>
-        <p className="text-secondary">
-          Manage your products, configure fraud/risk thresholds, and tune operational parameters.
+        <p className="text-secondary text-sm">
+          Here&apos;s what&apos;s happening with your cellar today. Manage your catalog, view risk thresholds, and check sales metrics.
         </p>
       </header>
 
       {/* KPI Cards Grid */}
       <div
-        className="kpi-grid"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "20px",
-          marginBottom: "24px",
-        }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8"
       >
         {/* Total Revenue */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Total Revenue
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: "var(--color-primary)",
-            }}
-          >
-            {formattedRevenue}
-          </span>
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+              Total Revenue
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-primary"
+              style={{ backgroundColor: "rgba(86, 25, 34, 0.08)", borderRadius: "6px" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>account_balance_wallet</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {formattedRevenue}
+            </h3>
+            <p className="text-xs text-secondary mt-1">Delivered orders sum</p>
+          </div>
         </div>
 
         {/* Orders Today */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Orders Today
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: "var(--color-primary)",
-            }}
-          >
-            {ordersToday.toLocaleString("en-IN")}
-          </span>
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+              Orders Today
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-primary"
+              style={{ backgroundColor: "rgba(86, 25, 34, 0.08)", borderRadius: "6px" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>receipt</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {ordersToday.toLocaleString("en-IN")}
+            </h3>
+            <p className="text-xs text-secondary mt-1">Placed since midnight</p>
+          </div>
         </div>
 
         {/* Pending Orders */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Pending Orders
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: "var(--color-primary)",
-            }}
-          >
-            {pendingOrders.toLocaleString("en-IN")}
-          </span>
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+              Pending Orders
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-primary"
+              style={{ backgroundColor: "rgba(86, 25, 34, 0.08)", borderRadius: "6px" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>pending_actions</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {pendingOrders.toLocaleString("en-IN")}
+            </h3>
+            <p className="text-xs text-secondary mt-1">Awaiting confirmation</p>
+          </div>
         </div>
 
-        {/* Total Active Users */}
+        {/* Active Customers */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Active Customers
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: "var(--color-primary)",
-            }}
-          >
-            {activeUsers.toLocaleString("en-IN")}
-          </span>
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+              Active Customers
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-primary"
+              style={{ backgroundColor: "rgba(86, 25, 34, 0.08)", borderRadius: "6px" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>groups</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {activeUsers.toLocaleString("en-IN")}
+            </h3>
+            <p className="text-xs text-secondary mt-1">Non-blocked buyers</p>
+          </div>
         </div>
 
         {/* Total Products */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: "4px solid var(--color-primary)",
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Total Products
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: "var(--color-primary)",
-            }}
-          >
-            {totalProducts.toLocaleString("en-IN")}
-          </span>
+          <div className="flex justify-between items-start">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider">
+              Total Products
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-primary"
+              style={{ backgroundColor: "rgba(86, 25, 34, 0.08)", borderRadius: "6px" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>inventory_2</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {totalProducts.toLocaleString("en-IN")}
+            </h3>
+            <p className="text-xs text-secondary mt-1">Active catalog count</p>
+          </div>
         </div>
 
         {/* Low Stock Products */}
         <div
-          className="card"
+          className="card hover-lift p-6 flex flex-col gap-4"
           style={{
-            padding: "20px",
-            borderRadius: "var(--radius-lg, 12px)",
-            backgroundColor: "var(--color-bg-card, #fcf9f8)",
+            backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
-            borderLeft: `4px solid ${lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)"}`,
+            borderRadius: "var(--radius-lg)",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            justifyContent: "between",
+            borderColor: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-border)",
           }}
         >
-          <span className="text-xs font-semibold text-secondary" style={{ textTransform: "uppercase", letterSpacing: "0.5px" }}>
-            Low Stock Products
-          </span>
-          <span
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "26px",
-              fontWeight: "600",
-              color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)",
-            }}
-          >
-            {lowStockProductsCount.toLocaleString("en-IN")}
-          </span>
-          <Link
-            href="/admin/products?filter=lowstock"
-            style={{ fontSize: "12px", color: "var(--color-primary)", textDecoration: "underline", marginTop: "2px" }}
-          >
-            View low stock items →
-          </Link>
+          <div className="flex justify-between items-start">
+            <span
+              className="text-xs font-semibold uppercase tracking-wider"
+              style={{ color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-text-secondary)" }}
+            >
+              Low Stock
+            </span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center"
+              style={{
+                backgroundColor: lowStockProductsCount > 0 ? "rgba(220, 38, 38, 0.08)" : "rgba(86, 25, 34, 0.08)",
+                borderRadius: "6px",
+                color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)",
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>warning</span>
+            </div>
+          </div>
+          <div>
+            <h3
+              className="font-heading"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: "600",
+                color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)",
+                margin: 0,
+              }}
+            >
+              {lowStockProductsCount.toLocaleString("en-IN")}
+            </h3>
+            <Link
+              href="/admin/products?filter=lowstock"
+              className="text-xs mt-1 block hover:text-accent font-medium transition-colors"
+              style={{
+                color: lowStockProductsCount > 0 ? "var(--color-error)" : "var(--color-primary)",
+                textDecoration: "underline",
+              }}
+            >
+              Manage Stock &rarr;
+            </Link>
+          </div>
         </div>
       </div>
 

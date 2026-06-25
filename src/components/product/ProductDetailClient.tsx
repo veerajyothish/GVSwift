@@ -232,7 +232,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       `}} />
 
       {/* Back to Products navigation */}
-      <div className="back-link-container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 20px 0" }}>
+      <div className="back-link-container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px 20px 0" }}>
         <Link
           href="/products"
           style={{
@@ -240,9 +240,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             alignItems: "center",
             gap: "8px",
             fontSize: "14px",
-            color: "var(--color-accent)",
-            fontWeight: 500,
+            color: "var(--color-primary)",
+            fontWeight: 600,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
           }}
+          className="nav-link-hover"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -258,46 +261,46 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         </Link>
       </div>
 
-      <main className="detail-grid products-main">
+      <main className="detail-grid products-main max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "32px" }}>
         {/* ── Desktop Image Column (Hidden on mobile to save vertical space) ── */}
-        <div className="desktop-image-column detail-image-container">
+        <div className="desktop-image-column relative rounded-lg overflow-hidden border border-border aspect-[3/4]" style={{ height: "650px" }}>
           <Image
             src={imageUrl}
             alt={primaryImage?.altText || product.name}
             fill
-            style={{ objectFit: "cover" }}
+            className="object-cover"
             priority
           />
           {isOutOfStock && (
-            <span className="product-card-badge-error">
+            <span className="badge-premium" style={{ position: "absolute", top: "20px", left: "20px", backgroundColor: "var(--color-error)", color: "#fff" }}>
               OUT OF STOCK
             </span>
           )}
         </div>
 
         {/* ── Right Column: Info & Action panel ── */}
-        <div className="detail-main-col">
+        <div className="detail-main-col flex flex-col gap-6" style={{ padding: "12px 0" }}>
           
           {/* Mobile Header: Visible on mobile, floats image beside title */}
-          <div className="mobile-header">
-            <div className="detail-thumb-mobile">
+          <div className="mobile-header items-center gap-4 bg-surface p-4 border border-border rounded-lg shadow-sm">
+            <div className="relative w-16 h-20 rounded-md overflow-hidden bg-default border border-border flex-shrink-0">
               <Image
                 src={imageUrl}
                 alt={product.name}
                 fill
-                style={{ objectFit: "cover" }}
+                className="object-cover"
               />
               {isOutOfStock && (
-                <span className="detail-thumb-out-badge">
+                <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.5)", color: "#fff", fontSize: "9px", fontWeight: "bold" }}>
                   OUT
                 </span>
               )}
             </div>
             <div>
-              <h1 className="text-base detail-mobile-title">
+              <h1 style={{ fontFamily: "var(--font-heading)", fontStyle: "italic", fontSize: "24px", color: "var(--color-primary)", fontWeight: 400, marginBottom: "4px" }}>
                 {product.name}
               </h1>
-              <span className="detail-mobile-price">
+              <span className="font-semibold text-lg text-primary">
                 {formattedPrice}
               </span>
             </div>
@@ -305,20 +308,23 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* Desktop Header: Visible on desktop */}
           <div className="desktop-header">
-            <h1 className="text-xl detail-desktop-title">
+            <span className="font-semibold text-accent uppercase tracking-widest text-xs mb-2 block" style={{ fontFamily: "var(--font-body)", letterSpacing: "0.15em" }}>
+              {product.category?.name || "Premium Collection"}
+            </span>
+            <h1 className="mb-4" style={{ fontFamily: "var(--font-heading)", fontSize: "40px", fontStyle: "italic", fontWeight: 400, color: "var(--color-primary)" }}>
               {product.name}
             </h1>
-            <span className="detail-desktop-price">
+            <span className="font-semibold text-2xl text-primary" style={{ display: "block", marginBottom: "8px" }}>
               {formattedPrice}
             </span>
           </div>
 
           {/* Variant Selector */}
-          <div>
-            <span className="detail-label">
-              SELECT SIZE
+          <div className="flex flex-col gap-3">
+            <span className="font-semibold text-xs text-secondary tracking-widest uppercase" style={{ fontFamily: "var(--font-body)", letterSpacing: "0.08em" }}>
+              Select Size
             </span>
-            <div className="detail-size-list">
+            <div className="flex flex-wrap gap-2">
               {product.variants.map((variant) => {
                 const { size } = parseVariantSku(variant.sku);
                 const isSelected = variant.id === selectedVariantId;
@@ -328,14 +334,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariantId(variant.id)}
-                    className="detail-size-btn"
+                    className="transition-all duration-300 font-semibold"
                     style={{
-                      border: `1px solid ${isSelected ? "var(--color-accent)" : "var(--color-border)"}`,
-                      backgroundColor: isSelected ? "var(--color-accent)" : "var(--color-surface)",
+                      border: `1px solid ${isSelected ? "var(--color-primary)" : "var(--color-border)"}`,
+                      backgroundColor: isSelected ? "var(--color-primary)" : "var(--color-surface)",
                       color: isSelected ? "var(--color-accent-text)" : "var(--color-text-primary)",
-                      opacity: isVarOutOfStock ? 0.4 : 1,
+                      opacity: isVarOutOfStock ? 0.35 : 1,
                       textDecoration: isVarOutOfStock ? "line-through" : "none",
+                      padding: "10px 24px",
+                      borderRadius: "4px",
+                      fontSize: "13px",
+                      letterSpacing: "0.05em",
+                      cursor: isVarOutOfStock ? "not-allowed" : "pointer",
+                      minWidth: "64px",
+                      textAlign: "center"
                     }}
+                    disabled={isVarOutOfStock}
                     title={isVarOutOfStock ? `${size} (Out of stock)` : size}
                     aria-label={`Size ${size}`}
                   >
@@ -347,9 +361,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Stock Status indicator */}
-          <div className="detail-stock-indicator">
+          <div className="flex items-center gap-2 py-1">
             <span
-              className="detail-stock-dot"
+              className="w-2.5 h-2.5 rounded-full"
               style={{
                 backgroundColor: isOutOfStock
                   ? "var(--color-error)"
@@ -358,29 +372,31 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   : "var(--color-success)",
               }}
             />
-            <span className="text-xs font-medium footer-text-muted">
+            <span className="text-xs font-semibold text-secondary uppercase tracking-wider" style={{ letterSpacing: "0.05em" }}>
               {isOutOfStock
                 ? "Out of stock"
                 : stock <= 5
                 ? `Only ${stock} units left — order soon`
-                : "In Stock (Dispatching today)"}
+                : "In Stock (Dispatching today from Visakhapatnam)"}
             </span>
           </div>
 
           {/* CTA Actions: Buy Now & Add to Cart */}
-          <div className="cta-container" ref={ctaRef}>
+          <div className="cta-container flex gap-3 mt-2" ref={ctaRef}>
             <Button
               variant={isOutOfStock ? "secondary" : "primary"}
-              style={{ flex: 1, minHeight: "44px" }}
+              className="btn-premium flex-1"
+              style={{ minHeight: "48px" }}
               disabled={isOutOfStock}
               loading={isBuyingNow}
               onClick={handleBuyNow}
             >
-              {isOutOfStock ? "Sold Out" : "Buy Now"}
+              {isOutOfStock ? "Sold Out" : "Buy It Now"}
             </Button>
             <Button
               variant="secondary"
-              style={{ flex: 1, minHeight: "44px" }}
+              className="btn-premium flex-1"
+              style={{ minHeight: "48px" }}
               disabled={isOutOfStock}
               loading={isAddingToCart}
               onClick={handleAddToCart}
@@ -389,9 +405,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </Button>
           </div>
 
-          {/* COD & Shipping above-the-fold compact boxes */}
-          <div className="detail-info-box">
-            <div className="detail-info-row-flex">
+          {/* COD & Shipping info box */}
+          <div className="info-box-premium flex flex-col gap-4 mt-4">
+            <div className="flex items-center gap-3 text-sm text-primary font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -399,7 +415,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 strokeWidth={2}
                 stroke="currentColor"
                 className="icon-xs"
-                style={{ color: "var(--color-accent)", flexShrink: 0 }}
+                style={{ color: "var(--color-primary)", flexShrink: 0 }}
               >
                 <path
                   strokeLinecap="round"
@@ -407,31 +423,33 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>COD available for serviceable areas</span>
+              <span>Cash on Delivery (COD) available for serviceable pincodes.</span>
             </div>
             
-            <div className="detail-info-grid">
+            <div className="grid grid-cols-2 gap-4 border-t border-border/60 pt-4 text-xs text-secondary leading-relaxed">
               <div>
-                <strong>Shipping:</strong> Standard 3-5 days.{" "}
-                <Link href="/shipping" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
-                  Learn more
+                <strong className="text-primary uppercase tracking-wider block mb-1">Standard Shipping</strong>
+                Free delivery across Andhra Pradesh in 3-5 business days.{" "}
+                <Link href="/shipping" style={{ color: "var(--color-primary)", textDecoration: "underline" }}>
+                  Shipping Policies
                 </Link>
               </div>
               <div>
-                <strong>Returns:</strong> Strict 7 days.{" "}
-                <Link href="/returns" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
-                  Learn more
+                <strong className="text-primary uppercase tracking-wider block mb-1">Conscious Returns</strong>
+                Strict 7-day return window. Contact support to initiate.{" "}
+                <Link href="/returns" style={{ color: "var(--color-primary)", textDecoration: "underline" }}>
+                  Return Policies
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Description Section (Below fold / secondary space) */}
-          <div className="detail-desc-section">
-            <h2 className="text-xs font-semibold" style={{ marginBottom: "6px" }}>
+          <div className="border-t border-border pt-6 mt-4">
+            <h2 className="font-semibold text-xs uppercase tracking-widest text-primary mb-3" style={{ fontFamily: "var(--font-body)" }}>
               Product Details
             </h2>
-            <p className="text-xs footer-text-muted" style={{ lineHeight: "1.5" }}>
+            <p className="text-sm text-secondary leading-relaxed" style={{ whiteSpace: "pre-line" }}>
               {product.description || "No product description provided."}
             </p>
           </div>
@@ -439,7 +457,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         </div>
       </main>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px 48px" }}>
+      <div style={{ maxWidth: "1200px", margin: "40px auto 48px" }} className="px-margin-mobile md:px-margin-desktop">
         <RecentlyViewed excludeProductId={product.id} />
       </div>
 
@@ -451,24 +469,24 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           bottom: showStickyBar ? "0" : "-100px",
           left: 0,
           right: 0,
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          backgroundColor: "rgba(252, 249, 248, 0.96)",
           backdropFilter: "blur(12px)",
           borderTop: "1px solid var(--color-border)",
-          padding: "12px 16px",
+          padding: "12px 20px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           zIndex: 50,
           transition: "bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-          boxShadow: "0 -4px 20px rgba(86, 25, 34, 0.08)",
+          boxShadow: "0 -4px 20px rgba(86, 25, 34, 0.06)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "var(--radius-sm)", overflow: "hidden", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ position: "relative", width: "44px", height: "44px", borderRadius: "4px", overflow: "hidden", flexShrink: 0, border: "1px solid var(--color-border)" }}>
             <Image src={imageUrl} alt={product.name} fill style={{ objectFit: "cover" }} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--color-text-primary)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", maxWidth: "140px" }}>
+            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--color-text-primary)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", maxWidth: "150px" }}>
               {product.name}
             </span>
             <span style={{ fontSize: "11px", color: "var(--color-text-secondary)" }}>
@@ -482,9 +500,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             disabled={isOutOfStock}
             loading={isBuyingNow}
             onClick={handleBuyNow}
-            style={{ fontSize: "12px", padding: "6px 16px", height: "36px", minWidth: "100px", transform: "scale(1)", transition: "transform 0.1s ease" }}
-            onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.96)")}
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            style={{ fontSize: "12px", padding: "6px 20px", height: "38px", minWidth: "110px" }}
+            className="btn-premium"
           >
             {isOutOfStock ? "Sold Out" : "Buy Now"}
           </Button>

@@ -97,16 +97,16 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
   };
 
   return (
-    <Card className="p-6 bg-surface border border-color-border rounded-lg shadow-sm">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <Card className="p-6 bg-surface border border-color-border rounded-lg shadow-sm" style={{ border: "1px solid var(--color-border)" }}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {/* Profile Header Block */}
-        <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: "color-mix(in oklch, var(--color-primary) 4%, var(--color-surface))", border: "1px solid var(--color-border)" }}>
+        <div className="flex items-center gap-4 p-4 rounded-xl" style={{ backgroundColor: "color-mix(in srgb, var(--color-primary) 4%, var(--color-surface))", border: "1px solid var(--color-border)" }}>
           <div
             className="flex items-center justify-center rounded-full font-bold text-white shadow-sm"
             style={{
               width: "60px",
               height: "60px",
-              fontSize: "22px",
+              fontSize: "20px",
               backgroundColor: "var(--color-primary)",
               letterSpacing: "0.05em",
               flexShrink: 0,
@@ -115,27 +115,32 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
             {initials}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-primary animate-fade-in" style={{ margin: 0 }}>
+            <h2 className="text-lg font-bold text-primary" style={{ margin: 0, fontFamily: "var(--font-heading)" }}>
               {displayName}
             </h2>
-            <p className="text-13 text-secondary" style={{ margin: "2px 0 0 0" }}>
-              GVSwift Member
+            <p className="text-xs text-secondary" style={{ margin: "4px 0 0 0" }}>
+              GVSwift Premium Member
             </p>
           </div>
         </div>
 
         {/* Email - Read-Only */}
         <div className="input-group">
-          <label className="input-label">Email Address</label>
+          <label className="input-label" style={{ fontFamily: "var(--font-body)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "12px", color: "var(--color-text-secondary)" }}>Email Address</label>
           <input
             type="text"
             value={initialUser.email}
             disabled
             className="input-field"
             style={{
-              backgroundColor: "rgba(86, 25, 34, 0.03)",
+              backgroundColor: "rgba(86, 25, 34, 0.02)",
               cursor: "not-allowed",
               color: "var(--color-text-secondary)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-md)",
+              padding: "10px 14px",
+              fontSize: "14px",
+              width: "100%",
             }}
           />
           <span className="text-xs text-secondary mt-1">
@@ -151,6 +156,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           error={fieldErrors.name}
           required
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="input-field-premium"
         />
 
         {/* Phone - Editable */}
@@ -163,25 +169,26 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })
           }
+          className="input-field-premium"
         />
 
         {/* Member Since - Display */}
-        <div className="flex justify-between items-center py-2 border-t border-b border-color-border my-2" style={{ borderTop: "1px solid var(--color-border)", borderBottom: "1px solid var(--color-border)", padding: "8px 0" }}>
+        <div className="flex justify-between items-center py-3 border-t border-b border-color-border my-2" style={{ borderTop: "1px solid var(--color-border)", borderBottom: "1px solid var(--color-border)" }}>
           <span className="text-sm font-medium text-secondary">Member Since</span>
           <span className="text-sm font-semibold text-primary">{formattedDate}</span>
         </div>
 
-        <div className="flex justify-between items-center mt-6 pt-6 border-t border-color-border" style={{ borderTop: "1px solid var(--color-border)" }}>
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center mt-4 pt-6 border-t border-color-border" style={{ borderTop: "1px solid var(--color-border)" }}>
           <SignOutButton
-            className="btn-secondary"
+            className="btn btn-secondary"
             style={{
-              padding: "10px 20px",
-              borderRadius: "var(--radius-md)",
+              padding: "10px 24px",
+              borderRadius: "50px",
               fontWeight: 600,
-              fontSize: "14px",
-              backgroundColor: "transparent",
-              border: "1px solid var(--color-border)",
-              color: "var(--color-text-secondary)",
+              fontSize: "13px",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
             }}
           >
             Sign Out
@@ -190,13 +197,14 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
             variant="primary"
             type="submit"
             loading={submitting}
-            className="btn-min-w-160"
+            className="btn-premium btn-min-w-160"
             style={{
-              backgroundColor: "var(--color-accent)",
-              color: "var(--color-accent-text)",
-              padding: "10px 24px",
-              borderRadius: "var(--radius-md)",
+              padding: "10px 28px",
+              borderRadius: "50px",
               fontWeight: 600,
+              fontSize: "13px",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
             }}
           >
             Save Changes

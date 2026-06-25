@@ -89,108 +89,150 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {/* Header action */}
       <div className="flex justify-end">
         <button
           onClick={() => setShowAddressModal(true)}
-          className="btn btn-primary"
-          style={{ display: "inline-flex", alignItems: "center", borderRadius: "50px", cursor: "pointer" }}
+          className="btn btn-primary btn-premium"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "10px 24px",
+            borderRadius: "50px",
+            cursor: "pointer",
+          }}
         >
-          + Add New Address
+          <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
+          Add New Address
         </button>
       </div>
 
       {/* Address List Grid */}
       {addresses.length === 0 ? (
-        <Card className="p-6 flex flex-col items-center text-center gap-4">
+        <Card className="p-8 flex flex-col items-center text-center gap-4" style={{ border: "1px solid var(--color-border)" }}>
           <span style={{ fontSize: "48px" }}>📍</span>
           <h2 className="text-xl font-semibold text-primary">No addresses found</h2>
-          <p className="text-sm text-secondary max-w-xl">
-            Add a shipping address to enable quick checkout for your cash on delivery orders.
+          <p className="text-sm text-secondary max-w-md">
+            Add a shipping address to enable quick checkout for your premium orders.
           </p>
           <button
             onClick={() => setShowAddressModal(true)}
-            className="btn btn-primary mt-8"
-            style={{ borderRadius: "50px", cursor: "pointer" }}
+            className="btn btn-primary btn-premium mt-4"
+            style={{ borderRadius: "50px" }}
           >
             Add Your First Address
           </button>
         </Card>
       ) : (
-        <div className="address-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
+        <div className="address-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
           {addresses.map((address) => (
-            <Card
+            <div
               key={address.id}
-              className={`p-5 flex flex-col gap-4 relative ${address.isDefault ? "address-card-default" : ""}`}
-              style={{ borderLeft: address.isDefault ? "4px solid var(--color-primary)" : undefined }}
+              className={`rounded-xl p-6 border relative overflow-hidden group hover:border-primary transition-all duration-300 ${
+                address.isDefault
+                  ? "bg-surface shadow-md"
+                  : "bg-surface-container-low"
+              }`}
+              style={{
+                border: address.isDefault ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
+                backgroundColor: address.isDefault ? "var(--color-surface)" : "var(--color-surface-container-low)",
+              }}
             >
-              {/* Badges Container */}
-              <div className="flex flex-wrap gap-2 absolute" style={{ top: "16px", right: "16px" }}>
-                {address.isDefault && (
-                  <span className="badge-default" style={{ backgroundColor: "var(--color-primary)", color: "#fff", padding: "2px 8px", borderRadius: "4px", fontSize: "12px" }}>
-                    Default
-                  </span>
-                )}
-                {address.codBlocked && (
-                  <span className="badge-warning" style={{ backgroundColor: "var(--color-warning-bg)", color: "var(--color-warning)", padding: "2px 8px", borderRadius: "4px", fontSize: "12px", border: "1px solid rgba(133, 79, 11, 0.15)" }}>
-                    COD Unavailable
-                  </span>
-                )}
-              </div>
+              {/* Default Badge */}
+              {address.isDefault && (
+                <div
+                  className="absolute top-0 right-0 text-white px-4 py-1 rounded-bl-lg uppercase tracking-wider"
+                  style={{
+                    backgroundColor: "var(--color-primary)",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Default
+                </div>
+              )}
 
-              {/* Recipient Details */}
-              <div>
-                <h3 className="text-lg font-semibold text-primary">
+              {/* Recipient Header */}
+              <div className="flex items-start justify-between mb-4 mt-2">
+                <h3 className="text-lg font-bold text-primary font-heading" style={{ margin: 0, fontFamily: "var(--font-heading)" }}>
                   {address.fullName}
                 </h3>
-                <p className="text-sm text-secondary mt-2">
-                  Phone: {address.phone}
-                </p>
+                <span
+                  className="material-symbols-outlined text-secondary"
+                  style={{
+                    color: address.isDefault ? "var(--color-primary)" : "var(--color-text-secondary)",
+                  }}
+                >
+                  {address.isDefault ? "home" : "place"}
+                </span>
               </div>
 
               {/* Address Details */}
-              <div className="text-sm text-primary" style={{ lineHeight: "1.6" }}>
-                <p>{address.line1}</p>
-                {address.line2 && <p>{address.line2}</p>}
-                <p>
+              <div className="text-sm text-secondary mb-4 space-y-1" style={{ lineHeight: "1.6" }}>
+                <p className="m-0 text-primary">{address.line1}</p>
+                {address.line2 && <p className="m-0 text-primary">{address.line2}</p>}
+                <p className="m-0 text-primary">
                   {address.city}, {address.state} &ndash;{" "}
                   <strong className="text-accent">{address.pincode}</strong>
                 </p>
               </div>
 
-              {/* Footer Actions */}
-              <div className="address-card-footer" style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
-                <Link
-                  href={`/account/addresses/${address.id}/edit`}
-                  className="btn btn-secondary btn-sm"
-                  style={{ minHeight: "36px", padding: "6px 16px", fontSize: "13px" }}
+              {/* Phone Details */}
+              <div className="flex items-center gap-2 mb-6 text-sm text-secondary">
+                <span className="material-symbols-outlined text-secondary" style={{ fontSize: "16px" }}>call</span>
+                <span>{address.phone}</span>
+              </div>
+
+              {/* COD Availability Alert */}
+              {address.codBlocked && (
+                <div
+                  className="mb-6 p-3 rounded-lg border flex items-center gap-2"
+                  style={{
+                    backgroundColor: "var(--color-warning-bg)",
+                    borderColor: "rgba(133, 79, 11, 0.15)",
+                    color: "var(--color-warning)",
+                  }}
                 >
-                  Edit
-                </Link>
-                <Button
-                  variant="danger"
+                  <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>warning</span>
+                  <span className="text-xs font-medium">COD unavailable for this pincode</span>
+                </div>
+              )}
+
+              {/* Footer Actions */}
+              <div className="flex gap-4 pt-4 border-t border-color-border items-center justify-between" style={{ borderTop: "1px solid var(--color-border)" }}>
+                <div className="flex gap-4 items-center">
+                  <Link
+                    href={`/account/addresses/${address.id}/edit`}
+                    className="text-xs font-semibold text-primary hover:text-accent uppercase tracking-wider transition-colors"
+                  >
+                    Edit
+                  </Link>
+
+                  {!address.isDefault && (
+                    <>
+                      <div className="h-3 w-[1px]" style={{ backgroundColor: "var(--color-border)" }}></div>
+                      <button
+                        onClick={() => handleSetDefault(address.id)}
+                        disabled={deletingId === address.id || settingDefaultId === address.id}
+                        className="text-xs font-semibold text-primary hover:text-accent uppercase tracking-wider transition-colors bg-transparent border-none p-0 cursor-pointer"
+                      >
+                        {settingDefaultId === address.id ? "Setting..." : "Set Default"}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <button
                   onClick={() => setConfirmDeleteId(address.id)}
                   disabled={deletingId === address.id || settingDefaultId === address.id}
-                  className="btn-sm"
-                  style={{ minHeight: "36px", padding: "6px 16px", fontSize: "13px" }}
+                  className="text-xs font-semibold text-secondary hover:text-error uppercase tracking-wider transition-colors ml-auto bg-transparent border-none p-0 cursor-pointer"
                 >
                   Delete
-                </Button>
-                {!address.isDefault && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleSetDefault(address.id)}
-                    loading={settingDefaultId === address.id}
-                    disabled={deletingId === address.id || settingDefaultId === address.id}
-                    className="btn-sm"
-                    style={{ minHeight: "36px", padding: "6px 16px", fontSize: "13px" }}
-                  >
-                    Set as Default
-                  </Button>
-                )}
+                </button>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       )}
@@ -206,6 +248,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
               variant="secondary"
               onClick={() => setConfirmDeleteId(null)}
               disabled={deletingId !== null}
+              style={{ borderRadius: "50px" }}
             >
               Cancel
             </Button>
@@ -218,6 +261,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
                 }
               }}
               loading={deletingId === confirmDeleteId}
+              style={{ borderRadius: "50px" }}
             >
               Delete Address
             </Button>

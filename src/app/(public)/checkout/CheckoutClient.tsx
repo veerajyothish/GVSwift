@@ -923,7 +923,8 @@ export default function CheckoutClient({
             onClick={handlePlaceOrder}
             disabled={isPlaceOrderDisabled}
             loading={submittingOrder}
-            style={{ width: "100%", padding: "12px 24px", fontSize: "16px" }}
+            style={{ width: "100%", padding: "14px 28px", fontSize: "15px" }}
+            className="btn-premium"
           >
             Place COD Order &rarr;
           </Button>

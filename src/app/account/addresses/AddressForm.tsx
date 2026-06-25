@@ -258,21 +258,31 @@ export default function AddressForm({
   };
 
   const formJsx = (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {/* Geolocation Button */}
       <button
         type="button"
         disabled={locating}
         onClick={handleGeolocation}
-        className="btn btn-outline btn-sm flex items-center gap-2 mb-2 self-start"
-        style={{ minHeight: "32px", fontSize: "13px", padding: "6px 12px" }}
+        className="btn btn-secondary flex items-center gap-2 mb-2 self-start btn-premium"
+        style={{
+          minHeight: "36px",
+          fontSize: "12px",
+          padding: "8px 16px",
+          borderRadius: "50px",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}
       >
         {locating ? (
           <>
-            <span className="animate-spin">⏳</span> Detecting location...
+            <span className="animate-spin mr-1">⌛</span> Detecting location...
           </>
         ) : (
-          <>📍 Use My Location</>
+          <>
+            <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>my_location</span>
+            Use My Location
+          </>
         )}
       </button>
 
@@ -284,6 +294,7 @@ export default function AddressForm({
           error={fieldErrors.fullName}
           required
           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+          className="input-field-premium"
         />
         <Input
           label="Mobile Number"
@@ -292,6 +303,7 @@ export default function AddressForm({
           error={fieldErrors.phone}
           required
           onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
+          className="input-field-premium"
         />
       </div>
 
@@ -305,9 +317,10 @@ export default function AddressForm({
             required
             onBlur={handlePincodeBlur}
             onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
+            className="input-field-premium"
           />
           {pincodeLoading && (
-            <span className="absolute right-2 top-9 text-xs text-secondary animate-pulse">
+            <span className="absolute right-3 top-9 text-xs text-secondary animate-pulse font-medium">
               Loading...
             </span>
           )}
@@ -319,6 +332,7 @@ export default function AddressForm({
           error={fieldErrors.city}
           required
           onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+          className="input-field-premium"
         />
         <Input
           label="State"
@@ -327,6 +341,7 @@ export default function AddressForm({
           error={fieldErrors.state}
           required
           onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+          className="input-field-premium"
         />
       </div>
 
@@ -337,6 +352,7 @@ export default function AddressForm({
         error={fieldErrors.line1}
         required
         onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
+        className="input-field-premium"
       />
 
       <Input
@@ -345,6 +361,7 @@ export default function AddressForm({
         value={formData.line2}
         error={fieldErrors.line2}
         onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
+        className="input-field-premium"
       />
 
       <div className="flex items-center gap-2 mt-2">
@@ -353,15 +370,18 @@ export default function AddressForm({
           id="isDefault"
           checked={formData.isDefault}
           onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-          className="icon-xs"
           style={{
             cursor: "pointer",
-            accentColor: "var(--color-accent)",
+            accentColor: "var(--color-primary)",
+            width: "18px",
+            height: "18px",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-sm)",
           }}
         />
         <label
           htmlFor="isDefault"
-          className="text-sm text-primary"
+          className="text-sm text-primary font-medium"
           style={{
             cursor: "pointer",
             userSelect: "none",
@@ -372,7 +392,7 @@ export default function AddressForm({
       </div>
 
       <div
-        className="border-t border-color-border pt-4 mt-4 flex justify-end gap-3"
+        className="border-t border-color-border pt-6 mt-4 flex justify-end gap-3"
         style={{ borderTop: "1px solid var(--color-border)" }}
       >
         <Button
@@ -386,6 +406,13 @@ export default function AddressForm({
             }
           }}
           disabled={submitting}
+          style={{
+            borderRadius: "50px",
+            padding: "10px 24px",
+            fontSize: "13px",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
         >
           Cancel
         </Button>
@@ -393,9 +420,13 @@ export default function AddressForm({
           variant="primary"
           type="submit"
           loading={submitting}
+          className="btn-premium"
           style={{
             borderRadius: "50px",
             padding: "10px 32px",
+            fontSize: "13px",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
           }}
         >
           {addressId ? "Save Changes" : "Add Address"}
@@ -409,8 +440,9 @@ export default function AddressForm({
   }
 
   return (
-    <Card className="p-6 bg-surface border border-color-border rounded-lg shadow-sm w-full max-w-xl mx-auto">
+    <Card className="p-6 bg-surface border border-color-border rounded-lg shadow-sm w-full max-w-xl mx-auto" style={{ border: "1px solid var(--color-border)" }}>
       {formJsx}
     </Card>
   );
 }
+

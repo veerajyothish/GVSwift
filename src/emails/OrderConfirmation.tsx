@@ -30,7 +30,7 @@ export default function OrderConfirmation(p: Props) {
         <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 16px' }}>
 
           <Section style={{
-            background: 'linear-gradient(135deg, #01696f, #0c4e54)',
+            background: 'linear-gradient(135deg, #561922, #3c0610)',
             borderRadius: '12px', padding: '28px 32px',
             textAlign: 'center', marginBottom: '20px',
           }}>
@@ -88,7 +88,7 @@ export default function OrderConfirmation(p: Props) {
             <Row>
               <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#28251d' }}>Total</Text></Column>
               <Column style={{ textAlign: 'right' }}>
-                <Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#01696f' }}>₹{p.total.toFixed(2)}</Text>
+                <Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#561922' }}>₹{p.total.toFixed(2)}</Text>
               </Column>
             </Row>
           </Section>
@@ -103,10 +103,11 @@ export default function OrderConfirmation(p: Props) {
 
           <Text style={{ fontSize: '12px', color: '#bab9b4', textAlign: 'center', margin: 0 }}>
             GVSwift · Questions? Visit{' '}
-            <a href="https://gvswift.vercel.app" style={{ color: '#01696f' }}>gvswift.vercel.app</a>
+            <a href="https://gvswift.vercel.app" style={{ color: '#561922' }}>gvswift.vercel.app</a>
           </Text>
         </Container>
       </Body>
     </Html>
   );
 }
+
