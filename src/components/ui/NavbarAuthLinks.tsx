@@ -64,7 +64,7 @@ export async function NavbarAuthLinks() {
       <Link href="/cart" className="site-navbar-link">
         Cart
       </Link>
-      <Link href="/orders" className="site-navbar-link">
+      <Link href="/account/orders" className="site-navbar-link">
         Orders
       </Link>
       {isAdmin && (

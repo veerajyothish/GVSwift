@@ -96,16 +96,19 @@ export default async function CheckoutPage() {
     );
   }
 
-  // Load user's cart from database
-  const cart = await getCart(user.id);
+  // Load checkout data in parallel
+  const [cart, addresses, codLimitPaise, loyaltyAccount, loyaltySettings] = await Promise.all([
+    getCart(user.id),
+    listAddresses(user.id),
+    getCodLimitPaise(),
+    getOrCreateLoyaltyAccount(user.id),
+    getLoyaltySettings(),
+  ]);
 
   // If cart is empty or null, redirect back to cart page
   if (!cart || cart.items.length === 0) {
     redirect("/cart");
   }
-
-  // Load user's addresses
-  const addresses = await listAddresses(user.id);
 
   // Pre-calculate serviceability, COD blocked status, and approval requirements for each address
   const addressesWithRisk = await Promise.all(
@@ -154,14 +157,6 @@ export default async function CheckoutPage() {
     })
   );
 
-  // Get the current COD limit
-  const codLimitPaise = await getCodLimitPaise();
-
-  // B12: Fetch loyalty balance and settings for the redeem toggle
-  const [loyaltyAccount, loyaltySettings] = await Promise.all([
-    getOrCreateLoyaltyAccount(user.id),
-    getLoyaltySettings(),
-  ]);
   const loyaltyBalance = loyaltyAccount.balance;
 
   return (

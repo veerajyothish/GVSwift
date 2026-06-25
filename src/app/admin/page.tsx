@@ -4,52 +4,76 @@ import RevenueCharts from "./RevenueCharts";
 import { getLowStockThreshold } from "@/features/settings/service";
 
 export default async function AdminPage() {
-  // 1. Total revenue — sum of all orders with status DELIVERED
-  const revenueAggregation = await prisma.order.aggregate({
-    _sum: {
-      totalPaise: true,
-    },
-    where: {
-      status: "DELIVERED",
-    },
-  });
-  const totalRevenueRs = (revenueAggregation._sum.totalPaise ?? 0) / 100;
-
-  // 2. Orders today — count of orders created today (midnight to now)
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const ordersToday = await prisma.order.count({
-    where: {
-      createdAt: {
-        gte: todayStart,
-      },
-    },
-  });
 
-  // 3. Pending orders — count of orders with status PLACED or CONFIRMED
-  const pendingOrders = await prisma.order.count({
-    where: {
-      status: {
-        in: ["PLACED", "CONFIRMED"],
-      },
-    },
-  });
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
 
-  // 4. Total active users — count of users where blocked = false AND role != 'ADMIN'
-  const activeUsers = await prisma.user.count({
-    where: {
-      blocked: false,
-      role: {
-        not: "ADMIN",
+  // Fetch all KPIs and historical orders in parallel
+  const [
+    revenueAggregation,
+    ordersToday,
+    pendingOrders,
+    activeUsers,
+    totalProducts,
+    lowStockThreshold,
+    dailyOrders,
+  ] = await Promise.all([
+    prisma.order.aggregate({
+      _sum: {
+        totalPaise: true,
       },
-    },
-  });
+      where: {
+        status: "DELIVERED",
+      },
+    }),
+    prisma.order.count({
+      where: {
+        createdAt: {
+          gte: todayStart,
+        },
+      },
+    }),
+    prisma.order.count({
+      where: {
+        status: {
+          in: ["PLACED", "CONFIRMED"],
+        },
+      },
+    }),
+    prisma.user.count({
+      where: {
+        blocked: false,
+        role: {
+          not: "ADMIN",
+        },
+      },
+    }),
+    prisma.product.count(),
+    getLowStockThreshold(),
+    prisma.order.findMany({
+      where: {
+        status: "DELIVERED",
+        createdAt: {
+          gte: thirtyDaysAgo,
+        },
+      },
+      select: {
+        createdAt: true,
+        totalPaise: true,
+      },
+    }),
+  ]);
 
-  // 5. Total products — count of all products
-  const totalProducts = await prisma.product.count();
+  const totalRevenueRs = (revenueAggregation._sum.totalPaise ?? 0) / 100;
+
+  const formattedRevenue = "₹" + totalRevenueRs.toLocaleString("en-IN", {
+    maximumFractionDigits: 0,
+  });
 
   // 6. Low stock products — count distinct products where at least one variant has stock < threshold
-  const lowStockThreshold = await getLowStockThreshold();
   const lowStockVariants = await prisma.productVariant.findMany({
     where: {
       stock: {
@@ -61,29 +85,6 @@ export default async function AdminPage() {
     },
   });
   const lowStockProductsCount = new Set(lowStockVariants.map((v) => v.productId)).size;
-
-  // Indian currency formatting
-  const formattedRevenue = "₹" + totalRevenueRs.toLocaleString("en-IN", {
-    maximumFractionDigits: 0,
-  });
-
-  // Daily revenue for the last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  thirtyDaysAgo.setHours(0, 0, 0, 0);
-
-  const dailyOrders = await prisma.order.findMany({
-    where: {
-      status: "DELIVERED",
-      createdAt: {
-        gte: thirtyDaysAgo,
-      },
-    },
-    select: {
-      createdAt: true,
-      totalPaise: true,
-    },
-  });
 
   const dailyMap: Record<string, number> = {};
   for (let i = 29; i >= 0; i--) {

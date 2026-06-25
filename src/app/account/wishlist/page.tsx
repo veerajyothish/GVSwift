@@ -47,26 +47,26 @@ export default async function WishlistPage() {
 
   let products: WishlistProduct[] = [];
   if (productIds.length > 0) {
-    // Fetch products matching the IDs using Prisma
-    const dbProducts = await prisma.product.findMany({
-      where: { id: { in: productIds } },
-      include: {
-        images: {
-          orderBy: [
-            { isPrimary: "desc" },
-            { sortOrder: "asc" },
-          ],
+    // Fetch products and ratings matching the IDs in parallel using Prisma
+    const [dbProducts, ratingAggregates] = await Promise.all([
+      prisma.product.findMany({
+        where: { id: { in: productIds } },
+        include: {
+          images: {
+            orderBy: [
+              { isPrimary: "desc" },
+              { sortOrder: "asc" },
+            ],
+          },
+          variants: true,
         },
-        variants: true,
-      },
-    });
-
-    // Fetch average rating for each product using Prisma
-    const ratingAggregates = await prisma.productReview.groupBy({
-      by: ["productId"],
-      where: { productId: { in: productIds } },
-      _avg: { rating: true },
-    });
+      }),
+      prisma.productReview.groupBy({
+        by: ["productId"],
+        where: { productId: { in: productIds } },
+        _avg: { rating: true },
+      }),
+    ]);
 
     products = dbProducts.map((p) => {
       const ratingMatch = ratingAggregates.find((r) => r.productId === p.id);

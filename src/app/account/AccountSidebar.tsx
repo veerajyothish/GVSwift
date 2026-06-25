@@ -14,7 +14,7 @@ export default function AccountSidebar() {
     { href: "/account/addresses", label: "Address Book" },
     { href: "/account/wishlist", label: "My Wishlist" },
     { href: "/account/loyalty", label: "Loyalty & Referrals" },
-    { href: "/orders", label: "My Orders" },
+    { href: "/account/orders", label: "My Orders" },
     { href: "/support", label: "Support Tickets" },
     { href: "/account/settings", label: "Settings" },
   ];

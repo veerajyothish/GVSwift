@@ -67,7 +67,12 @@ export async function GET(request: NextRequest) {
 
     const result = await getProducts(query);
 
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json(result, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);
     return NextResponse.json({ error, code }, { status: statusCode });

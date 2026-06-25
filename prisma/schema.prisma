@@ -180,6 +180,10 @@ model Product {
 
   @@index([categoryId])
   @@index([slug])
+  @@index([isActive])
+  @@index([isActive, categoryId])
+  @@index([createdAt(sort: Desc)])
+  @@index([basePricePaise])
 }
 
 model ProductVariant {
@@ -289,7 +293,7 @@ model Order {
 
   @@index([userId])
   @@index([status])
-  @@index([createdAt])
+  @@index([createdAt(sort: Desc)])
 }
 
 model OrderItem {
@@ -440,6 +444,7 @@ model WishlistItem {
   @@unique([userId, productId])
   @@index([userId])
   @@index([productId])
+  @@index([userId, productId])
 }
 
 model ProductReview {
@@ -525,6 +530,7 @@ model PointsLedger {
 
   @@index([loyaltyAccountId])
   @@index([orderId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model LoyaltySettings {

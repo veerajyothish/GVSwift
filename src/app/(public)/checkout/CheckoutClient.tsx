@@ -443,7 +443,7 @@ export default function CheckoutClient({
       toast.success("Order placed successfully!");
       
       // Redirect to the order details page as part of TICKET-302 implementation
-      router.push(`/orders/${data.order.id}`);
+      router.push(`/account/orders/${data.order.id}`);
     } catch (err: unknown) {
       const error = err as Error;
       setServerError(error.message || "Failed to place order. Please try again.");

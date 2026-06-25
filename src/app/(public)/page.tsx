@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
 import { getProducts } from "@/features/catalog/service";
 import { getServerSession } from "@/lib/auth/session";
-import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 
@@ -15,11 +14,14 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const session = await getServerSession();
+  const [session, productsResult] = await Promise.all([
+    getServerSession(),
+    getProducts({ limit: "8" }),
+  ]);
+  const { products } = productsResult;
   
   let wishlistedIds: string[] = [];
   if (session) {
-
     try {
       const supabase = await createSupabaseServerClient();
       const { data: wishlistItems } = await supabase
@@ -30,11 +32,7 @@ export default async function HomePage() {
     } catch (e) {
       console.error("Failed to fetch wishlisted IDs on server:", e);
     }
-  }
-
-  // Preserve the existing database data fetching logic
-  const productsResult = await getProducts({ limit: "8" });
-  const { products } = productsResult;  return (
+  }  return (
     <div className="homepage-wrapper bg-default min-h-screen flex flex-col">
       <Navbar />
 

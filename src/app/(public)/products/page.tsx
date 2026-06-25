@@ -21,22 +21,12 @@ interface ProductsPageProps {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const session = await getServerSession();
-  let wishlistedIds: string[] = [];
-  if (session) {
-    try {
-      const supabase = await createSupabaseServerClient();
-      const { data: wishlistItems } = await supabase
-        .from("wishlists")
-        .select("product_id")
-        .eq("user_id", session.id);
-      wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
-    } catch (e) {
-      console.error("Failed to fetch wishlisted IDs on server:", e);
-    }
-  }
+  const [session, params, categories] = await Promise.all([
+    getServerSession(),
+    searchParams,
+    getCategories(),
+  ]);
 
-  const params = await searchParams;
   let currentCategoryId = params.categoryId ?? "";
   const categorySlug = params.category ?? "";
 
@@ -55,27 +45,40 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const currentSort = params.sort ?? "newest";
   const currentMaxPrice = params.maxPrice ?? "";
 
-  // Fetch data in parallel
-  // When a search query is present, delegate to the search abstraction
-  // (TICKET-105: search logic lives entirely behind features/catalog/search.ts)
-  const [categories, productsResult] = await Promise.all([
-    getCategories(),
-    currentSearch
-      ? searchProducts({
-          query: currentSearch,
-          page: currentPage,
-          limit: 12,
-          categoryId: currentCategoryId || undefined,
-          sort: currentSort,
-          maxPrice: currentMaxPrice ? parseInt(currentMaxPrice, 10) : undefined,
-        })
-      : getProducts({
-          page: currentPage.toString(),
-          categoryId: currentCategoryId || undefined,
-          limit: "12",
-          sort: currentSort,
-          maxPrice: currentMaxPrice || undefined,
-        }),
+  // Fetch products and wishlist items in parallel
+  const wishlistPromise: Promise<string[]> = session
+    ? createSupabaseServerClient().then(async (supabase) => {
+        const { data: wishlistItems } = await supabase
+          .from("wishlists")
+          .select("product_id")
+          .eq("user_id", session.id);
+        return (wishlistItems?.map((w) => w.product_id) ?? []) as string[];
+      }).catch(e => {
+        console.error("Failed to fetch wishlisted IDs on server:", e);
+        return [] as string[];
+      })
+    : Promise.resolve([] as string[]);
+
+  const productsPromise = currentSearch
+    ? searchProducts({
+        query: currentSearch,
+        page: currentPage,
+        limit: 12,
+        categoryId: currentCategoryId || undefined,
+        sort: currentSort,
+        maxPrice: currentMaxPrice ? parseInt(currentMaxPrice, 10) : undefined,
+      })
+    : getProducts({
+        page: currentPage.toString(),
+        categoryId: currentCategoryId || undefined,
+        limit: "12",
+        sort: currentSort,
+        maxPrice: currentMaxPrice || undefined,
+      });
+
+  const [wishlistedIds, productsResult] = await Promise.all([
+    wishlistPromise,
+    productsPromise,
   ]);
 
   const { products, totalPages } = productsResult;

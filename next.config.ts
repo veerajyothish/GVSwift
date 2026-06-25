@@ -2,6 +2,24 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [375, 640, 750, 828, 1080, 1200, 1920],
+    minimumCacheTTL: 2592000,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'yrqvqbjtcxycveisyvlg.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+    ],
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@react-email/components'],
+  },
   async headers() {
     return [
       {

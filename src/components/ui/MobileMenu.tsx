@@ -176,7 +176,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                   <span>Cart</span>
                   {cartCount > 0 && <span className="mobile-drawer-badge">{cartCount}</span>}
                 </Link>
-                <Link href="/orders" onClick={handleLinkClick} className="mobile-drawer-link">
+                <Link href="/account/orders" onClick={handleLinkClick} className="mobile-drawer-link">
                   My Orders
                 </Link>
                 {isAdmin && (

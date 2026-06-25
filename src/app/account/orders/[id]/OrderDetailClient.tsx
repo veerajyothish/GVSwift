@@ -250,7 +250,7 @@ export default function OrderDetailClient({
     <div className="order-detail">
       {/* Breadcrumb */}
       <nav className="order-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/orders" className="order-breadcrumb-link">
+        <Link href="/account/orders" className="order-breadcrumb-link">
           My Orders
         </Link>
         <span className="order-breadcrumb-sep" aria-hidden="true">

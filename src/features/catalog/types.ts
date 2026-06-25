@@ -10,6 +10,7 @@ export type ProductWithVariantsAndImages = Product & {
 export interface ListProductsParams {
   page?: number;
   limit?: number;
+  pageSize?: number;
   categoryId?: string;
   includeInactive?: boolean;
   search?: string;
@@ -17,12 +18,17 @@ export interface ListProductsParams {
   lowStockThreshold?: number;
   sort?: string;
   maxPrice?: number;
+  maxPricePaise?: number;
+  featured?: boolean;
 }
 
 export interface PaginatedProductsResult {
   products: ProductWithVariantsAndImages[];
   totalCount: number;
+  total?: number;
   page: number;
   limit: number;
+  pageSize?: number;
   totalPages: number;
+  hasNextPage?: boolean;
 }

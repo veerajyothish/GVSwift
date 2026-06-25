@@ -14,8 +14,9 @@ export async function listProducts(
   params: ListProductsParams = {}
 ): Promise<PaginatedProductsResult> {
   const page = Math.max(1, params.page ?? 1);
-  const limit = Math.max(1, Math.min(100, params.limit ?? 20)); // Cap limit at 100
-  const skip = (page - 1) * limit;
+  const pageSize = Math.max(1, Math.min(100, params.pageSize ?? params.limit ?? 12));
+  const take = params.limit ?? pageSize;
+  const skip = params.limit ? 0 : (page - 1) * pageSize;
   const threshold = params.lowStockThreshold ?? 10;
 
   const where: Prisma.ProductWhereInput = {};
@@ -44,7 +45,9 @@ export async function listProducts(
   }
 
   // Filter by price
-  if (params.maxPrice !== undefined) {
+  if (params.maxPricePaise !== undefined) {
+    where.basePricePaise = { lte: params.maxPricePaise };
+  } else if (params.maxPrice !== undefined) {
     where.basePricePaise = { lte: params.maxPrice * 100 };
   }
 
@@ -62,7 +65,7 @@ export async function listProducts(
     prisma.product.findMany({
       where,
       skip,
-      take: limit,
+      take,
       include: {
         variants: true,
         images: {
@@ -97,14 +100,17 @@ export async function listProducts(
     });
   }
 
-  const totalPages = Math.ceil(totalCount / limit);
+  const totalPages = Math.ceil(totalCount / take);
 
   return {
     products: productsWithRatings,
+    total: totalCount,
     totalCount,
     page,
-    limit,
+    limit: take,
+    pageSize: take,
     totalPages,
+    hasNextPage: !params.limit && page * pageSize < totalCount,
   };
 }
 

@@ -1,115 +1,169 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, Sparkles, Tag } from 'lucide-react';
+import { getSupabaseBrowserClient } from '@/lib/supabase/browser';
 import Link from 'next/link';
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export default function LoginBanner() {
-  const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const supabase = createSupabaseBrowserClient();
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const init = async () => {
-      const dismissed = sessionStorage.getItem('login-banner-dismissed');
-      if (dismissed) return;
+      if (sessionStorage.getItem('login-banner-dismissed')) return;
+      const supabase = getSupabaseBrowserClient();
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       setMounted(true);
-      setTimeout(() => setVisible(true), 800); // slight delay feels natural
+      setTimeout(() => setVisible(true), 800);
     };
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     sessionStorage.setItem('login-banner-dismissed', '1');
     setVisible(false);
-    setTimeout(() => setMounted(false), 400);
-  };
+    setTimeout(() => setMounted(false), 350);
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') dismiss(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [visible, dismiss]);
 
   if (!mounted) return null;
 
   return (
-    <div
-      role="region"
-      aria-label="Welcome offer"
-      style={{
-        position: 'fixed',
-        bottom: '24px',
-        left: '50%',
-        zIndex: 9999,
-        width: 'calc(100% - 32px)',
-        maxWidth: '560px',
-        transition: 'opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1)',
-        opacity: visible ? 1 : 0,
-        transform: visible
-          ? 'translateX(-50%) translateY(0)'
-          : 'translateX(-50%) translateY(32px)',
-        pointerEvents: visible ? 'auto' : 'none',
-      }}
-    >
-      <div style={{
-        background: 'linear-gradient(135deg, #01696f 0%, #0c4e54 100%)',
-        borderRadius: '16px',
-        padding: '20px 24px',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '14px',
-        color: 'white',
-      }}>
+    <>
+      {/* Backdrop */}
+      <div
+        aria-hidden="true"
+        onClick={dismiss}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 9998,
+          background: 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          opacity: visible ? 1 : 0,
+          transition: 'opacity 0.35s ease',
+          pointerEvents: visible ? 'auto' : 'none',
+        }}
+      />
+
+      {/* Modal */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Welcome offer"
+        style={{
+          position: 'fixed',
+          top: '50%', left: '50%',
+          zIndex: 9999,
+          width: 'calc(100% - 32px)',
+          maxWidth: '480px',
+          background: '#FDFAF5',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.25)',
+          transform: visible
+            ? 'translate(-50%, -50%) scale(1)'
+            : 'translate(-50%, -48%) scale(0.96)',
+          opacity: visible ? 1 : 0,
+          transition: 'transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease',
+          pointerEvents: visible ? 'auto' : 'none',
+        }}
+      >
+        {/* Wine red header strip */}
         <div style={{
-          background: 'rgba(255,255,255,0.15)',
-          borderRadius: '12px',
-          padding: '10px',
-          flexShrink: 0,
+          background: 'linear-gradient(135deg, #6B1E2E 0%, #4A1020 100%)',
+          padding: '28px 28px 24px',
+          position: 'relative',
+          textAlign: 'center',
         }}>
-          <Sparkles size={22} />
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontWeight: 700, fontSize: '15px', margin: 0, letterSpacing: '-0.01em' }}>
-            Welcome back! 🎉
-          </p>
-          <p style={{ fontSize: '13px', opacity: 0.85, margin: '3px 0 0', lineHeight: 1.4 }}>
-            Check out our latest arrivals and exclusive member deals.
-          </p>
-        </div>
-        <Link
-          href="/products"
-          onClick={dismiss}
-          style={{
-            background: 'white',
-            color: '#01696f',
-            fontWeight: 600,
-            fontSize: '13px',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-            flexShrink: 0,
-          }}
-        >
-          Shop Now
-        </Link>
-        <button
-          onClick={dismiss}
-          aria-label="Dismiss"
-          style={{
+          <button
+            onClick={dismiss}
+            aria-label="Close welcome offer"
+            style={{
+              position: 'absolute', top: '14px', right: '14px',
+              background: 'rgba(255,255,255,0.15)', border: 'none',
+              borderRadius: '8px', padding: '6px 7px',
+              cursor: 'pointer', color: 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.2s',
+            }}
+          >
+            <X size={15} />
+          </button>
+          <div style={{
+            width: '52px', height: '52px', borderRadius: '14px',
             background: 'rgba(255,255,255,0.15)',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '6px',
-            cursor: 'pointer',
-            color: 'white',
-            flexShrink: 0,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <X size={16} />
-        </button>
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 14px',
+          }}>
+            <Sparkles size={26} color="white" />
+          </div>
+          <h2 style={{
+            color: 'white', fontSize: '20px', fontWeight: 700,
+            margin: '0 0 6px', letterSpacing: '-0.02em', lineHeight: 1.2,
+          }}>
+            Welcome back! 🎉
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', margin: 0 }}>
+            You have an exclusive deal waiting today.
+          </p>
+        </div>
+
+        {/* Offer body */}
+        <div style={{ padding: '24px 28px 28px' }}>
+          {/* Discount pill */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            background: '#FDF3F5', border: '1px solid #F0D5DA',
+            borderRadius: '12px', padding: '14px 16px', marginBottom: '20px',
+          }}>
+            <Tag size={18} color="#6B1E2E" style={{ flexShrink: 0 }} />
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#6B1E2E', margin: 0 }}>
+                FLAT ₹100 OFF on your first order
+              </p>
+              <p style={{ fontSize: '12px', color: '#9B6A72', margin: '3px 0 0' }}>
+                Valid until July 25 · Applied automatically at checkout
+              </p>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Link
+              href="/products"
+              onClick={dismiss}
+              style={{
+                flex: 1, background: '#6B1E2E', color: 'white',
+                fontWeight: 600, fontSize: '14px',
+                padding: '13px 20px', borderRadius: '10px',
+                textDecoration: 'none', textAlign: 'center',
+                display: 'block', transition: 'background 0.2s',
+              }}
+            >
+              Shop Now
+            </Link>
+            <button
+              onClick={dismiss}
+              style={{
+                flex: 1, background: '#F5F0EB', color: '#6B1E2E',
+                fontWeight: 600, fontSize: '14px',
+                padding: '13px 20px', borderRadius: '10px',
+                border: 'none', cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
