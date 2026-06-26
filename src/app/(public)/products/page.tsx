@@ -5,7 +5,7 @@ import { searchProducts } from "@/features/catalog/search";
 import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getWishlistedIds } from "@/lib/wishlist";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -46,17 +46,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const currentMaxPrice = params.maxPrice ?? "";
 
   // Fetch products and wishlist items in parallel
-  const wishlistPromise: Promise<string[]> = session
-    ? createSupabaseServerClient().then(async (supabase) => {
-        const { data: wishlistItems } = await supabase
-          .from("wishlists")
-          .select("product_id")
-          .eq("user_id", session.id);
-        return (wishlistItems?.map((w) => w.product_id) ?? []) as string[];
-      }).catch(e => {
-        console.error("Failed to fetch wishlisted IDs on server:", e);
-        return [] as string[];
-      })
+  const wishlistPromise = session
+    ? getWishlistedIds(session.id)
     : Promise.resolve([] as string[]);
 
   const productsPromise = currentSearch
