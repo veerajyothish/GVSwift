@@ -1,24 +1,24 @@
-import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+/**
+ * Wishlist helpers — all reads/writes go through the /api/v1/wishlist route
+ * so they use the Prisma WishlistItem model (the single source of truth).
+ * The old raw Supabase `wishlists` table is no longer used.
+ */
 
 export async function getWishlist(): Promise<string[]> {
-  const supabase = createSupabaseBrowserClient();
-  const { data } = await supabase.from('wishlists').select('product_id');
-  return data?.map((r) => r.product_id) ?? [];
+  const res = await fetch('/api/v1/wishlist', { credentials: 'include' });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data.map((item: { productId: string }) => item.productId) : [];
 }
 
 export async function toggleWishlist(productId: string): Promise<boolean> {
-  const supabase = createSupabaseBrowserClient();
-  const { data: existing } = await supabase
-    .from('wishlists')
-    .select('id')
-    .eq('product_id', productId)
-    .maybeSingle();
-
-  if (existing) {
-    await supabase.from('wishlists').delete().eq('product_id', productId);
-    return false;
-  } else {
-    await supabase.from('wishlists').insert({ product_id: productId });
-    return true;
-  }
+  const res = await fetch('/api/v1/wishlist', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ productId }),
+  });
+  if (!res.ok) throw new Error('Wishlist toggle failed');
+  const data = await res.json();
+  return data.added as boolean;
 }

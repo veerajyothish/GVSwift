@@ -1,142 +1,60 @@
-import { NextRequest, NextResponse } from "next/server";
-import { requireUserForApi } from "@/lib/auth/guards";
-import { prisma } from "@/lib/prisma";
-import { toSafeError } from "@/lib/errors";
+import { NextResponse } from 'next/server';
+import { getServerSession } from '@/lib/auth/session';
+import { prisma } from '@/lib/prisma';
 
+// GET /api/v1/wishlist — return all wishlist items for the authenticated user
 export async function GET() {
-  try {
-    const { user, errorResponse } = await requireUserForApi();
-    if (errorResponse) return errorResponse;
+  const session = await getServerSession();
+  if (!session) return NextResponse.json([], { status: 200 });
 
-    const wishlistItems = await prisma.wishlistItem.findMany({
-      where: { userId: user.id },
-      include: {
-        product: {
-          include: {
-            images: {
-              orderBy: [
-                { isPrimary: "desc" },
-                { sortOrder: "asc" },
-              ],
-            },
-            variants: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+  const user = await prisma.user.findUnique({
+    where: { supabaseId: session.id },
+    select: { id: true },
+  });
+  if (!user) return NextResponse.json([], { status: 200 });
 
-    return NextResponse.json({ success: true, items: wishlistItems });
-  } catch (err) {
-    const { error, code, statusCode } = toSafeError(err);
-    return NextResponse.json({ error, code }, { status: statusCode });
-  }
+  const items = await prisma.wishlistItem.findMany({
+    where: { userId: user.id },
+    select: { productId: true, createdAt: true },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return NextResponse.json(items);
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { user, errorResponse } = await requireUserForApi();
-    if (errorResponse) return errorResponse;
-
-    const body = await request.json().catch(() => null);
-    if (!body || typeof body !== "object") {
-      return NextResponse.json(
-        { error: "Request body must be valid JSON", code: "VALIDATION_ERROR" },
-        { status: 400 }
-      );
-    }
-
-    const { productId } = body as { productId?: string };
-    if (!productId) {
-      return NextResponse.json(
-        { error: "productId is required", code: "VALIDATION_ERROR" },
-        { status: 400 }
-      );
-    }
-
-    // Check if it already exists
-    const existing = await prisma.wishlistItem.findUnique({
-      where: {
-        userId_productId: {
-          userId: user.id,
-          productId,
-        },
-      },
-    });
-
-    if (existing) {
-      return NextResponse.json(
-        { error: "Item is already in wishlist", code: "ALREADY_EXISTS" },
-        { status: 409 }
-      );
-    }
-
-    const newItem = await prisma.wishlistItem.create({
-      data: {
-        userId: user.id,
-        productId,
-      },
-      include: {
-        product: true,
-      },
-    });
-
-    return NextResponse.json({ success: true, item: newItem }, { status: 201 });
-  } catch (err) {
-    const { error, code, statusCode } = toSafeError(err);
-    return NextResponse.json({ error, code }, { status: statusCode });
+// POST /api/v1/wishlist — toggle a product in/out of the wishlist
+export async function POST(req: Request) {
+  const session = await getServerSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-}
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const { user, errorResponse } = await requireUserForApi();
-    if (errorResponse) return errorResponse;
+  const body = await req.json();
+  const { productId } = body as { productId?: string };
 
-    const body = await request.json().catch(() => null);
-    if (!body || typeof body !== "object") {
-      return NextResponse.json(
-        { error: "Request body must be valid JSON", code: "VALIDATION_ERROR" },
-        { status: 400 }
-      );
-    }
+  if (!productId || typeof productId !== 'string') {
+    return NextResponse.json({ error: 'productId is required' }, { status: 400 });
+  }
 
-    const { productId } = body as { productId?: string };
-    if (!productId) {
-      return NextResponse.json(
-        { error: "productId is required", code: "VALIDATION_ERROR" },
-        { status: 400 }
-      );
-    }
+  const user = await prisma.user.findUnique({
+    where: { supabaseId: session.id },
+    select: { id: true },
+  });
+  if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    const existing = await prisma.wishlistItem.findUnique({
-      where: {
-        userId_productId: {
-          userId: user.id,
-          productId,
-        },
-      },
-    });
+  const existing = await prisma.wishlistItem.findUnique({
+    where: { userId_productId: { userId: user.id, productId } },
+  });
 
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Item not found in wishlist", code: "NOT_FOUND" },
-        { status: 404 }
-      );
-    }
-
+  if (existing) {
     await prisma.wishlistItem.delete({
-      where: {
-        userId_productId: {
-          userId: user.id,
-          productId,
-        },
-      },
+      where: { userId_productId: { userId: user.id, productId } },
     });
-
-    return NextResponse.json({ success: true, message: "Item removed from wishlist" });
-  } catch (err) {
-    const { error, code, statusCode } = toSafeError(err);
-    return NextResponse.json({ error, code }, { status: statusCode });
+    return NextResponse.json({ added: false });
+  } else {
+    await prisma.wishlistItem.create({
+      data: { userId: user.id, productId },
+    });
+    return NextResponse.json({ added: true });
   }
 }
