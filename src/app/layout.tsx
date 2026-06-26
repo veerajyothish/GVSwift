@@ -38,6 +38,7 @@ export const metadata: Metadata = {
 import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
+import LoginBanner from "@/components/ui/LoginBanner";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -57,6 +58,8 @@ export default function RootLayout({
       <body className="antialiased">
         <ToastProvider>
           <WishlistProvider>
+            {/* Login welcome popup — shows once per session after login, dismissed with X */}
+            <LoginBanner />
             {children}
             <CookieConsentBanner />
           </WishlistProvider>
