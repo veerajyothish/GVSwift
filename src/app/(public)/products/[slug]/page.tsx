@@ -5,6 +5,8 @@ import { ProductDetailClient } from "@/components/product/ProductDetailClient";
 import { Navbar } from "@/components/ui/Navbar";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
+import { getServerSession } from "@/lib/auth/session";
+import { getWishlistedIds } from "@/lib/wishlist";
 
 interface ProductDetailPageProps {
   params: Promise<{
@@ -26,9 +28,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     notFound();
   }
 
-  const relatedProducts = product.categoryId
-    ? await getRelatedProducts(product.categoryId, product.id, 4)
-    : [];
+  const [session, relatedProducts] = await Promise.all([
+    getServerSession(),
+    product.categoryId ? getRelatedProducts(product.categoryId, product.id, 4) : [],
+  ]);
+
+  const wishlistedIds = session ? await getWishlistedIds(session.id) : [];
 
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: "Shop", href: "/products" },
@@ -60,7 +65,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             gap: "24px"
           }}>
             {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <ProductCard
+                key={p.id}
+                product={p}
+                initialWishlisted={wishlistedIds.includes(p.id)}
+              />
             ))}
           </div>
         </section>
