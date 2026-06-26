@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Heart } from "lucide-react";
-import { useWishlist } from "@/context/WishlistContext";
+import WishlistButton from "@/components/ui/WishlistButton";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 
@@ -46,16 +45,6 @@ export default function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { wishlistedIds, refresh, toggleWishlist } = useWishlist();
-
-  // Derive wishlisted status from the global context (most up-to-date)
-  const isCurrentlyWishlisted = wishlistedIds.includes(product.id) || initialWishlisted;
-  const [wishlisted, setWishlisted] = useState(isCurrentlyWishlisted);
-
-  // Keep local state in sync with context
-  React.useEffect(() => {
-    setWishlisted(wishlistedIds.includes(product.id) || initialWishlisted);
-  }, [wishlistedIds, product.id, initialWishlisted]);
 
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -67,22 +56,9 @@ export default function ProductCard({
   const primaryImage = product.images?.find((img) => img.isPrimary) || product.images?.[0];
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
 
-  const handleWishlist = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Optimistic toggle
-    setWishlisted((prev) => !prev);
-    try {
-      await toggleWishlist(product.id);
-      await refresh();
-    } catch {
-      // Revert on failure
-      setWishlisted(isCurrentlyWishlisted);
-    }
+  const getFirstInStockVariant = () => {
+    return product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
   };
-
-  const getFirstInStockVariant = () =>
-    product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -169,54 +145,10 @@ export default function ProductCard({
           />
         </Link>
 
-        {/* ── Wishlist heart button — top-right overlay ── */}
-        <button
-          onClick={handleWishlist}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          title={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            zIndex: 10,
-            width: "34px",
-            height: "34px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.88)",
-            backdropFilter: "blur(4px)",
-            WebkitBackdropFilter: "blur(4px)",
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
-            transition: "transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.12)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.18)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.12)";
-          }}
-          onMouseDown={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.94)";
-          }}
-          onMouseUp={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.12)";
-          }}
-        >
-          <Heart
-            size={16}
-            style={{
-              fill: wishlisted ? "#e11d48" : "none",
-              stroke: wishlisted ? "#e11d48" : "#6b7280",
-              transition: "fill 0.18s ease, stroke 0.18s ease",
-            }}
-          />
-        </button>
+        <WishlistButton
+          productId={product.id}
+          initialWishlisted={initialWishlisted}
+        />
 
         {/* Stock badges */}
         {isOutOfStock ? (
