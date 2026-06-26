@@ -6,7 +6,7 @@ import { Banner } from "@/app/admin/banners/components/BannersListTable";
 
 export default function BannerBar() {
   const [activeBanner, setActiveBanner] = useState<Banner | null>(null);
-  const [isDismissed, setIsDismissed] = useState(true); // Default to true (hidden) until checked
+  const [isDismissed, setIsDismissed] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,6 @@ export default function BannerBar() {
           const banner = await res.json();
           if (banner) {
             setActiveBanner(banner);
-            // Check session storage
             const sessionDismissed = sessionStorage.getItem(`banner_dismissed_${banner.id}`);
             if (!sessionDismissed) {
               setIsDismissed(false);
@@ -30,7 +29,6 @@ export default function BannerBar() {
         setLoading(false);
       }
     }
-
     fetchActiveBanner();
   }, []);
 
@@ -45,7 +43,6 @@ export default function BannerBar() {
     return null;
   }
 
-  // Get style variables based on type
   let bg = "";
   let text = "";
   let border = "";
@@ -77,19 +74,21 @@ export default function BannerBar() {
     <div
       role="region"
       aria-label="Announcement"
+      id={`active-storefront-banner-${activeBanner.id}`}
       style={{
         backgroundColor: bg,
         color: text,
         borderBottom: `1px solid ${border}`,
         width: "100%",
-        position: "relative",
-        zIndex: 50,
+        /* Stick to the very top of the viewport above the navbar */
+        position: "sticky",
+        top: 0,
+        zIndex: 60,
         transition: "all 0.3s ease",
       }}
       className="py-2.5 px-4 text-center text-13 font-medium flex items-center justify-between gap-4"
-      id={`active-storefront-banner-${activeBanner.id}`}
     >
-      {/* Centered Message Area */}
+      {/* Centered Message */}
       <div className="flex-1 text-center">
         <span>{activeBanner.message}</span>
         {activeBanner.linkText && activeBanner.linkUrl && (
@@ -103,11 +102,11 @@ export default function BannerBar() {
         )}
       </div>
 
-      {/* Dismiss Button */}
+      {/* Dismiss ✕ button */}
       <button
         onClick={handleDismiss}
         className="flex items-center justify-center p-1 rounded-full hover:bg-black/5 active:bg-black/10 transition-colors"
-        style={{ color: text }}
+        style={{ color: text, flexShrink: 0 }}
         aria-label="Dismiss banner"
       >
         <svg

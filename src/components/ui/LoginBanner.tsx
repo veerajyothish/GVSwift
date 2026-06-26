@@ -12,17 +12,19 @@ export default function LoginBanner() {
 
   useEffect(() => {
     const init = async () => {
-      // Don't show if already dismissed this session
+      // Only show once per session — if already dismissed, skip
       if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(BANNER_KEY)) return;
 
       const supabase = getSupabaseBrowserClient();
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
+      // Only show when logged in
       if (!session) return;
 
       setMounted(true);
-      // Small delay so it feels intentional, not jarring
+      // Slight delay so it feels intentional, not jarring
       setTimeout(() => setVisible(true), 600);
     };
     init();
@@ -46,23 +48,17 @@ export default function LoginBanner() {
     return () => document.removeEventListener('keydown', onKey);
   }, [visible, dismiss]);
 
-  // Lock body scroll while open
+  // Prevent body scroll while popup is open
   useEffect(() => {
-    if (visible) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    document.body.style.overflow = visible ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [visible]);
 
   if (!mounted) return null;
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — click to dismiss */}
       <div
         aria-hidden="true"
         onClick={dismiss}
@@ -79,7 +75,7 @@ export default function LoginBanner() {
         }}
       />
 
-      {/* Modal */}
+      {/* Popup modal */}
       <div
         role="dialog"
         aria-modal="true"
@@ -113,7 +109,7 @@ export default function LoginBanner() {
             textAlign: 'center',
           }}
         >
-          {/* Close button */}
+          {/* ✕ Close button — top right */}
           <button
             onClick={dismiss}
             aria-label="Close welcome offer"
@@ -134,12 +130,10 @@ export default function LoginBanner() {
               lineHeight: 0,
             }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLButtonElement).style.background =
-                'rgba(255,255,255,0.28)')
+              ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.28)')
             }
             onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLButtonElement).style.background =
-                'rgba(255,255,255,0.18)')
+              ((e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.18)')
             }
           >
             <X size={15} strokeWidth={2.5} />
@@ -194,29 +188,16 @@ export default function LoginBanner() {
           >
             <Tag size={18} color="#6B1E2E" style={{ flexShrink: 0 }} />
             <div>
-              <p
-                style={{
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: '#6B1E2E',
-                  margin: 0,
-                }}
-              >
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#6B1E2E', margin: 0 }}>
                 FLAT ₹100 OFF on your first order
               </p>
-              <p
-                style={{
-                  fontSize: '12px',
-                  color: '#9B6A72',
-                  margin: '3px 0 0',
-                }}
-              >
+              <p style={{ fontSize: '12px', color: '#9B6A72', margin: '3px 0 0' }}>
                 Valid until July 25 · Applied automatically at checkout
               </p>
             </div>
           </div>
 
-          {/* CTA buttons */}
+          {/* CTAs */}
           <div style={{ display: 'flex', gap: '10px' }}>
             <Link
               href="/products"

@@ -47,15 +47,15 @@ export default function ProductCard({
   const router = useRouter();
   const { toast } = useToast();
   const { wishlistedIds, refresh, toggleWishlist } = useWishlist();
-  
-  // Resolve wishlisted status from context, with fallback to initialWishlisted
+
+  // Derive wishlisted status from the global context (most up-to-date)
   const isCurrentlyWishlisted = wishlistedIds.includes(product.id) || initialWishlisted;
   const [wishlisted, setWishlisted] = useState(isCurrentlyWishlisted);
 
-  // Sync state with context value if it changes
+  // Keep local state in sync with context
   React.useEffect(() => {
-    setWishlisted(isCurrentlyWishlisted);
-  }, [isCurrentlyWishlisted]);
+    setWishlisted(wishlistedIds.includes(product.id) || initialWishlisted);
+  }, [wishlistedIds, product.id, initialWishlisted]);
 
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -70,47 +70,35 @@ export default function ProductCard({
   const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Optimistic update pattern
+    // Optimistic toggle
     setWishlisted((prev) => !prev);
     try {
       await toggleWishlist(product.id);
       await refresh();
     } catch {
-      // Revert on error
+      // Revert on failure
       setWishlisted(isCurrentlyWishlisted);
     }
   };
 
-  const getFirstInStockVariant = () => {
-    return product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
-  };
+  const getFirstInStockVariant = () =>
+    product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isOutOfStock) return;
     const selectedVariant = getFirstInStockVariant();
     if (!selectedVariant) return;
-
     setIsAddingToCart(true);
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product.id,
-          variantId: selectedVariant.id,
-          quantity: 1,
-        }),
+        body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
       });
-
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to add item to cart");
-      }
-
+      if (!res.ok) throw new Error(data.error || "Failed to add item to cart");
       toast.success(`Added ${product.name} to cart!`, "Added to Cart");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Could not add item to cart";
@@ -123,28 +111,18 @@ export default function ProductCard({
   const handleBuyNow = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isOutOfStock) return;
     const selectedVariant = getFirstInStockVariant();
     if (!selectedVariant) return;
-
     setIsBuyingNow(true);
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product.id,
-          variantId: selectedVariant.id,
-          quantity: 1,
-        }),
+        body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
       });
-
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to add item to cart");
-      }
-
+      if (!res.ok) throw new Error(data.error || "Failed to add item to cart");
       router.push("/checkout");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Could not process Buy Now request";
@@ -166,10 +144,10 @@ export default function ProductCard({
         borderRadius: "12px",
         overflow: "hidden",
         position: "relative",
-        transition: "transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease"
+        transition: "transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease",
       }}
     >
-      {/* Image Wrapper */}
+      {/* ── Image container ── */}
       <div
         className="card-product-image-container"
         style={{
@@ -191,22 +169,56 @@ export default function ProductCard({
           />
         </Link>
 
-        {/* Wishlist Toggle Overlay */}
+        {/* ── Wishlist heart button — top-right overlay ── */}
         <button
           onClick={handleWishlist}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/80
-                     backdrop-blur-sm shadow-sm transition-transform duration-200
-                     hover:scale-110 active:scale-95"
-          style={{ border: "none", cursor: "pointer" }}
+          title={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 10,
+            width: "34px",
+            height: "34px",
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.88)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
+            transition: "transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.12)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.18)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.12)";
+          }}
+          onMouseDown={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.94)";
+          }}
+          onMouseUp={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.transform = "scale(1.12)";
+          }}
         >
           <Heart
-            size={18}
-            className={wishlisted ? "fill-red-500 stroke-red-500" : "fill-none stroke-gray-400"}
+            size={16}
+            style={{
+              fill: wishlisted ? "#e11d48" : "none",
+              stroke: wishlisted ? "#e11d48" : "#6b7280",
+              transition: "fill 0.18s ease, stroke 0.18s ease",
+            }}
           />
         </button>
 
-        {/* Stock Status Badge */}
+        {/* Stock badges */}
         {isOutOfStock ? (
           <span className="product-card-badge-error" style={{ position: "absolute", top: "12px", left: "12px" }}>
             Out of Stock
@@ -218,7 +230,7 @@ export default function ProductCard({
         ) : null}
       </div>
 
-      {/* Content Section */}
+      {/* ── Content section ── */}
       <div
         className="card-product-content"
         style={{
@@ -295,7 +307,7 @@ export default function ProductCard({
               </div>
             )}
           </div>
-          {totalStock <= 10 && totalStock > 0 && (
+          {totalStock <= 10 && totalStock > 5 && (
             <p style={{ fontSize: '12px', color: '#a12c7b', fontWeight: 600, margin: '6px 0 0' }}>
               ⚡ Only {totalStock} left
             </p>

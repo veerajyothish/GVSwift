@@ -9,7 +9,7 @@ import SearchBar from "./SearchBar";
 
 export async function Navbar() {
   const session = await getServerSession();
-  
+
   let isLoggedIn = false;
   let isAdmin = false;
   let cartCount = 0;
@@ -22,19 +22,15 @@ export async function Navbar() {
         where: { supabaseId: session.id },
         select: { id: true, role: true },
       });
-      
+
       if (user) {
         isAdmin = user.role === "ADMIN";
-        
+
         const cart = await prisma.cart.findFirst({
           where: { userId: user.id },
-          include: {
-            items: {
-              select: { quantity: true },
-            },
-          },
+          include: { items: { select: { quantity: true } } },
         });
-        
+
         if (cart) {
           cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         }
@@ -50,51 +46,70 @@ export async function Navbar() {
 
   return (
     <>
+      {/* ── Banner: sticky at the very top of the page, above the navbar ── */}
       <BannerBar />
+
       <nav className="site-navbar" aria-label="Main navigation">
-        <div className="site-navbar-inner" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", maxWidth: "1200px", margin: "0 auto" }}>
-          
+        <div
+          className="site-navbar-inner"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            maxWidth: "1200px",
+            margin: "0 auto",
+          }}
+        >
           {/* Left Zone: Logo */}
           <div className="navbar-left-zone">
             <Link href="/" className="site-navbar-brand">
-              <span className="site-navbar-logo" style={{ fontStyle: "italic", fontFamily: "var(--font-heading)", color: "var(--color-primary)", fontSize: "28px" }}>GVSwift</span>
+              <span
+                className="site-navbar-logo"
+                style={{
+                  fontStyle: "italic",
+                  fontFamily: "var(--font-heading)",
+                  color: "var(--color-primary)",
+                  fontSize: "28px",
+                }}
+              >
+                GVSwift
+              </span>
             </Link>
           </div>
 
           {/* Center Zone: Nav links (Desktop) or Hamburger Menu (Mobile) */}
           <div className="navbar-center-zone">
-            {/* Desktop Nav Links */}
-            <div className="navbar-desktop-links" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-              <Link href="/products" className="navbar-center-link">
-                SHOP
-              </Link>
-              <Link href="/categories" className="navbar-center-link">
-                CATEGORIES
-              </Link>
-              <Link href="/faq" className="navbar-center-link">
-                FAQ
-              </Link>
-              <Link href="/support" className="navbar-center-link">
-                SUPPORT
-              </Link>
+            <div
+              className="navbar-desktop-links"
+              style={{ display: "flex", alignItems: "center", gap: "24px" }}
+            >
+              <Link href="/products" className="navbar-center-link">SHOP</Link>
+              <Link href="/categories" className="navbar-center-link">CATEGORIES</Link>
+              <Link href="/faq" className="navbar-center-link">FAQ</Link>
+              <Link href="/support" className="navbar-center-link">SUPPORT</Link>
               <SearchBar />
             </div>
-            
-            {/* Mobile Hamburger Drawer */}
             <MobileMenu isLoggedIn={isLoggedIn} isAdmin={isAdmin} cartCount={cartCount} />
           </div>
 
-          {/* Right Zone: Icons (Search, Wishlist, Profile, Cart) */}
+          {/* Right Zone: Icons */}
           <div className="navbar-right-zone">
-            <NavbarIconsAndSearch 
-              isLoggedIn={isLoggedIn} 
-              cartCount={cartCount} 
+            <NavbarIconsAndSearch
+              isLoggedIn={isLoggedIn}
+              cartCount={cartCount}
               wishlistIcon={
                 <Link
                   href="/account/wishlist"
                   className="navbar-icon-btn relative"
                   aria-label="Wishlist"
-                  style={{ color: "var(--color-primary)", padding: "4px", display: "inline-flex", alignItems: "center", position: "relative" }}
+                  style={{
+                    color: "var(--color-primary)",
+                    padding: "4px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    position: "relative",
+                  }}
                 >
                   <svg
                     width="20"
@@ -134,7 +149,6 @@ export async function Navbar() {
               }
             />
           </div>
-
         </div>
       </nav>
     </>
