@@ -1,8 +1,14 @@
 "use client";
 
+/**
+ * MobileMenu — PDF p.18:
+ * Mobile navbar: hamburger left, GVSWIFT centre (italic Garamond wine red), cart icon right.
+ * Drawer: slides in from left, logo + close button top, nav links stacked, sign-out red at bottom.
+ * PDF p.18 bottom nav bar: SHOP · SEARCH · ORDERS · PROFILE pill icons.
+ */
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 interface MobileMenuProps {
   isLoggedIn: boolean;
@@ -13,19 +19,15 @@ interface MobileMenuProps {
 export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const drawerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  // Close drawer on escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
+      if (e.key === "Escape") setIsOpen(false);
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
-      // Focus trap
       document.body.style.overflow = "hidden";
     }
     return () => {
@@ -34,46 +36,28 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
     };
   }, [isOpen]);
 
-  // Focus trap implementation
+  // Focus trap
   useEffect(() => {
     if (!isOpen || !drawerRef.current) return;
-
-    const focusableElements = drawerRef.current.querySelectorAll(
-      'a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])'
+    const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    const handleTabTrap = (e: KeyboardEvent) => {
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const trap = (e: KeyboardEvent) => {
       if (e.key !== "Tab") return;
-
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          lastElement.focus();
-          e.preventDefault();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          firstElement.focus();
-          e.preventDefault();
-        }
-      }
+      if (e.shiftKey) { if (document.activeElement === first) { last.focus(); e.preventDefault(); } }
+      else { if (document.activeElement === last) { first.focus(); e.preventDefault(); } }
     };
-
-    window.addEventListener("keydown", handleTabTrap);
-    firstElement?.focus();
-
-    return () => {
-      window.removeEventListener("keydown", handleTabTrap);
-    };
+    window.addEventListener("keydown", trap);
+    first?.focus();
+    return () => window.removeEventListener("keydown", trap);
   }, [isOpen]);
 
-  const handleLinkClick = () => {
-    setIsOpen(false);
-  };
+  const close = () => setIsOpen(false);
 
   const handleLogout = async () => {
-    setIsOpen(false);
+    close();
     try {
       await fetch("/api/v1/auth/logout", { method: "POST" });
       router.push("/");
@@ -83,51 +67,43 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
     }
   };
 
+  /* Bottom nav tabs — PDF p.18 */
+  const bottomTabs = [
+    { label: "Shop",    href: "/products",        icon: "🛍" },
+    { label: "Search",  href: "/products",        icon: "🔍" },
+    { label: "Orders",  href: "/account/orders",  icon: "📋" },
+    { label: "Profile", href: isLoggedIn ? "/account/profile" : "/login", icon: "👤" },
+  ];
+
   return (
-    <div className="mobile-menu-container">
-      {/* Hamburger Trigger Button */}
+    <>
+      {/* ── Hamburger trigger ──────────────────────────────────────────── */}
       <button
-        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
         className="mobile-hamburger-btn"
         aria-expanded={isOpen}
-        aria-controls="mobile-drawer"
-        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-label={isOpen ? "Close menu" : "Open menu"}
+        style={{ color: "var(--color-accent)" }}
       >
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           {isOpen ? (
-            <>
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </>
+            <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
           ) : (
-            <>
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="6" x2="20" y2="6" />
-              <line x1="4" y1="18" x2="20" y2="18" />
-            </>
+            <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></>
           )}
         </svg>
       </button>
 
-      {/* Drawer Overlay */}
+      {/* ── Overlay ────────────────────────────────────────────────────── */}
       {isOpen && (
         <div
           className="mobile-drawer-overlay"
-          onClick={() => setIsOpen(false)}
+          onClick={close}
+          aria-hidden
         />
       )}
 
-      {/* Drawer Panel */}
+      {/* ── Drawer ─────────────────────────────────────────────────────── */}
       <div
         id="mobile-drawer"
         ref={drawerRef}
@@ -135,72 +111,151 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
         aria-hidden={!isOpen}
       >
         <div className="mobile-drawer-inner">
+          {/* Header */}
           <div className="mobile-drawer-header">
-            <Link href="/" onClick={handleLinkClick} className="site-navbar-brand">
-              <span className="site-navbar-logo" style={{ fontStyle: "italic", fontFamily: "var(--font-heading)" }}>GVSwift</span>
-            </Link>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="mobile-drawer-close"
-              aria-label="Close menu"
+            <Link
+              href="/"
+              onClick={close}
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "22px",
+                fontWeight: 700,
+                fontStyle: "italic",
+                color: "var(--color-accent)",
+                textDecoration: "none",
+              }}
             >
+              GVSwift
+            </Link>
+            <button onClick={close} className="mobile-drawer-close" aria-label="Close menu">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
 
+          {/* Nav links */}
           <nav className="mobile-drawer-nav">
-            <Link href="/products" onClick={handleLinkClick} className="mobile-drawer-link">
-              Shop
-            </Link>
-            <Link href="/categories" onClick={handleLinkClick} className="mobile-drawer-link">
-              Categories
-            </Link>
-            <Link href="/faq" onClick={handleLinkClick} className="mobile-drawer-link">
-              FAQ
-            </Link>
-            <Link href="/support" onClick={handleLinkClick} className="mobile-drawer-link">
-              Support
-            </Link>
+            {[
+              { label: "New Arrivals", href: "/products?sort=newest" },
+              { label: "Collections",  href: "/products" },
+              { label: "Heritage",     href: "/products?category=heritage" },
+              { label: "FAQ",          href: "/faq" },
+              { label: "Support",      href: "/support" },
+            ].map(({ label, href }) => (
+              <Link key={label} href={href} onClick={close} className="mobile-drawer-link">
+                {label}
+              </Link>
+            ))}
 
             <div className="mobile-drawer-divider" />
 
             {isLoggedIn ? (
               <>
-                <Link href="/account" onClick={handleLinkClick} className="mobile-drawer-link">
-                  My Account
-                </Link>
-                <Link href="/cart" onClick={handleLinkClick} className="mobile-drawer-link flex items-center justify-between">
+                <Link href="/account/profile" onClick={close} className="mobile-drawer-link">My Account</Link>
+                <Link href="/account/orders"  onClick={close} className="mobile-drawer-link">My Orders</Link>
+                <Link href="/account/wishlist" onClick={close} className="mobile-drawer-link">Wishlist</Link>
+                <Link href="/cart" onClick={close} className="mobile-drawer-link" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span>Cart</span>
-                  {cartCount > 0 && <span className="mobile-drawer-badge">{cartCount}</span>}
-                </Link>
-                <Link href="/account/orders" onClick={handleLinkClick} className="mobile-drawer-link">
-                  My Orders
+                  {cartCount > 0 && (
+                    <span className="mobile-drawer-badge">{cartCount}</span>
+                  )}
                 </Link>
                 {isAdmin && (
-                  <Link href="/admin" onClick={handleLinkClick} className="mobile-drawer-link" style={{ color: "var(--color-primary)", fontWeight: 600 }}>
-                    Admin Dashboard
+                  <Link href="/admin" onClick={close} className="mobile-drawer-link" style={{ color: "var(--color-accent)", fontWeight: 600 }}>
+                    Admin Console
                   </Link>
                 )}
                 <button onClick={handleLogout} className="mobile-drawer-logout-btn">
-                  Logout
+                  Sign Out
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" onClick={handleLinkClick} className="mobile-drawer-link">
-                  Sign In
-                </Link>
-                <Link href="/signup" onClick={handleLinkClick} className="mobile-drawer-signup-btn">
-                  Create Account
-                </Link>
+                <Link href="/login"  onClick={close} className="mobile-drawer-link">Sign In</Link>
+                <Link href="/signup" onClick={close} className="mobile-drawer-signup-btn">Create Account</Link>
               </>
             )}
           </nav>
         </div>
       </div>
-    </div>
+
+      {/* ── Bottom nav bar — PDF p.18 ──────────────────────────────────── */}
+      <nav
+        aria-label="Bottom navigation"
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "64px",
+          background: "rgba(253,250,245,0.96)",
+          backdropFilter: "blur(12px)",
+          borderTop: "1px solid var(--color-border)",
+          display: "none", /* shown via media query below */
+          alignItems: "center",
+          justifyContent: "space-around",
+          zIndex: 90,
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+        className="mobile-bottom-nav"
+      >
+        {bottomTabs.map(({ label, href, icon }) => {
+          const isActive = pathname === href || (href !== "/" && pathname.startsWith(href.split("?")[0]));
+          return (
+            <Link
+              key={label}
+              href={href}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "4px",
+                textDecoration: "none",
+                flex: 1,
+                padding: "8px 0",
+              }}
+            >
+              <span
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  background: isActive ? "rgba(107,30,46,0.1)" : "transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "20px",
+                  transition: "background 0.2s",
+                }}
+              >
+                {icon}
+              </span>
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontWeight: isActive ? 600 : 400,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  color: isActive ? "var(--color-accent)" : "var(--color-text-secondary)",
+                }}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Bottom nav spacer so page content isn't hidden behind it */}
+      <div className="mobile-bottom-spacer" style={{ display: "none", height: "64px" }} />
+
+      <style>{`
+        @media (max-width: 767px) {
+          .mobile-bottom-nav    { display: flex !important; }
+          .mobile-bottom-spacer { display: block !important; }
+        }
+      `}</style>
+    </>
   );
 }

@@ -1,3 +1,9 @@
+/**
+ * Navbar — PDF p.1/4/6/8/11:
+ * Logo "GVSwift" italic Garamond left, nav links center (COLLECTION HERITAGE STORES JOURNAL),
+ * icons right (search, account circle dashed, cart bag).
+ * Mobile p.18: hamburger left, GVSWIFT centre, cart right.
+ */
 import React from "react";
 import Link from "next/link";
 import { getServerSession } from "@/lib/auth/session";
@@ -22,131 +28,154 @@ export async function Navbar() {
         where: { supabaseId: session.id },
         select: { id: true, role: true },
       });
-
       if (user) {
         isAdmin = user.role === "ADMIN";
-
         const cart = await prisma.cart.findFirst({
           where: { userId: user.id },
           include: { items: { select: { quantity: true } } },
         });
-
         if (cart) {
           cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         }
-
         wishlistCount = await prisma.wishlistItem.count({
           where: { userId: user.id },
         });
       }
     } catch (e) {
-      console.error("Failed to query auth/cart/wishlist data for navbar:", e);
+      console.error("Navbar data fetch failed:", e);
     }
   }
 
   return (
     <>
-      {/* ── Banner: sticky at the very top of the page, above the navbar ── */}
       <BannerBar />
-
       <nav className="site-navbar" aria-label="Main navigation">
         <div
-          className="site-navbar-inner"
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
             maxWidth: "1200px",
             margin: "0 auto",
+            padding: "0 24px",
+            height: "64px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "24px",
           }}
         >
-          {/* Left Zone: Logo */}
-          <div className="navbar-left-zone">
-            <Link href="/" className="site-navbar-brand">
-              <span
-                className="site-navbar-logo"
+          {/* ── Logo (left) ──────────────────────────────────────────────── */}
+          {/* PDF: "GVSwift" or "GVSWIFT" in italic Garamond, wine red */}
+          <Link
+            href="/"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "22px",
+              fontWeight: 700,
+              fontStyle: "italic",
+              color: "var(--color-accent)",
+              letterSpacing: "0.02em",
+              textDecoration: "none",
+              flexShrink: 0,
+            }}
+            aria-label="GVSwift home"
+          >
+            GVSwift
+          </Link>
+
+          {/* ── Centre nav links (desktop only) ──────────────────────────── */}
+          {/* PDF p.1: COLLECTION · HERITAGE · STORES · JOURNAL, small caps */}
+          <div className="navbar-desktop-links">
+            {[
+              { label: "New Arrivals", href: "/products?sort=newest" },
+              { label: "Collections", href: "/products" },
+              { label: "Couture", href: "/products?category=couture" },
+              { label: "Heritage", href: "/products?category=heritage" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="navbar-center-link nav-link-hover"
                 style={{
-                  fontStyle: "italic",
-                  fontFamily: "var(--font-heading)",
-                  color: "var(--color-primary)",
-                  fontSize: "28px",
+                  fontSize: "13px",
+                  letterSpacing: "0.02em",
+                  color: "var(--color-text-secondary)",
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
                 }}
               >
-                GVSwift
-              </span>
-            </Link>
+                {label}
+              </Link>
+            ))}
+            <SearchBar />
           </div>
 
-          {/* Center Zone: Nav links (Desktop) or Hamburger Menu (Mobile) */}
-          <div className="navbar-center-zone">
-            <div
-              className="navbar-desktop-links"
-              style={{ display: "flex", alignItems: "center", gap: "24px" }}
-            >
-              <Link href="/products" className="navbar-center-link">SHOP</Link>
-              <Link href="/categories" className="navbar-center-link">CATEGORIES</Link>
-              <Link href="/faq" className="navbar-center-link">FAQ</Link>
-              <Link href="/support" className="navbar-center-link">SUPPORT</Link>
-              <SearchBar />
-            </div>
-            <MobileMenu isLoggedIn={isLoggedIn} isAdmin={isAdmin} cartCount={cartCount} />
-          </div>
+          {/* ── Right: icons + mobile hamburger ──────────────────────────── */}
+          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            {/* Wishlist heart icon (desktop) */}
+            {isLoggedIn && (
+              <Link
+                href="/account/wishlist"
+                aria-label="Wishlist"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "40px",
+                  height: "40px",
+                  color: "var(--color-accent)",
+                  position: "relative",
+                  textDecoration: "none",
+                  flexShrink: 0,
+                }}
+                className="navbar-desktop-links"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                {wishlistCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "4px",
+                      right: "4px",
+                      width: "15px",
+                      height: "15px",
+                      borderRadius: "50%",
+                      background: "var(--color-accent)",
+                      color: "#fff",
+                      fontSize: "9px",
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
-          {/* Right Zone: Icons */}
-          <div className="navbar-right-zone">
+            {/* Icons: account + cart */}
             <NavbarIconsAndSearch
               isLoggedIn={isLoggedIn}
               cartCount={cartCount}
-              wishlistIcon={
-                <Link
-                  href="/account/wishlist"
-                  className="navbar-icon-btn relative"
-                  aria-label="Wishlist"
-                  style={{
-                    color: "var(--color-primary)",
-                    padding: "4px",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    position: "relative",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  </svg>
-                  {wishlistCount > 0 && (
-                    <span
-                      className="wishlist-badge"
-                      style={{
-                        position: "absolute",
-                        top: "-4px",
-                        right: "-4px",
-                        backgroundColor: "var(--color-primary)",
-                        color: "#fff",
-                        borderRadius: "50%",
-                        width: "16px",
-                        height: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "10px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {wishlistCount}
-                    </span>
-                  )}
-                </Link>
-              }
+              wishlistIcon={null}
+            />
+
+            {/* Mobile hamburger */}
+            <MobileMenu
+              isLoggedIn={isLoggedIn}
+              isAdmin={isAdmin}
+              cartCount={cartCount}
             />
           </div>
         </div>

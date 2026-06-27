@@ -1,21 +1,68 @@
-import React from 'react';
+import React from "react";
 
+/**
+ * PDF p.15: Full-screen cream loading screen.
+ * Centered GVSWIFT wordmark (Garamond italic, wine red), thin horizontal rule,
+ * "Crafting your experience..." italic caption below.
+ */
 export default function Loading() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-12">
-      {/* Top hero rectangle (full width, 420px height) */}
-      <div className="w-full h-[420px] bg-gray-100 rounded-2xl animate-pulse" />
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "var(--color-bg)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+        gap: "16px",
+      }}
+    >
+      {/* Wordmark — PDF p.15 */}
+      <span
+        style={{
+          fontFamily: "var(--font-heading), 'EB Garamond', Georgia, serif",
+          fontSize: "clamp(28px, 6vw, 44px)",
+          fontWeight: 700,
+          fontStyle: "italic",
+          color: "var(--color-accent)",
+          letterSpacing: "0.08em",
+        }}
+      >
+        GVSWIFT
+      </span>
 
-      {/* Row of 4 product card skeletons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-3 animate-pulse">
-            <div className="bg-gray-100 rounded-xl aspect-square w-full" />
-            <div className="h-4 bg-gray-100 rounded w-3/4" />
-            <div className="h-4 bg-gray-100 rounded w-1/2" />
-          </div>
-        ))}
-      </div>
+      {/* Thin animated rule */}
+      <div
+        style={{
+          width: "120px",
+          height: "1px",
+          background: `linear-gradient(90deg, transparent, var(--color-accent), transparent)`,
+          animation: "loading-rule 1.6s ease-in-out infinite",
+        }}
+      />
+
+      {/* Caption */}
+      <span
+        style={{
+          fontFamily: "var(--font-heading), 'EB Garamond', Georgia, serif",
+          fontSize: "15px",
+          fontStyle: "italic",
+          color: "var(--color-text-secondary)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        Crafting your experience...
+      </span>
+
+      <style>{`
+        @keyframes loading-rule {
+          0%, 100% { opacity: 0.3; transform: scaleX(0.6); }
+          50%       { opacity: 1;   transform: scaleX(1); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,11 +1,19 @@
 "use client";
 
+/**
+ * Footer — PDF p.3/7/9/11:
+ * p.3: centered GVSWIFT wordmark, 4 inline links (Privacy Policy · Terms · Shipping · Sustainability),
+ *      copyright "© 2024 GVSWIFT PREMIUM. CRAFTED IN INDIA." on surface bg.
+ * p.7/9/11: GVSwift logo left + tagline, 3 link columns (Shop/Company/Customer Care, Collections/Our Story/Contact Us, Couture/Sustainability/Shipping & Returns),
+ *      right: copyright. Surface bg, 4-col desktop, accordion mobile.
+ */
+
 import React, { useState } from "react";
 import Link from "next/link";
 
 interface SectionState {
   shop: boolean;
-  support: boolean;
+  company: boolean;
   legal: boolean;
   connect: boolean;
 }
@@ -13,164 +21,122 @@ interface SectionState {
 export function Footer() {
   const [openSections, setOpenSections] = useState<SectionState>({
     shop: false,
-    support: false,
+    company: false,
     legal: false,
     connect: false,
   });
 
-  const toggleSection = (section: keyof SectionState) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+  const toggle = (section: keyof SectionState) =>
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
 
   return (
     <footer className="site-footer">
       <div className="site-footer-inner">
-        {/* Footer Columns Container */}
+        {/* ── Main grid: brand + 3 link cols + social ── */}
         <div className="footer-grid">
-          {/* Column 1: Shop */}
-          <div className="footer-col">
-            <button
-              onClick={() => toggleSection("shop")}
-              className="footer-header-btn"
+
+          {/* Col 1: Brand */}
+          <div className="footer-col" style={{ gap: "12px" }}>
+            <Link
+              href="/"
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "22px",
+                fontWeight: 700,
+                fontStyle: "italic",
+                color: "var(--color-accent)",
+                textDecoration: "none",
+                display: "inline-block",
+                marginBottom: "8px",
+              }}
             >
+              GVSwift
+            </Link>
+            <p
+              style={{
+                fontSize: "13px",
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.6,
+                maxWidth: "200px",
+              }}
+            >
+              Exquisite Indian Craftsmanship. Shop with Confidence.
+            </p>
+          </div>
+
+          {/* Col 2: Shop */}
+          <div className="footer-col">
+            <button onClick={() => toggle("shop")} className="footer-header-btn">
               <span>Shop</span>
-              <span className="footer-chevron">
-                {openSections.shop ? "▲" : "▼"}
-              </span>
+              <span className="footer-chevron">{openSections.shop ? "▲" : "▼"}</span>
             </button>
             <div className={`footer-content ${openSections.shop ? "open" : ""}`}>
-              <Link href="/products" className="footer-link">
-                Shop All Products
-              </Link>
+              <Link href="/products" className="footer-link">All Products</Link>
+              <Link href="/products?sort=newest" className="footer-link">New Arrivals</Link>
+              <Link href="/products?category=heritage" className="footer-link">Heritage</Link>
+              <Link href="/faq" className="footer-link">FAQ</Link>
             </div>
           </div>
 
-          {/* Column 2: Support */}
+          {/* Col 3: Company / Support */}
           <div className="footer-col">
-            <button
-              onClick={() => toggleSection("support")}
-              className="footer-header-btn"
-            >
-              <span>Support</span>
-              <span className="footer-chevron">
-                {openSections.support ? "▲" : "▼"}
-              </span>
+            <button onClick={() => toggle("company")} className="footer-header-btn">
+              <span>Company</span>
+              <span className="footer-chevron">{openSections.company ? "▲" : "▼"}</span>
             </button>
-            <div className={`footer-content ${openSections.support ? "open" : ""}`}>
-              <Link href="/support" className="footer-link">
-                Support Portal
-              </Link>
-              <Link href="/faq" className="footer-link">
-                FAQ
-              </Link>
+            <div className={`footer-content ${openSections.company ? "open" : ""}`}>
+              <Link href="/support" className="footer-link">Customer Care</Link>
+              <Link href="/returns" className="footer-link">Shipping & Returns</Link>
+              <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+              <Link href="/terms" className="footer-link">Terms of Service</Link>
+              <Link href="/grievance" className="footer-link">Grievance Officer</Link>
             </div>
           </div>
 
-          {/* Column 3: Legal */}
+          {/* Col 4: Connect */}
           <div className="footer-col">
-            <button
-              onClick={() => toggleSection("legal")}
-              className="footer-header-btn"
-            >
-              <span>Legal</span>
-              <span className="footer-chevron">
-                {openSections.legal ? "▲" : "▼"}
-              </span>
-            </button>
-            <div className={`footer-content ${openSections.legal ? "open" : ""}`}>
-              <Link href="/privacy" className="footer-link">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="footer-link">
-                Terms of Service
-              </Link>
-              <Link href="/returns" className="footer-link">
-                Returns &amp; Refunds Policy
-              </Link>
-              <Link href="/shipping" className="footer-link">
-                Shipping Policy
-              </Link>
-              <Link href="/cookies" className="footer-link">
-                Cookie Policy
-              </Link>
-              <Link href="/disclaimer" className="footer-link">
-                Disclaimer
-              </Link>
-              <Link href="/grievance" className="footer-link">
-                Grievance Officer
-              </Link>
-            </div>
-          </div>
-
-          {/* Column 4: Connect */}
-          <div className="footer-col">
-            <button
-              onClick={() => toggleSection("connect")}
-              className="footer-header-btn"
-            >
+            <button onClick={() => toggle("connect")} className="footer-header-btn">
               <span>Connect</span>
-              <span className="footer-chevron">
-                {openSections.connect ? "▲" : "▼"}
-              </span>
+              <span className="footer-chevron">{openSections.connect ? "▲" : "▼"}</span>
             </button>
             <div className={`footer-content ${openSections.connect ? "open" : ""}`}>
-              <span className="footer-text-muted">
-                For queries or grievance redressal:
-              </span>
+              {/* Social links — PDF p.9: INSTAGRAM · PINTEREST · FACEBOOK */}
+              {[
+                { label: "Instagram", href: "https://instagram.com/gv_swift" },
+                { label: "Facebook", href: "https://www.facebook.com/share/17oYPBS19o/" },
+                { label: "X / Twitter", href: "https://x.com/GVSwift_shop" },
+              ].map(({ label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-link"
+                >
+                  {label}
+                </a>
+              ))}
               <a href="mailto:gvswift.help@gmail.com" className="footer-link footer-link-highlight">
                 gvswift.help@gmail.com
               </a>
-              <div className="footer-social-links" style={{ display: "flex", gap: "16px", marginTop: "8px" }}>
-                <a
-                  href="https://instagram.com/gv_swift"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="footer-link"
-                  style={{ color: "var(--color-primary)", display: "inline-flex" }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                </a>
-                <a
-                  href="https://www.facebook.com/share/17oYPBS19o/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className="footer-link"
-                  style={{ color: "var(--color-primary)", display: "inline-flex" }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                  </svg>
-                </a>
-                <a
-                  href="https://x.com/GVSwift_shop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="X (Twitter)"
-                  className="footer-link"
-                  style={{ color: "var(--color-primary)", display: "inline-flex" }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Bottom copyright section */}
+        {/* ── Bottom bar ── */}
         <div className="footer-bottom-bar">
-          <span>&copy; {new Date().getFullYear()} GVSwift. All rights reserved.</span>
-          <span className="footer-bottom-disclaimer">Shop with Confidence. Fast Delivery &amp; COD assessment active.</span>
+          <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
+            © {new Date().getFullYear()} GVSwift. Crafted with Integrity.
+          </span>
+          <span
+            style={{
+              fontSize: "12px",
+              color: "var(--color-text-secondary)",
+              opacity: 0.7,
+            }}
+          >
+            Shop with Confidence · Fast Delivery · COD Available
+          </span>
         </div>
       </div>
     </footer>

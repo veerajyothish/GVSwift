@@ -1,10 +1,18 @@
 "use client";
 
+/**
+ * ProductCard — PDF p.6/7:
+ * 3:4 aspect image (no bottom border), category label (small caps, muted), product name,
+ * price below name. Heart icon top-right overlay on image. No in-card CTA buttons on catalog
+ * (keep them for functionality but minimal style). Clean white card, hover lift.
+ */
+
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import WishlistButton from "@/components/ui/WishlistButton";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/context/WishlistContext";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 
@@ -13,14 +21,12 @@ interface ProductImage {
   altText: string | null;
   isPrimary: boolean;
 }
-
 interface ProductVariant {
   id: string;
   sku: string;
   stock: number;
   priceDeltaPaise: number;
 }
-
 interface Product {
   id: string;
   name: string;
@@ -31,7 +37,6 @@ interface Product {
   images?: ProductImage[];
   variants?: ProductVariant[];
 }
-
 interface ProductCardProps {
   product: Product;
   initialWishlisted?: boolean;
@@ -45,40 +50,61 @@ export default function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { wishlistedIds, refresh, toggleWishlist } = useWishlist();
+
+  const isCurrentlyWishlisted =
+    wishlistedIds.includes(product.id) || initialWishlisted;
+  const [wishlisted, setWishlisted] = useState(isCurrentlyWishlisted);
+
+  React.useEffect(() => {
+    setWishlisted(isCurrentlyWishlisted);
+  }, [isCurrentlyWishlisted]);
 
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
 
-  const totalStock = product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
+  const totalStock =
+    product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
   const isOutOfStock = totalStock === 0;
   const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
 
-  const primaryImage = product.images?.find((img) => img.isPrimary) || product.images?.[0];
+  const primaryImage =
+    product.images?.find((img) => img.isPrimary) || product.images?.[0];
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
 
-  const getFirstInStockVariant = () => {
-    return product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
+  const handleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setWishlisted((prev) => !prev);
+    try {
+      await toggleWishlist(product.id);
+      await refresh();
+    } catch {
+      setWishlisted(isCurrentlyWishlisted);
+    }
   };
+
+  const getFirstInStockVariant = () =>
+    product.variants?.find((v) => v.stock > 0) || product.variants?.[0];
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    const selectedVariant = getFirstInStockVariant();
-    if (!selectedVariant) return;
+    const variant = getFirstInStockVariant();
+    if (!variant) return;
     setIsAddingToCart(true);
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
+        body: JSON.stringify({ productId: product.id, variantId: variant.id, quantity: 1 }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add item to cart");
+      if (!res.ok) throw new Error(data.error || "Failed to add item");
       toast.success(`Added ${product.name} to cart!`, "Added to Cart");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Could not add item to cart";
-      toast.error(message, "Error");
+      toast.error(err instanceof Error ? err.message : "Could not add item", "Error");
     } finally {
       setIsAddingToCart(false);
     }
@@ -88,190 +114,211 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    const selectedVariant = getFirstInStockVariant();
-    if (!selectedVariant) return;
+    const variant = getFirstInStockVariant();
+    if (!variant) return;
     setIsBuyingNow(true);
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
+        body: JSON.stringify({ productId: product.id, variantId: variant.id, quantity: 1 }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add item to cart");
+      if (!res.ok) throw new Error(data.error || "Failed to add item");
       router.push("/checkout");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Could not process Buy Now request";
-      toast.error(message, "Error");
+      toast.error(err instanceof Error ? err.message : "Could not process Buy Now", "Error");
       setIsBuyingNow(false);
     }
   };
 
   return (
+    /* PDF p.6: card = cream bg, no box-shadow, clean border, hover lift */
     <div
-      className="card card-interactive card-product"
+      className="hover-lift"
       style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        border: "none",
-        background: "var(--color-surface)",
-        boxShadow: "0 4px 12px rgba(86, 25, 34, 0.05)",
-        borderRadius: "12px",
+        background: "var(--color-bg)",
+        border: "1px solid var(--color-border)",
+        borderRadius: "var(--radius-md)",
         overflow: "hidden",
         position: "relative",
-        transition: "transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease",
+        cursor: "pointer",
       }}
     >
-      {/* ── Image container ── */}
+      {/* ── Image ──────────────────────────────────────────────────────── */}
       <div
-        className="card-product-image-container"
         style={{
           position: "relative",
           width: "100%",
-          aspectRatio: "3/4",
+          aspectRatio: "3 / 4",
           overflow: "hidden",
-          backgroundColor: "var(--color-surface)",
+          background: "var(--color-surface)",
         }}
       >
-        <Link href={`/products/${product.slug}`} style={{ display: "block", width: "100%", height: "100%" }}>
+        <Link
+          href={`/products/${product.slug}`}
+          style={{ display: "block", width: "100%", height: "100%" }}
+        >
           <Image
             src={imageUrl}
             alt={primaryImage?.altText || product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            style={{ objectFit: "cover" }}
-            className="card-product-image"
+            style={{ objectFit: "cover", transition: "transform 0.4s ease" }}
           />
         </Link>
 
-        <WishlistButton
-          productId={product.id}
-          initialWishlisted={initialWishlisted}
-        />
+        {/* Heart icon — PDF: top-right on image */}
+        <button
+          onClick={handleWishlist}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            width: "32px",
+            height: "32px",
+            borderRadius: "50%",
+            border: "none",
+            background: "rgba(253,250,245,0.88)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            zIndex: 2,
+            transition: "transform 0.2s",
+          }}
+        >
+          <Heart
+            size={15}
+            style={{
+              fill: wishlisted ? "var(--color-accent)" : "none",
+              stroke: wishlisted ? "var(--color-accent)" : "var(--color-text-secondary)",
+              strokeWidth: 2,
+            }}
+          />
+        </button>
 
-        {/* Stock badges */}
+        {/* Stock badge */}
         {isOutOfStock ? (
-          <span className="product-card-badge-error" style={{ position: "absolute", top: "12px", left: "12px" }}>
-            Out of Stock
-          </span>
+          <span className="product-card-badge-error">Out of Stock</span>
         ) : totalStock <= 5 ? (
-          <span className="product-card-badge-warning" style={{ position: "absolute", top: "12px", left: "12px" }}>
-            Only {totalStock} left
-          </span>
+          <span className="product-card-badge-warning">Only {totalStock} left</span>
         ) : null}
       </div>
 
-      {/* ── Content section ── */}
+      {/* ── Content ────────────────────────────────────────────────────── */}
+      {/* PDF p.6: category small caps, name, price — no buttons on grid card */}
       <div
-        className="card-product-content"
         style={{
-          padding: "16px",
-          flexGrow: 1,
+          padding: "14px 14px 16px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "12px",
+          gap: "4px",
+          flexGrow: 1,
         }}
       >
-        <div>
-          {categoryName && (
-            <span
-              className="card-product-category"
-              style={{
-                fontSize: "11px",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "var(--color-text-secondary)",
-                display: "block",
-                marginBottom: "4px",
-              }}
-            >
-              {categoryName}
-            </span>
-          )}
-          <h3
+        {categoryName && (
+          <span
+            style={{
+              fontSize: "10px",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--color-text-secondary)",
+              display: "block",
+            }}
+          >
+            {categoryName}
+          </span>
+        )}
+
+        <h3 style={{ margin: 0 }}>
+          <Link
+            href={`/products/${product.slug}`}
             style={{
               fontFamily: "var(--font-body)",
-              fontSize: "15px",
+              fontSize: "14px",
               fontWeight: 500,
               color: "var(--color-text-primary)",
-              marginBottom: "6px",
-              lineHeight: "1.4",
+              textDecoration: "none",
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              textOverflow: "ellipsis",
-              height: "42px",
+              lineHeight: 1.4,
             }}
           >
-            <Link href={`/products/${product.slug}`} style={{ color: "inherit", textDecoration: "none" }}>
-              {product.name}
-            </Link>
-          </h3>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span
-              className="card-product-price"
-              style={{
-                fontSize: "16px",
-                fontWeight: 600,
-                color: "var(--color-primary)",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {formattedPrice}
-            </span>
-            {product.avgRating && (
-              <div
-                className="product-rating"
-                style={{
-                  fontFamily: "var(--font-body), sans-serif",
-                  color: "var(--color-primary)",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "2px",
-                }}
-              >
-                {product.avgRating.toFixed(1)} ★
-              </div>
-            )}
-          </div>
-          {totalStock <= 10 && totalStock > 5 && (
-            <p style={{ fontSize: '12px', color: '#a12c7b', fontWeight: 600, margin: '6px 0 0' }}>
-              ⚡ Only {totalStock} left
-            </p>
-          )}
-          {totalStock === 0 && (
-            <p style={{ fontSize: '12px', color: '#7a7974', fontWeight: 600, margin: '6px 0 0' }}>
-              Out of Stock
-            </p>
-          )}
-        </div>
+            {product.name}
+          </Link>
+        </h3>
 
-        {/* Action CTAs */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
-          <Button
-            variant={isOutOfStock ? "secondary" : "primary"}
-            style={{ width: "100%", paddingTop: "8px", paddingBottom: "8px", minHeight: "38px" }}
-            disabled={isOutOfStock}
-            loading={isBuyingNow}
-            onClick={handleBuyNow}
+        {/* Price — PDF: below name, no accent colour on catalog, just dark */}
+        <span
+          style={{
+            fontSize: "15px",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+            fontVariantNumeric: "tabular-nums",
+            marginTop: "4px",
+          }}
+        >
+          {formattedPrice}
+        </span>
+
+        {/* Add-to-cart / Buy Now — kept for functionality, minimal */}
+        {!isOutOfStock && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+              marginTop: "12px",
+            }}
           >
-            {isOutOfStock ? "Sold Out" : "Buy Now"}
-          </Button>
-          <Button
-            variant="secondary"
-            style={{ width: "100%", paddingTop: "8px", paddingBottom: "8px", minHeight: "38px" }}
-            disabled={isOutOfStock}
-            loading={isAddingToCart}
-            onClick={handleAddToCart}
+            <Button
+              variant="primary"
+              style={{
+                width: "100%",
+                minHeight: "36px",
+                fontSize: "12px",
+                borderRadius: "9999px",
+              }}
+              loading={isBuyingNow}
+              onClick={handleBuyNow}
+            >
+              Buy Now
+            </Button>
+            <Button
+              variant="secondary"
+              style={{
+                width: "100%",
+                minHeight: "36px",
+                fontSize: "12px",
+                borderRadius: "9999px",
+              }}
+              loading={isAddingToCart}
+              onClick={handleAddToCart}
+            >
+              Add to Cart
+            </Button>
+          </div>
+        )}
+        {isOutOfStock && (
+          <span
+            style={{
+              fontSize: "12px",
+              color: "var(--color-text-secondary)",
+              marginTop: "8px",
+            }}
           >
-            {isOutOfStock ? "Sold Out" : "Add to Cart"}
-          </Button>
-        </div>
+            Sold Out
+          </span>
+        )}
       </div>
     </div>
   );

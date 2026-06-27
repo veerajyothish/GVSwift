@@ -1,3 +1,8 @@
+/**
+ * /account/orders — Order History
+ * PDF p.12: sidebar left, main right. Order cards show ORDER NUMBER / DATE PLACED /
+ * TOTAL AMOUNT / status badge pill / product thumb + name / TRACK ORDER button.
+ */
 import React from "react";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/guards";
@@ -5,32 +10,30 @@ import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "My Orders",
+export const metadata: Metadata = { title: "My Orders | GVSwift" };
+
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; colorVar: string; bgVar: string }
+> = {
+  PLACED:            { label: "Placed",             colorVar: "var(--color-info)",           bgVar: "var(--color-info-bg)" },
+  CONFIRMED:         { label: "Confirmed",           colorVar: "var(--color-info)",           bgVar: "var(--color-info-bg)" },
+  SHIPPED:           { label: "Shipped",             colorVar: "var(--color-accent)",         bgVar: "rgba(107,30,46,0.08)" },
+  OUT_FOR_DELIVERY:  { label: "Out for Delivery",    colorVar: "var(--color-accent)",         bgVar: "rgba(107,30,46,0.08)" },
+  DELIVERED:         { label: "Delivered",           colorVar: "var(--color-success)",        bgVar: "var(--color-success-bg)" },
+  CANCELLED:         { label: "Cancelled",           colorVar: "var(--color-error)",          bgVar: "var(--color-error-bg)" },
+  FAILED_DELIVERY:   { label: "Failed Delivery",     colorVar: "var(--color-warning)",        bgVar: "var(--color-warning-bg)" },
+  RTO:               { label: "Returned to Origin",  colorVar: "var(--color-error)",          bgVar: "var(--color-error-bg)" },
+  RETURN_REQUESTED:  { label: "Return Requested",    colorVar: "var(--color-warning)",        bgVar: "var(--color-warning-bg)" },
+  RETURNED:          { label: "Returned",            colorVar: "var(--color-text-secondary)", bgVar: "var(--color-surface)" },
 };
 
-const STATUS_CONFIG: Record<string, { label: string; colorVar: string; icon: string }> = {
-  PLACED: { label: "Placed", colorVar: "var(--color-info)", icon: "receipt" },
-  CONFIRMED: { label: "Confirmed", colorVar: "var(--color-info)", icon: "check_circle" },
-  SHIPPED: { label: "Shipped", colorVar: "var(--color-accent)", icon: "local_shipping" },
-  OUT_FOR_DELIVERY: { label: "Out for Delivery", colorVar: "var(--color-accent)", icon: "local_shipping" },
-  DELIVERED: { label: "Delivered", colorVar: "var(--color-success)", icon: "done_all" },
-  CANCELLED: { label: "Cancelled", colorVar: "var(--color-error)", icon: "cancel" },
-  FAILED_DELIVERY: { label: "Failed Delivery", colorVar: "var(--color-warning)", icon: "warning" },
-  RTO: { label: "Returned to Origin", colorVar: "var(--color-error)", icon: "assignment_return" },
-  RETURN_REQUESTED: { label: "Return Requested", colorVar: "var(--color-warning)", icon: "assignment_return" },
-  RETURNED: { label: "Returned", colorVar: "var(--color-text-secondary)", icon: "assignment_returned" },
-};
-
-function formatPaise(paise: number): string {
-  return `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+function formatPaise(paise: number) {
+  return `₹${(paise / 100).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
 }
-
-function formatDate(date: Date): string {
+function formatDate(date: Date) {
   return new Date(date).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+    day: "numeric", month: "long", year: "numeric",
   });
 }
 
@@ -47,14 +50,11 @@ export default async function AccountOrdersPage({ searchParams }: PageProps) {
   const [orders, total] = await Promise.all([
     prisma.order.findMany({
       where: { userId: user.id },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       select: {
-        id: true,
-        status: true,
-        totalPaise: true,
-        createdAt: true,
+        id: true, status: true, totalPaise: true, createdAt: true,
         items: {
           take: 1,
           select: {
@@ -62,15 +62,11 @@ export default async function AccountOrdersPage({ searchParams }: PageProps) {
             product: {
               select: {
                 name: true,
-                images: {
-                  where: { isPrimary: true },
-                  take: 1,
-                  select: { url: true }
-                }
-              }
-            }
-          }
-        }
+                images: { where: { isPrimary: true }, take: 1, select: { url: true } },
+              },
+            },
+          },
+        },
       },
     }),
     prisma.order.count({ where: { userId: user.id } }),
@@ -79,190 +75,280 @@ export default async function AccountOrdersPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="mb-12 border-b border-color-border pb-6" style={{ borderBottom: "1px solid var(--color-border)" }}>
-        <h1 className="text-3xl font-semibold text-primary mb-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Header */}
+      <header
+        style={{
+          paddingBottom: "20px",
+          borderBottom: "1px solid var(--color-border)",
+          marginBottom: "8px",
+        }}
+      >
+        <h1
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "clamp(28px, 4vw, 36px)",
+            fontWeight: 400,
+            fontStyle: "italic",
+            color: "var(--color-accent)",
+            marginBottom: "8px",
+          }}
+        >
           Order History
         </h1>
-        <p className="text-secondary text-sm">
+        <p style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
           {total === 0
             ? "You haven't placed any orders yet."
-            : `Manage and track your ${total} order${total !== 1 ? "s" : ""} total.`}
+            : `${total} order${total !== 1 ? "s" : ""} total.`}
         </p>
       </header>
 
+      {/* Empty state */}
       {orders.length === 0 ? (
-        <div className="card p-8 flex flex-col items-center text-center gap-4">
-          <span style={{ fontSize: "48px" }}>📦</span>
-          <h2 className="text-xl font-semibold text-primary">No orders found</h2>
-          <p className="text-sm text-secondary max-w-md">
-            Looks like you haven&apos;t placed any orders yet. Start browsing our premium collections.
+        <div
+          style={{
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-lg)",
+            padding: "64px 24px",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "16px",
+          }}
+        >
+          <span style={{ fontSize: "56px", opacity: 0.4 }}>📦</span>
+          <p
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "22px",
+              fontStyle: "italic",
+              color: "var(--color-text-primary)",
+            }}
+          >
+            No orders yet
           </p>
-          <Link href="/products" className="btn btn-primary mt-4" style={{ borderRadius: "50px" }}>
+          <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", maxWidth: "320px" }}>
+            Start browsing our premium collections.
+          </p>
+          <Link
+            href="/products"
+            className="btn btn-primary btn-premium"
+            style={{ marginTop: "8px" }}
+          >
             Browse Products
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
-          {orders.map((order) => {
-            const cfg = STATUS_CONFIG[order.status] ?? {
-              label: order.status,
-              colorVar: "var(--color-text-secondary)",
-              icon: "package",
-            };
+        <>
+          {/* Order cards — PDF p.12 layout */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {orders.map((order) => {
+              const cfg = STATUS_CONFIG[order.status] ?? {
+                label: order.status,
+                colorVar: "var(--color-text-secondary)",
+                bgVar: "var(--color-surface)",
+              };
+              const displayId = `#GVS-${order.id.slice(0, 8).toUpperCase()}`;
+              const firstItem = order.items[0];
+              const itemName = firstItem?.product?.name ?? "Unknown Product";
+              const itemImage = firstItem?.product?.images?.[0]?.url ?? null;
 
-            const displayOrderId = `#GVS-${order.id.slice(0, 8).toUpperCase()}`;
-            const firstItem = order.items[0];
-            const firstItemName = firstItem?.product?.name ?? "Unknown Product";
-            const firstItemImage = firstItem?.product?.images?.[0]?.url ?? null;
-
-            return (
-              <div
-                key={order.id}
-                className="card hover-lift p-6 flex flex-col gap-6"
-                id={`order-${order.id}`}
-                style={{
-                  backgroundColor: "var(--color-surface)",
-                  border: "1px solid var(--color-border)",
-                }}
-              >
-                {/* Card Header (Meta Details) */}
+              return (
                 <div
-                  className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4 border-b border-color-border"
-                  style={{ borderBottom: "1px solid var(--color-border)" }}
+                  key={order.id}
+                  style={{
+                    background: "var(--color-bg)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: "24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                  }}
                 >
-                  <div className="flex flex-wrap gap-x-8 gap-y-2">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-secondary font-semibold uppercase tracking-wider">
-                        Order Number
-                      </span>
-                      <span className="text-sm font-semibold text-primary font-mono">
-                        {displayOrderId}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-secondary font-semibold uppercase tracking-wider">
-                        Date Placed
-                      </span>
-                      <span className="text-sm font-medium text-primary">
-                        {formatDate(order.createdAt)}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs text-secondary font-semibold uppercase tracking-wider">
-                        Total Amount
-                      </span>
-                      <span className="text-sm font-bold text-accent">
-                        {formatPaise(order.totalPaise)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Status Badge */}
+                  {/* Top row: meta + status badge */}
                   <div
-                    className="flex items-center gap-2 px-4 py-2 rounded-full self-start sm:self-auto"
                     style={{
-                      backgroundColor: `color-mix(in srgb, ${cfg.colorVar} 10%, transparent)`,
-                      border: `1px solid color-mix(in srgb, ${cfg.colorVar} 20%, transparent)`,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      flexWrap: "wrap",
+                      gap: "12px",
+                      paddingBottom: "16px",
+                      borderBottom: "1px solid var(--color-border)",
                     }}
                   >
-                    <span
-                      className="material-symbols-outlined"
+                    <div
                       style={{
-                        fontSize: "18px",
-                        color: cfg.colorVar,
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "28px",
                       }}
                     >
-                      {cfg.icon}
-                    </span>
+                      {[
+                        { label: "Order Number", value: displayId, mono: true },
+                        { label: "Date Placed", value: formatDate(order.createdAt) },
+                        { label: "Total Amount", value: formatPaise(order.totalPaise) },
+                      ].map(({ label, value, mono }) => (
+                        <div key={label}>
+                          <span
+                            style={{
+                              display: "block",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              letterSpacing: "0.07em",
+                              textTransform: "uppercase",
+                              color: "var(--color-text-secondary)",
+                              marginBottom: "4px",
+                            }}
+                          >
+                            {label}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: 600,
+                              color: "var(--color-text-primary)",
+                              fontFamily: mono ? "monospace" : "inherit",
+                            }}
+                          >
+                            {value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Status badge pill — PDF p.12 */}
                     <span
-                      className="text-xs font-semibold uppercase tracking-wider"
-                      style={{ color: cfg.colorVar }}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "5px 14px",
+                        borderRadius: "9999px",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        letterSpacing: "0.05em",
+                        textTransform: "uppercase",
+                        color: cfg.colorVar,
+                        background: cfg.bgVar,
+                        border: `1px solid ${cfg.colorVar}`,
+                        flexShrink: 0,
+                      }}
                     >
                       {cfg.label}
                     </span>
                   </div>
-                </div>
 
-                {/* Card Body */}
-                <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
-                  <div className="flex gap-4 items-center">
-                    <div
-                      className="relative w-20 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-default"
-                      style={{ border: "1px solid var(--color-border)" }}
-                    >
-                      {firstItemImage ? (
-                        <Image
-                          src={firstItemImage}
-                          alt={firstItemName}
-                          className="w-full h-full object-cover"
-                          fill
-                          sizes="(max-width: 640px) 80px, 80px"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-secondary text-xl">
-                          📦
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <h3 className="text-base font-semibold text-primary">
-                        {firstItemName}
-                      </h3>
-                      <p className="text-xs text-secondary">
-                        Quantity: {firstItem?.quantity ?? 1}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <Link
-                    href={`/account/orders/${order.id}`}
-                    className="btn btn-secondary btn-sm w-full sm:w-auto text-center"
+                  {/* Product preview + Track button */}
+                  <div
                     style={{
-                      minHeight: "38px",
-                      padding: "8px 24px",
-                      borderRadius: "50px",
-                      display: "inline-flex",
+                      display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      justifyContent: "space-between",
+                      gap: "16px",
+                      flexWrap: "wrap",
                     }}
                   >
-                    View Details
-                  </Link>
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                      {/* Thumbnail */}
+                      <div
+                        style={{
+                          width: "64px",
+                          height: "64px",
+                          borderRadius: "var(--radius-md)",
+                          overflow: "hidden",
+                          flexShrink: 0,
+                          background: "var(--color-surface)",
+                          border: "1px solid var(--color-border)",
+                          position: "relative",
+                        }}
+                      >
+                        {itemImage ? (
+                          <Image
+                            src={itemImage}
+                            alt={itemName}
+                            fill
+                            sizes="64px"
+                            style={{ objectFit: "cover" }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "24px",
+                            }}
+                          >
+                            📦
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <p
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: 500,
+                            color: "var(--color-text-primary)",
+                            marginBottom: "2px",
+                          }}
+                        >
+                          {itemName}
+                        </p>
+                        <p style={{ fontSize: "12px", color: "var(--color-text-secondary)" }}>
+                          Qty: {firstItem?.quantity ?? 1}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Track Order button — PDF p.12 */}
+                    <Link
+                      href={`/account/orders/${order.id}`}
+                      className="btn btn-secondary"
+                      style={{ minWidth: "140px", justifyContent: "center" }}
+                    >
+                      Track Order
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
             <nav
-              className="flex items-center justify-between mt-8 pt-6"
-              style={{ borderTop: "1px solid var(--color-border)" }}
-              aria-label="Order list pagination"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingTop: "20px",
+                borderTop: "1px solid var(--color-border)",
+                marginTop: "8px",
+              }}
             >
               {page > 1 ? (
                 <Link
                   href={`/account/orders?page=${page - 1}`}
                   className="btn btn-secondary btn-sm"
-                  style={{ borderRadius: "50px", padding: "6px 16px" }}
                 >
                   ← Previous
                 </Link>
               ) : (
                 <span />
               )}
-
-              <span className="text-xs text-secondary font-medium">
+              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
                 Page {page} of {totalPages}
               </span>
-
               {page < totalPages ? (
                 <Link
                   href={`/account/orders?page=${page + 1}`}
                   className="btn btn-secondary btn-sm"
-                  style={{ borderRadius: "50px", padding: "6px 16px" }}
                 >
                   Next →
                 </Link>
@@ -271,7 +357,7 @@ export default async function AccountOrdersPage({ searchParams }: PageProps) {
               )}
             </nav>
           )}
-        </div>
+        </>
       )}
     </div>
   );

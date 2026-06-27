@@ -1,5 +1,11 @@
 import React from "react";
 
+/**
+ * Input / Textarea / Select — all use .input-field which is now pill-shaped
+ * (border-radius: var(--radius-pill)) per globals.css and PDF spec p.9/13/23/25.
+ * Labels: small-caps uppercase, muted secondary colour.
+ */
+
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
@@ -10,14 +16,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, required, className = "", id, ...props }, ref) => {
     const fallbackId = React.useId();
     const uniqueId = id || fallbackId;
-    const groupClasses = `input-group ${error ? "input-error" : ""} ${className}`.trim();
+    const groupClasses = ["input-group", error ? "input-error" : "", className]
+      .filter(Boolean)
+      .join(" ");
 
     return (
       <div className={groupClasses}>
         {label && (
           <label
             htmlFor={uniqueId}
-            className={`input-label ${required ? "input-required" : ""}`}
+            className={`input-label${required ? " input-required" : ""}`}
           >
             {label}
           </label>
@@ -32,11 +40,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <span
-            id={`${uniqueId}-error`}
-            className="input-error-msg"
-            aria-live="polite"
-          >
+          <span id={`${uniqueId}-error`} className="input-error-msg" aria-live="polite">
             {error}
           </span>
         )}
@@ -56,14 +60,16 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, required, className = "", id, ...props }, ref) => {
     const fallbackId = React.useId();
     const uniqueId = id || fallbackId;
-    const groupClasses = `input-group ${error ? "input-error" : ""} ${className}`.trim();
+    const groupClasses = ["input-group", error ? "input-error" : "", className]
+      .filter(Boolean)
+      .join(" ");
 
     return (
       <div className={groupClasses}>
         {label && (
           <label
             htmlFor={uniqueId}
-            className={`input-label ${required ? "input-required" : ""}`}
+            className={`input-label${required ? " input-required" : ""}`}
           >
             {label}
           </label>
@@ -78,11 +84,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <span
-            id={`${uniqueId}-error`}
-            className="input-error-msg"
-            aria-live="polite"
-          >
+          <span id={`${uniqueId}-error`} className="input-error-msg" aria-live="polite">
             {error}
           </span>
         )}
@@ -103,14 +105,16 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, required, className = "", id, options = [], children, ...props }, ref) => {
     const fallbackId = React.useId();
     const uniqueId = id || fallbackId;
-    const groupClasses = `input-group ${error ? "input-error" : ""} ${className}`.trim();
+    const groupClasses = ["input-group", error ? "input-error" : "", className]
+      .filter(Boolean)
+      .join(" ");
 
     return (
       <div className={groupClasses}>
         {label && (
           <label
             htmlFor={uniqueId}
-            className={`input-label ${required ? "input-required" : ""}`}
+            className={`input-label${required ? " input-required" : ""}`}
           >
             {label}
           </label>
@@ -122,6 +126,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           aria-invalid={!!error}
           aria-describedby={error ? `${uniqueId}-error` : undefined}
           required={required}
+          style={{ borderRadius: "var(--radius-lg)" }} /* select looks odd as full pill */
           {...props}
         >
           {children ||
@@ -132,11 +137,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ))}
         </select>
         {error && (
-          <span
-            id={`${uniqueId}-error`}
-            className="input-error-msg"
-            aria-live="polite"
-          >
+          <span id={`${uniqueId}-error`} className="input-error-msg" aria-live="polite">
             {error}
           </span>
         )}

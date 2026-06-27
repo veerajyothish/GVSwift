@@ -1,34 +1,44 @@
 /**
- * /cart
- *
- * Public Shopping Cart Page. Secured by requireUser() — anonymous cart not supported.
+ * /cart — Shopping Cart Page
+ * PDF: cream bg, Garamond italic heading, cart grid (items left, summary right),
+ * pill CTA "Proceed to Checkout", items list with thumb + stepper + remove.
  */
-
 import React from "react";
 import { requireUser } from "@/lib/auth/guards";
 import { getCart } from "@/features/cart/service";
 import CartPageClient from "./CartPageClient";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Shopping Cart",
-};
+export const metadata: Metadata = { title: "Shopping Cart | GVSwift" };
 
 export default async function CartPage() {
-  // Ensure the user is logged in
   const user = await requireUser();
-
-  // Load user's cart from database
-  // The service automatically handles mapping and includes product/variant/images details.
   const cart = await getCart(user.id);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px", minHeight: "60vh" }}>
-      <header>
-        <h1 className="text-3xl font-semibold" style={{ color: "var(--color-text-primary)", marginBottom: "8px" }}>
+    <div
+      style={{
+        maxWidth: "1100px",
+        margin: "0 auto",
+        padding: "48px 24px 80px",
+        minHeight: "60vh",
+      }}
+    >
+      <header style={{ marginBottom: "36px" }}>
+        <h1
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "clamp(32px, 5vw, 48px)",
+            fontWeight: 400,
+            fontStyle: "italic",
+            color: "var(--color-accent)",
+            marginBottom: "8px",
+            lineHeight: 1.1,
+          }}
+        >
           Shopping Cart
         </h1>
-        <p style={{ color: "var(--color-text-secondary)" }}>
+        <p style={{ fontSize: "14px", color: "var(--color-text-secondary)" }}>
           Review your items and proceed to secure checkout.
         </p>
       </header>

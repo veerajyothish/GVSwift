@@ -15,9 +15,16 @@ export default async function PublicLayout({
 
   return (
     <WishlistProvider>
-      <div className="flex flex-col min-h-screen">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+          background: "var(--color-bg)",
+        }}
+      >
         <LoginBanner />
-        <div className="flex-1">{children}</div>
+        <div style={{ flex: 1 }}>{children}</div>
         {showFooter && <Footer />}
       </div>
     </WishlistProvider>
