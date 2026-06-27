@@ -436,11 +436,10 @@ select.input-field {
   background-color: rgba(26, 26, 26, 0.45);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 40px var(--space-4);
-  overflow-y: auto;
+  padding: var(--space-4);
   animation: modal-fade-in 0.2s ease-out;
 }
 
@@ -450,9 +449,6 @@ select.input-field {
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 520px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: modal-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -467,7 +463,6 @@ select.input-field {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  flex-shrink: 0;
 }
 
 .modal-title {
@@ -506,8 +501,6 @@ select.input-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  overflow-y: auto;
-  flex-grow: 1;
 }
 
 .modal-footer {
@@ -519,7 +512,6 @@ select.input-field {
   justify-content: flex-end;
   gap: var(--space-3);
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  flex-shrink: 0;
 }
 
 @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
@@ -1503,3 +1495,76 @@ select.input-field {
 
 /* ── Info box ────────────────────────────────────────────────────────────────── */
 .info-box-premium { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: var(--shadow-sm); }
+
+/* ── Performance optimisations ───────────────────────────────────────────────
+   These reduce layout thrashing, improve paint performance, and make buttons
+   feel instantly reactive.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Buttons: instant visual feedback — no delay */
+.btn {
+  /* Override: active state fires immediately with no transition delay */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* removes 300ms tap delay on mobile */
+  user-select: none;
+}
+
+/* Ensure all interactive elements have touch-action set for mobile */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Active press feedback — instant (no transition on active) */
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
+  transition: transform 0.05s ease !important;
+}
+
+/* Links don't need hover transitions on touch devices */
+@media (hover: none) {
+  .hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .site-navbar-link:hover { background-color: transparent; }
+}
+
+/* Content-visibility: skip off-screen rendering */
+.site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
+}
+
+/* Smooth page transitions via View Transitions API (Chrome 111+) */
+@view-transition {
+  navigation: auto;
+}
+
+/* Font rendering */
+body {
+  text-rendering: optimizeSpeed; /* faster than optimizeLegibility for body */
+  font-synthesis: none;
+}
+
+h1, h2, h3 {
+  text-rendering: optimizeLegibility; /* legibility matters for headings */
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skeleton loading — prevent layout shift */
+.skeleton-card { min-height: 300px; }
+
+/* Image containers — explicit dimensions prevent layout shift (CLS) */
+.card-product-image-container,
+.detail-image-container {
+  contain: layout style;
+}

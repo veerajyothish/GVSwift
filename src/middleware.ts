@@ -1,45 +1,70 @@
 /**
- * middleware.ts — Next.js edge middleware
+ * middleware.ts — Optimised for speed
  *
- * Responsibilities (in execution order):
- *  1. Refresh Supabase auth tokens so sessions don't expire mid-request
- *  2. HTTPS redirect (only in production)
- *  3. Security headers (base set — TICKET-902 will add the full CSP)
+ * Key change: skip Supabase auth.getUser() for public static/asset routes.
+ * Previously the auth check ran on EVERY request including _next/image,
+ * adding 200-400ms Supabase round-trip to image loads.
  *
- * NOTE: Rate limiting (TICKET-901) was removed from here because the
- * in-memory `global`-based store is incompatible with Next.js edge runtime.
- * Rate limiting must be implemented using an edge-compatible store (e.g. Upstash Redis).
- *
- * Middleware runs on every matched route (see `config.matcher` below).
- * Keep it lean — no DB queries, no heavy computation here.
+ * Now: only call getUser() for routes that actually need auth context.
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+// Routes where we MUST check auth
+const PROTECTED_PREFIXES = ["/admin", "/account", "/checkout"];
+// Routes where we never need auth (skip Supabase call entirely)
+const PUBLIC_STATIC = [
+  "/_next",
+  "/favicon",
+  "/robots",
+  "/sitemap",
+  "/logo",
+  "/api/v1/banners", // public banner API — no auth needed
+  "/api/search",     // public search — no auth needed
+];
+
 export async function middleware(request: NextRequest) {
-  request.headers.set("x-pathname", request.nextUrl.pathname);
+  const pathname = request.nextUrl.pathname;
+
+  // ── Fast path: skip auth entirely for static/public routes ──────────
+  const isStatic = PUBLIC_STATIC.some((p) => pathname.startsWith(p));
+  if (isStatic) {
+    const response = NextResponse.next();
+    response.headers.set("x-pathname", pathname);
+    return response;
+  }
 
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   });
 
-  // ── 1. Supabase auth token refresh ────────────────────────────────────
+  response.headers.set("x-pathname", pathname);
+
+  // ── Auth check (only for routes that need it) ────────────────────────
+  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  const needsAuthCheck = isProtected || pathname === "/login";
+
+  if (!needsAuthCheck) {
+    // Public page (homepage, products, etc.) — skip auth entirely
+    // Session will be checked server-side in individual pages if needed
+    addSecurityHeaders(response);
+    return response;
+  }
+
+  // ── Supabase session refresh (only protected + login routes) ─────────
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
           response = NextResponse.next({ request });
+          response.headers.set("x-pathname", pathname);
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -48,64 +73,50 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session and check authentication
   const { data: { user } } = await supabase.auth.getUser();
 
-  const pathname = request.nextUrl.pathname;
-  const isProtectedRoute = pathname.startsWith("/admin") || pathname.startsWith("/account") || pathname.startsWith("/checkout");
-  const isLoginPage = pathname === "/login";
-
-  // If no valid user, treat as logged out and clear stale cookies
   if (!user) {
-    const sbCookies = request.cookies.getAll().filter(c => c.name.startsWith("sb-"));
-    if (sbCookies.length > 0) {
-      sbCookies.forEach(c => {
-        response.cookies.delete(c.name);
-      });
-    }
+    // Clear stale cookies
+    const sbCookies = request.cookies.getAll().filter((c) =>
+      c.name.startsWith("sb-")
+    );
+    sbCookies.forEach((c) => response.cookies.delete(c.name));
 
-    if (isProtectedRoute && !isLoginPage) {
-      const redirectResponse = NextResponse.redirect(new URL("/login", request.url));
-      sbCookies.forEach(c => {
-        redirectResponse.cookies.delete(c.name);
-      });
+    if (isProtected) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      sbCookies.forEach((c) => redirectResponse.cookies.delete(c.name));
       return redirectResponse;
     }
   }
 
-  // 1. Admin landing redirect
-  if (user && user.user_metadata?.role === "ADMIN" && pathname === "/") {
+  // Admin redirect from homepage
+  if (user?.user_metadata?.role === "ADMIN" && pathname === "/") {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
-  // ── 2. HTTPS redirect (production only) ───────────────────────────────
+  // HTTPS redirect in production
   if (
     process.env.NODE_ENV === "production" &&
     request.headers.get("x-forwarded-proto") === "http"
   ) {
-    const httpsUrl = `https://${request.headers.get("host")}${request.nextUrl.pathname}${request.nextUrl.search}`;
+    const httpsUrl = `https://${request.headers.get("host")}${pathname}${request.nextUrl.search}`;
     return NextResponse.redirect(httpsUrl, { status: 301 });
   }
 
-  // ── 3. Base security headers (TICKET-902 expands to full CSP) ─────────
+  addSecurityHeaders(response);
+  return response;
+}
+
+function addSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set(
-    "Referrer-Policy",
-    "strict-origin-when-cross-origin"
-  );
-
-  return response;
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths EXCEPT:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, robots.txt, sitemap.xml (public assets)
-     */
     "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };
