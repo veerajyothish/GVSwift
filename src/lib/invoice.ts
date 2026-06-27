@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 interface InvoiceOrderItem {
   productName: string;
@@ -39,7 +39,6 @@ function formatPaise(paise: number): string {
 }
 
 interface AutoTablePDF extends jsPDF {
-  autoTable: (options: unknown) => jsPDF;
   lastAutoTable: {
     finalY: number;
   };
@@ -133,7 +132,7 @@ export function downloadInvoicePdf(order: InvoiceOrder) {
     formatPaise(item.lineTotalPaise),
   ]);
 
-  autotableDoc.autoTable({
+  autoTable(doc, {
     startY: 108,
     head: [tableHeaders],
     body: tableRows,

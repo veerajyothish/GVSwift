@@ -1,17 +1,29 @@
-# Checkout & Loyalty UI Task List
+# Bug Fixes & UX Optimization Task List
 
-- [x] Fix 1: Checkout 400 Bad Request
-  - [x] Verify `src/features/checkout/validation.ts` schema defaults pointsToRedeem
-  - [x] Update `/api/v1/loyalty/me` endpoint to return `rupeesPer100Points`
-  - [x] Ensure CheckoutClient always sends pointsToRedeem as a number in the fetch body
-- [x] Fix 2: Loyalty points checkbox visible at checkout
-  - [x] Update `src/app/globals.css`
-  - [x] Add global font-variant-numeric: tabular-nums for prices and statistics
-  - [x] Add text-wrap: balance for headings and text-wrap: pretty for paragraphs
-  - [x] Add transition and scale-on-press active state for `button`, `.btn`, and `a.btn` elements
-- [x] Update `src/app/(public)/cart/CartPageClient.tsx`
-  - [x] Add tabular-nums variant to dynamic pricing displays (subtotal and total)
-- [x] Update `src/app/account/loyalty/LoyaltyPageClient.tsx`
-  - [x] Add tabular-nums variant to user statistics and points history deltas
-- [x] Verify build with `npx next build`
-- [x] Check in all modifications via git commit & push changes
+- [x] Optimize Page Load Speed (Lag reduction)
+  - [x] Implement `unstable_cache` for `listCategories` in `src/features/catalog/repository.ts`
+  - [x] Implement `unstable_cache` for `getProductBySlug` and `getProductById` in `src/features/catalog/repository.ts`
+  - [x] Add short-term caching for `listProducts` default query
+- [x] Initial Loading Screen & Navigation Lag
+  - [x] Create `src/components/ui/InitialLoader.tsx` client-side loader
+  - [x] Add `InitialLoader` to root layout `src/app/layout.tsx`
+  - [x] Delete/disable `src/app/(public)/loading.tsx` root-level loader
+- [x] Duplicate Footers
+  - [x] Remove duplicate `<Footer />` render and import in `src/app/(public)/page.tsx`
+- [x] Header Links Clean Up
+  - [x] Remove "Couture" and "Heritage" links from `src/components/ui/Navbar.tsx`
+  - [x] Remove "Heritage" link from `src/components/ui/MobileMenu.tsx`
+- [x] Mobile Bottom Nav Bar Placement
+  - [x] Use React Portal in `src/components/ui/MobileMenu.tsx` to render overlay, drawer, and bottom nav under `document.body`
+- [x] Wishlist Synchronisation
+  - [x] Change `src/app/account/wishlist/page.tsx` to query Prisma `WishlistItem` table instead of Supabase
+- [x] Product Page Price Filters
+  - [x] Update price filter options to Under ₹5,000 / ₹10,000 / ₹20,000 in `src/app/(public)/products/page.tsx`
+- [x] Address Forms & Modals
+  - [x] Add scrolling styles for modals in `src/app/globals.css`
+  - [x] Update "+ Add New Address" button in `src/app/account/addresses/AddressesClient.tsx` to redirect to `/account/addresses/new`
+  - [x] Implement inline Address Form inside `src/app/(public)/checkout/CheckoutClient.tsx`
+- [x] Invoice Generation Bug (Sentry error)
+  - [x] Fix `jspdf-autotable` import and call in `src/lib/invoice.ts`
+- [x] Verification
+  - [x] Run `npm run build` and verify 0 errors

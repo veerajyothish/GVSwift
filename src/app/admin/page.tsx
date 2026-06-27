@@ -24,7 +24,6 @@ export default async function AdminPage() {
     ordersToday,
     pendingOrders,
     activeUsers,
-    totalProducts,
     lowStockThreshold,
     dailyOrders,
   ] = await Promise.all([
@@ -32,7 +31,6 @@ export default async function AdminPage() {
     prisma.order.count({ where: { createdAt: { gte: todayStart } } }),
     prisma.order.count({ where: { status: { in: ["PLACED", "CONFIRMED"] } } }),
     prisma.user.count({ where: { blocked: false, role: { not: "ADMIN" } } }),
-    prisma.product.count(),
     getLowStockThreshold(),
     prisma.order.findMany({
       where: { status: "DELIVERED", createdAt: { gte: thirtyDaysAgo } },

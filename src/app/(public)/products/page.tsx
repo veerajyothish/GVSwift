@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { getProducts, getCategories } from "@/features/catalog/service";
 import { searchProducts } from "@/features/catalog/search";
-import { Button } from "@/components/ui/Button";
 import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -277,9 +276,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </span>
             {[
               { label: "All", value: "" },
-              { label: "Under ₹500", value: "500" },
-              { label: "Under ₹1,000", value: "1000" },
-              { label: "Under ₹2,000", value: "2000" },
+              { label: "Under ₹5,000", value: "5000" },
+              { label: "Under ₹10,000", value: "10000" },
+              { label: "Under ₹20,000", value: "20000" },
             ].map((opt) => (
               <Link
                 key={opt.value}

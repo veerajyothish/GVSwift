@@ -7,7 +7,6 @@ import { requireUser } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Metadata } from "next";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 
 export const metadata: Metadata = { title: "My Wishlist | GVSwift" };
@@ -25,15 +24,13 @@ interface WishlistProduct {
 
 export default async function WishlistPage() {
   const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
+  const wishlistItems = await prisma.wishlistItem.findMany({
+    where: { userId: user.id },
+    select: { productId: true },
+    orderBy: { createdAt: "desc" },
+  });
 
-  const { data: wishlistItems } = await supabase
-    .from("wishlists")
-    .select("product_id")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  const productIds = wishlistItems?.map((item) => item.product_id) ?? [];
+  const productIds = wishlistItems?.map((item) => item.productId) ?? [];
 
   let products: WishlistProduct[] = [];
   if (productIds.length > 0) {

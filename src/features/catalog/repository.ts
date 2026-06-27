@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import {
   ListProductsParams,
   PaginatedProductsResult,
@@ -7,11 +8,10 @@ import {
 } from "./types";
 
 /**
- * Lists products with pagination and filters.
- * By default, soft-deleted/inactive products are excluded.
+ * Direct database query function to list products.
  */
-export async function listProducts(
-  params: ListProductsParams = {}
+async function fetchProductsDirect(
+  params: ListProductsParams
 ): Promise<PaginatedProductsResult> {
   const page = Math.max(1, params.page ?? 1);
   const pageSize = Math.max(1, Math.min(100, params.pageSize ?? params.limit ?? 12));
@@ -114,6 +114,52 @@ export async function listProducts(
   };
 }
 
+const listProductsCached = unstable_cache(
+  async (serializedParams: string) => {
+    const params = JSON.parse(serializedParams) as ListProductsParams;
+    return fetchProductsDirect(params);
+  },
+  ["products-list"],
+  { revalidate: 30, tags: ["products"] }
+);
+
+/**
+ * Lists products with pagination and filters.
+ * By default, soft-deleted/inactive products are excluded.
+ */
+export async function listProducts(
+  params: ListProductsParams = {}
+): Promise<PaginatedProductsResult> {
+  const sortedParams: Record<string, unknown> = {};
+  Object.keys(params)
+    .sort()
+    .forEach((key) => {
+      sortedParams[key] = (params as Record<string, unknown>)[key];
+    });
+  const serialized = JSON.stringify(sortedParams);
+  return listProductsCached(serialized);
+}
+
+const getProductBySlugCached = unstable_cache(
+  async (slug: string) => {
+    return prisma.product.findUnique({
+      where: { slug },
+      include: {
+        variants: true,
+        images: {
+          orderBy: [
+            { isPrimary: "desc" },
+            { sortOrder: "asc" },
+          ],
+        },
+        category: true,
+      },
+    }) as Promise<ProductWithVariantsAndImages | null>;
+  },
+  ["product-by-slug"],
+  { revalidate: 60, tags: ["products"] }
+);
+
 /**
  * Retrieves a single product by its slug, including variants and images.
  * Returns null if the product is not found or is inactive (when includeInactive is false).
@@ -122,19 +168,21 @@ export async function getProductBySlug(
   slug: string,
   includeInactive = false
 ): Promise<ProductWithVariantsAndImages | null> {
-  const product = (await prisma.product.findUnique({
-    where: { slug },
-    include: {
-      variants: true,
-      images: {
-        orderBy: [
-          { isPrimary: "desc" },
-          { sortOrder: "asc" },
-        ],
-      },
-      category: true,
-    },
-  })) as ProductWithVariantsAndImages | null;
+  const product = includeInactive
+    ? ((await prisma.product.findUnique({
+        where: { slug },
+        include: {
+          variants: true,
+          images: {
+            orderBy: [
+              { isPrimary: "desc" },
+              { sortOrder: "asc" },
+            ],
+          },
+          category: true,
+        },
+      })) as ProductWithVariantsAndImages | null)
+    : await getProductBySlugCached(slug);
 
   if (!product) return null;
 
@@ -146,6 +194,26 @@ export async function getProductBySlug(
   return product;
 }
 
+const getProductByIdCached = unstable_cache(
+  async (id: string) => {
+    return prisma.product.findUnique({
+      where: { id },
+      include: {
+        variants: true,
+        images: {
+          orderBy: [
+            { isPrimary: "desc" },
+            { sortOrder: "asc" },
+          ],
+        },
+        category: true,
+      },
+    }) as Promise<ProductWithVariantsAndImages | null>;
+  },
+  ["product-by-id"],
+  { revalidate: 60, tags: ["products"] }
+);
+
 /**
  * Retrieves a single product by its ID, including variants and images.
  */
@@ -153,19 +221,21 @@ export async function getProductById(
   id: string,
   includeInactive = false
 ): Promise<ProductWithVariantsAndImages | null> {
-  const product = (await prisma.product.findUnique({
-    where: { id },
-    include: {
-      variants: true,
-      images: {
-        orderBy: [
-          { isPrimary: "desc" },
-          { sortOrder: "asc" },
-        ],
-      },
-      category: true,
-    },
-  })) as ProductWithVariantsAndImages | null;
+  const product = includeInactive
+    ? ((await prisma.product.findUnique({
+        where: { id },
+        include: {
+          variants: true,
+          images: {
+            orderBy: [
+              { isPrimary: "desc" },
+              { sortOrder: "asc" },
+            ],
+          },
+          category: true,
+        },
+      })) as ProductWithVariantsAndImages | null)
+    : await getProductByIdCached(id);
 
   if (!product) return null;
 
@@ -176,13 +246,21 @@ export async function getProductById(
   return product;
 }
 
+const listCategoriesCached = unstable_cache(
+  async () => {
+    return prisma.category.findMany({
+      orderBy: { name: "asc" },
+    });
+  },
+  ["categories-list"],
+  { revalidate: 3600, tags: ["categories"] }
+);
+
 /**
  * Lists all categories (flat array).
  */
 export async function listCategories() {
-  return prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+  return listCategoriesCached();
 }
 
 /**

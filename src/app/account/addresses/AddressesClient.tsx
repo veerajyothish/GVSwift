@@ -6,7 +6,6 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
-import AddressForm from "./AddressForm";
 
 interface Address {
   id: string;
@@ -33,7 +32,6 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [settingDefaultId, setSettingDefaultId] = useState<string | null>(null);
-  const [showAddressModal, setShowAddressModal] = useState(false);
 
   // Synchronize state with backend by reloading
   const refreshAddresses = async () => {
@@ -92,8 +90,8 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
     <div className="flex flex-col gap-6">
       {/* Header action */}
       <div className="flex justify-end">
-        <button
-          onClick={() => setShowAddressModal(true)}
+        <Link
+          href="/account/addresses/new"
           className="btn btn-primary btn-premium"
           style={{
             display: "inline-flex",
@@ -102,11 +100,12 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
             padding: "10px 24px",
             borderRadius: "50px",
             cursor: "pointer",
+            textDecoration: "none",
           }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
           Add New Address
-        </button>
+        </Link>
       </div>
 
       {/* Address List Grid */}
@@ -117,13 +116,13 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
           <p className="text-sm text-secondary max-w-md">
             Add a shipping address to enable quick checkout for your premium orders.
           </p>
-          <button
-            onClick={() => setShowAddressModal(true)}
+          <Link
+            href="/account/addresses/new"
             className="btn btn-primary btn-premium mt-4"
-            style={{ borderRadius: "50px" }}
+            style={{ borderRadius: "50px", textDecoration: "none" }}
           >
             Add Your First Address
-          </button>
+          </Link>
         </Card>
       ) : (
         <div className="address-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "24px" }}>
@@ -272,24 +271,6 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
           Are you sure you want to permanently delete this shipping address? This action cannot be undone.
         </p>
       </Modal>
-
-      {/* Add New Address Modal */}
-      {showAddressModal && (
-        <Modal
-          isOpen={showAddressModal}
-          onClose={() => setShowAddressModal(false)}
-          title="Add Address"
-        >
-          <AddressForm
-            isModal={true}
-            onSuccess={async () => {
-              setShowAddressModal(false);
-              await refreshAddresses();
-            }}
-            onCancel={() => setShowAddressModal(false)}
-          />
-        </Modal>
-      )}
     </div>
   );
 }

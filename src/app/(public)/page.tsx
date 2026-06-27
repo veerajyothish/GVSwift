@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
-import { Footer } from "@/components/ui/Footer";
 import { getProducts } from "@/features/catalog/service";
 import { getServerSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -590,8 +589,6 @@ export default async function HomePage() {
           </section>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

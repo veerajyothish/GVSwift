@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 
 interface Address {
@@ -471,20 +470,154 @@ export default function CheckoutClient({
             <h2 className="text-xl font-semibold checkout-header-title">
               1. Shipping Address
             </h2>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setFormData(defaultFormData);
-                setFieldErrors({});
-                setIsModalOpen(true);
-              }}
-              className="checkout-add-address-btn"
-            >
-              + Add Address
-            </Button>
+            {!isModalOpen && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setFormData(defaultFormData);
+                  setFieldErrors({});
+                  setIsModalOpen(true);
+                }}
+                className="checkout-add-address-btn"
+              >
+                + Add Address
+              </Button>
+            )}
           </div>
 
-          {addresses.length === 0 ? (
+          {isModalOpen ? (
+            <div style={{ paddingTop: "8px" }}>
+              <form onSubmit={handleAddAddressSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-2">
+                  <Input
+                    label="Full Name"
+                    placeholder="e.g. John Doe"
+                    value={formData.fullName}
+                    error={fieldErrors.fullName}
+                    required
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  />
+                  <Input
+                    label="Mobile Number"
+                    placeholder="10-digit Indian number"
+                    value={formData.phone}
+                    error={fieldErrors.phone}
+                    required
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
+                  />
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "-8px" }}>
+                  <button
+                    type="button"
+                    onClick={handleGeolocation}
+                    disabled={locating}
+                    className="btn btn-outline btn-sm flex items-center gap-2"
+                    style={{ padding: "6px 12px", fontSize: "12px", minHeight: "32px" }}
+                  >
+                    {locating ? (
+                      <>
+                        <span className="animate-spin">⏳</span> Detecting location...
+                      </>
+                    ) : (
+                      <>📍 Use My Location</>
+                    )}
+                  </button>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-3">
+                  <Input
+                    label="Pincode"
+                    placeholder="6-digit PIN code"
+                    value={formData.pincode}
+                    error={fieldErrors.pincode}
+                    required
+                    onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
+                  />
+                  <Input
+                    label="City"
+                    placeholder="e.g. Bangalore"
+                    value={formData.city}
+                    error={fieldErrors.city}
+                    required
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  />
+                  <Input
+                    label="State"
+                    placeholder="e.g. Karnataka"
+                    value={formData.state}
+                    error={fieldErrors.state}
+                    required
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  />
+                </div>
+
+                <Input
+                  label="Address Line 1"
+                  placeholder="Flat, House no., Building, Company, Apartment"
+                  value={formData.line1}
+                  error={fieldErrors.line1}
+                  required
+                  onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
+                />
+
+                <Input
+                  label="Address Line 2 (Optional)"
+                  placeholder="Area, Street, Sector, Village"
+                  value={formData.line2}
+                  error={fieldErrors.line2}
+                  onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
+                />
+
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
+                  <input
+                    type="checkbox"
+                    id="isDefault"
+                    checked={formData.isDefault}
+                    onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      cursor: "pointer",
+                      accentColor: "var(--color-accent)",
+                    }}
+                  />
+                  <label
+                    htmlFor="isDefault"
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--color-text-primary)",
+                      cursor: "pointer",
+                      userSelect: "none",
+                    }}
+                  >
+                    Make this my default shipping address
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "16px", borderTop: "1px solid var(--color-border)", paddingTop: "16px" }}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setIsModalOpen(false)}
+                    disabled={submittingAddress}
+                    type="button"
+                    style={{ minHeight: "44px" }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleAddAddressSubmit}
+                    loading={submittingAddress}
+                    type="submit"
+                    style={{ minHeight: "44px", minWidth: "120px" }}
+                  >
+                    Add Address
+                  </Button>
+                </div>
+              </form>
+            </div>
+          ) : addresses.length === 0 ? (
             <div className="checkout-empty-address">
               <p style={{ color: "var(--color-text-secondary)", marginBottom: "16px" }}>
                 No shipping addresses saved yet.
@@ -935,141 +1068,6 @@ export default function CheckoutClient({
         </div>
       </div>
 
-      {/* Add New Address Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add Shipping Address"
-        footer={
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", width: "100%" }}>
-            <Button
-              variant="secondary"
-              onClick={() => setIsModalOpen(false)}
-              disabled={submittingAddress}
-              style={{ minHeight: "44px" }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleAddAddressSubmit}
-              loading={submittingAddress}
-              style={{ minHeight: "44px", minWidth: "120px" }}
-            >
-              Add Address
-            </Button>
-          </div>
-        }
-      >
-        <form onSubmit={handleAddAddressSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-2">
-            <Input
-              label="Full Name"
-              placeholder="e.g. John Doe"
-              value={formData.fullName}
-              error={fieldErrors.fullName}
-              required
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            />
-            <Input
-              label="Mobile Number"
-              placeholder="10-digit Indian number"
-              value={formData.phone}
-              error={fieldErrors.phone}
-              required
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
-            />
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "-8px" }}>
-            <button
-              type="button"
-              onClick={handleGeolocation}
-              disabled={locating}
-              className="btn btn-outline btn-sm flex items-center gap-2"
-              style={{ padding: "6px 12px", fontSize: "12px", minHeight: "32px" }}
-            >
-              {locating ? (
-                <>
-                  <span className="animate-spin">⏳</span> Detecting location...
-                </>
-              ) : (
-                <>📍 Use My Location</>
-              )}
-            </button>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="md:grid-cols-3">
-            <Input
-              label="Pincode"
-              placeholder="6-digit PIN code"
-              value={formData.pincode}
-              error={fieldErrors.pincode}
-              required
-              onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
-            />
-            <Input
-              label="City"
-              placeholder="e.g. Bangalore"
-              value={formData.city}
-              error={fieldErrors.city}
-              required
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            />
-            <Input
-              label="State"
-              placeholder="e.g. Karnataka"
-              value={formData.state}
-              error={fieldErrors.state}
-              required
-              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-            />
-          </div>
-
-          <Input
-            label="Address Line 1"
-            placeholder="Flat, House no., Building, Company, Apartment"
-            value={formData.line1}
-            error={fieldErrors.line1}
-            required
-            onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
-          />
-
-          <Input
-            label="Address Line 2 (Optional)"
-            placeholder="Area, Street, Sector, Village"
-            value={formData.line2}
-            error={fieldErrors.line2}
-            onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
-          />
-
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
-            <input
-              type="checkbox"
-              id="isDefault"
-              checked={formData.isDefault}
-              onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-              style={{
-                width: "18px",
-                height: "18px",
-                cursor: "pointer",
-                accentColor: "var(--color-accent)",
-              }}
-            />
-            <label
-              htmlFor="isDefault"
-              style={{
-                fontSize: "14px",
-                color: "var(--color-text-primary)",
-                cursor: "pointer",
-                userSelect: "none",
-              }}
-            >
-              Make this my default shipping address
-            </label>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }
