@@ -10,7 +10,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
-import Image from "next/image";
+
 
 interface MobileMenuProps {
   isLoggedIn: boolean;
@@ -156,28 +156,8 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             aria-hidden={!isOpen}
           >
             <div className="mobile-drawer-inner">
-              {/* Header */}
-              <div className="mobile-drawer-header">
-                <Link
-                  href="/"
-                  onClick={close}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image
-                    src="/logo.png"
-                    alt="GVSwift"
-                    width={100}
-                    height={24}
-                    style={{
-                      height: "24px",
-                      width: "auto",
-                      objectFit: "contain",
-                    }}
-                  />
-                </Link>
+              {/* Header — close button only; logo lives in the main navbar */}
+              <div className="mobile-drawer-header" style={{ justifyContent: "flex-end" }}>
                 <button onClick={close} className="mobile-drawer-close" aria-label="Close menu">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
