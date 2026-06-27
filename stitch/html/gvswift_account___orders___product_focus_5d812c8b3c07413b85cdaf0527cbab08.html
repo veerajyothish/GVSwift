@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVSwift - Account Suite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "primary": "#561922",
+                    "surface-container": "#f0eded",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f3f0ef",
+                    "on-surface": "#1c1b1b",
+                    "secondary-container": "#e6e2dd",
+                    "primary-fixed-dim": "#ffb2b8",
+                    "on-secondary-container": "#666460",
+                    "tertiary-container": "#5f3e19",
+                    "tertiary": "#452805",
+                    "tertiary-fixed-dim": "#eebd8e",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e5e2e1",
+                    "surface-container-high": "#eae7e7",
+                    "on-tertiary-fixed": "#2c1600",
+                    "on-primary-fixed-variant": "#753139",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#3c0610",
+                    "error": "#ba1a1a",
+                    "outline": "#867273",
+                    "on-surface-variant": "#534343",
+                    "on-tertiary-fixed-variant": "#61401b",
+                    "secondary-fixed-dim": "#c9c6c1",
+                    "on-secondary-fixed": "#1c1c19",
+                    "on-tertiary-container": "#d9aa7c",
+                    "on-secondary-fixed-variant": "#484743",
+                    "primary-container": "#722f37",
+                    "surface-dim": "#dcd9d9",
+                    "error-container": "#ffdad6",
+                    "secondary": "#605e5b",
+                    "surface-container-highest": "#e5e2e1",
+                    "inverse-primary": "#ffb2b8",
+                    "tertiary-fixed": "#ffdcbd",
+                    "surface-bright": "#fcf9f8",
+                    "on-primary-container": "#f499a0",
+                    "background": "#fcf9f8",
+                    "surface-tint": "#92484f",
+                    "primary-fixed": "#ffdadb",
+                    "surface-container-low": "#f6f3f2",
+                    "outline-variant": "#d8c1c2",
+                    "inverse-surface": "#313030",
+                    "on-background": "#1c1b1b",
+                    "secondary-fixed": "#e6e2dd",
+                    "surface": "#fcf9f8",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "headline-sm": [
+                            "EB Garamond"
+                    ],
+                    "headline-md": [
+                            "EB Garamond"
+                    ],
+                    "body-md": [
+                            "Manrope"
+                    ],
+                    "display-lg-mobile": [
+                            "EB Garamond"
+                    ],
+                    "label-md": [
+                            "Manrope"
+                    ],
+                    "body-lg": [
+                            "Manrope"
+                    ],
+                    "caption": [
+                            "Manrope"
+                    ],
+                    "display-lg": [
+                            "EB Garamond"
+                    ]
+            },
+            "fontSize": {
+                    "headline-sm": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "caption": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "64px",
+                            {
+                                    "lineHeight": "72px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface');
+            color: theme('colors.on-surface');
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-body-md">
+<!-- Top Navigation (Shared Component JSON) -->
+<header class="bg-surface dark:bg-inverse-surface w-full sticky top-0 z-50 border-b border-outline-variant dark:border-on-surface-variant flat no shadows">
+<div class="flex justify-between items-center w-full px-margin-desktop h-20 max-w-container-max mx-auto">
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">COLLECTION</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">HERITAGE</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">STORES</a>
+<a class="font-label-md text-label-md uppercase tracking-widest text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform" href="#">JOURNAL</a>
+</nav>
+<a class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim tracking-tighter" href="#">GVSWIFT</a>
+<div class="flex items-center gap-6">
+<!-- Assuming Search is implied 'on_right' from JSON, though not explicitly an icon in trailing_icon_actions array, but usually implies search bar placement -->
+<button class="cursor-pointer active:scale-95 transition-transform text-secondary hover:text-primary transition-colors duration-300">
+<span class="material-symbols-outlined text-[24px]" data-icon="search">search</span>
+</button>
+<button class="cursor-pointer active:scale-95 transition-transform text-secondary hover:text-primary transition-colors duration-300">
+<span class="material-symbols-outlined text-[24px]" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<!-- Active State for Profile in Top Nav (Semantic mapping for Account page) -->
+<button class="cursor-pointer active:scale-95 transition-transform text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1">
+<span class="material-symbols-outlined text-[24px]" data-icon="person">person</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-container-max mx-auto px-margin-desktop py-16 flex gap-gutter flex-col md:flex-row min-h-[calc(100vh-80px)]">
+<!-- Account Sidebar -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-8">My Account</h1>
+<nav class="flex flex-col gap-2">
+<!-- Active Tab -->
+<a class="flex items-center gap-4 py-3 px-4 bg-surface-container-low rounded-xl text-primary font-bold group cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-md text-label-md uppercase tracking-widest">Profile Details</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-4 py-3 px-4 rounded-xl text-secondary hover:bg-surface-container-low hover:text-on-surface transition-all duration-200 group cursor-pointer" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="shopping_basket">shopping_basket</span>
+<span class="font-label-md text-label-md uppercase tracking-widest group-hover:text-primary transition-colors">Order History</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-4 rounded-xl text-secondary hover:bg-surface-container-low hover:text-on-surface transition-all duration-200 group cursor-pointer" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="location_on">location_on</span>
+<span class="font-label-md text-label-md uppercase tracking-widest group-hover:text-primary transition-colors">Addresses</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-4 rounded-xl text-secondary hover:bg-surface-container-low hover:text-on-surface transition-all duration-200 group cursor-pointer" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="favorite">favorite</span>
+<span class="font-label-md text-label-md uppercase tracking-widest group-hover:text-primary transition-colors">Wishlist</span>
+</a>
+<div class="h-px bg-outline-variant my-4 w-full"></div>
+<a class="flex items-center gap-4 py-3 px-4 rounded-xl text-secondary hover:bg-surface-container-low hover:text-on-surface transition-all duration-200 group cursor-pointer" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md uppercase tracking-widest group-hover:text-primary transition-colors">Sign Out</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<section class="flex-1 flex flex-col gap-12">
+<!-- Profile Section -->
+<div class="flex flex-col gap-8" id="profile-section">
+<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Profile Details</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Manage your personal information and preferences.</p>
+</div>
+<button class="font-label-md text-label-md text-primary uppercase tracking-widest border border-primary px-6 py-2 rounded-full hover:bg-primary-container hover:text-on-primary-container transition-all duration-300">
+                        Edit Profile
+                    </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Form Field (Read-only state shown) -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary uppercase tracking-widest">First Name</label>
+<div class="border border-outline px-4 py-3 rounded-xl bg-surface-container-lowest flex items-center">
+<span class="font-body-md text-body-md text-on-surface">Eleanor</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary uppercase tracking-widest">Last Name</label>
+<div class="border border-outline px-4 py-3 rounded-xl bg-surface-container-lowest flex items-center">
+<span class="font-body-md text-body-md text-on-surface">Vance</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-md text-label-md text-secondary uppercase tracking-widest">Email Address</label>
+<div class="border border-outline px-4 py-3 rounded-xl bg-surface-container-lowest flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface">eleanor.vance@example.com</span>
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="font-label-md text-label-md text-secondary uppercase tracking-widest">Phone Number</label>
+<div class="border border-outline px-4 py-3 rounded-xl bg-surface-container-lowest flex items-center group focus-within:border-primary focus-within:border-2 transition-all">
+<input class="font-body-md text-body-md text-on-surface bg-transparent border-none p-0 w-full focus:ring-0" disabled="" type="tel" value="+1 (555) 123-4567"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Orders Section -->
+<div class="flex flex-col gap-8 mt-8" id="orders-section">
+<div class="flex justify-between items-end border-b border-outline-variant pb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Recent Orders</h2>
+</div>
+<a class="font-label-md text-label-md text-secondary uppercase tracking-widest hover:text-primary transition-colors underline underline-offset-4" href="#">
+                        View All
+                    </a>
+</div>
+<!-- Order Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 flex flex-col gap-6">
+<div class="flex justify-between items-center border-b border-outline-variant pb-6">
+<div class="flex gap-12">
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">Order Number</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">#GVS-88392</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">Date Placed</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">October 24, 2023</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">Total Amount</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">$1,450.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="local_shipping">local_shipping</span>
+<span class="font-label-md text-label-md text-primary uppercase tracking-widest">In Transit</span>
+</div>
+</div>
+<div class="flex gap-6 items-center">
+<div class="w-24 h-32 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A meticulously styled product shot of a luxury leather handbag in deep burgundy. The bag is placed on a pristine white marble block against a soft cream background. Lighting is dramatic, highlighting the fine texture of the leather and the polished gold hardware. No models present, just the object in focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDyZTKHOl0WeEpFpKOIr9IBVrBk3gQn5oP4wHUI7zV_0_0RwmD36ORvh3sQ5_TAOZ3tglMJUBLLZYBqwH4O12oZ8ESPzYEtvqWngij52sNxziVGkzro36A-XVTmOFn8tujwD8rt5ELEd6UXoJ0izP_nu0ak6Z1s7bhQjA3dHWt9j2uxUVJ2PbnfxwfmOo1khEP03ytm-m8qX0ZyZJn4ABAtb4tL2chYfIexSSmasqMUg2lSI2yiW0SLrNOqLaQbSE_wVZ2CQ3jzZP5"/>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">The Heritage Tote</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Burgundy Calfskin Leather</p>
+<span class="font-body-md text-body-md text-secondary">Qty: 1</span>
+</div>
+<button class="font-label-md text-label-md text-on-surface uppercase tracking-widest border border-outline px-6 py-2 rounded-full hover:border-primary hover:text-primary transition-colors">
+                            Track Order
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component JSON) -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full py-16 flex flex-col items-center gap-8 w-full px-margin-desktop border-t border-outline-variant flat no shadows">
+<h2 class="font-headline-sm text-headline-sm text-primary">GVSWIFT</h2>
+<div class="flex gap-6 font-body-md text-body-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a>
+<a class="hover:text-primary transition-colors" href="#">Sustainability</a>
+</div>
+<p class="font-body-md text-body-md text-on-surface dark:text-inverse-on-surface">© 2024 GVSWIFT PREMIUM. CRAFTED IN INDIA.</p>
+</footer>
+</body></html>

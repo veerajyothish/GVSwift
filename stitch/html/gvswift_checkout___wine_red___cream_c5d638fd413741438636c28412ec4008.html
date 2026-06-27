@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout - GVSwift</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#e9c349",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary-fixed-variant": "#574500",
+                        "surface-dim": "#dcd9d8",
+                        "background": "#fcf9f8",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#241a00",
+                        "inverse-surface": "#303030",
+                        "on-primary-fixed": "#3c0610",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-container": "#745c00",
+                        "primary": "#561922",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#f499a0",
+                        "on-tertiary-fixed-variant": "#5a4137",
+                        "outline-variant": "#d8c1c2",
+                        "surface-container-high": "#eae7e7",
+                        "secondary-fixed": "#ffe088",
+                        "error": "#ba1a1a",
+                        "surface": "#fcf9f8",
+                        "surface-container-highest": "#e4e2e1",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffdbce",
+                        "primary-fixed-dim": "#ffb2b8",
+                        "surface-tint": "#92484f",
+                        "outline": "#867273",
+                        "on-surface-variant": "#534343",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#583f35",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#722f37",
+                        "tertiary-fixed-dim": "#e3bfb2",
+                        "on-background": "#1b1c1b",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#ffb2b8",
+                        "on-surface": "#1b1c1b",
+                        "primary-fixed": "#ffdadb",
+                        "on-tertiary-fixed": "#2a170f",
+                        "secondary-container": "#fed65b",
+                        "surface-container": "#f0edec",
+                        "tertiary": "#402920",
+                        "secondary": "#735c00",
+                        "on-primary-fixed-variant": "#753139",
+                        "on-tertiary-container": "#ceab9e",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["\"Source Serif 4\""],
+                        "label-sm": ["Work Sans"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-lg-mobile": ["Libre Caslon Text"],
+                        "body-md": ["\"Source Serif 4\""],
+                        "body-lg": ["\"Source Serif 4\""],
+                        "display-lg": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Subtle texture simulating paper */
+        body {
+            background-color: theme('colors.background');
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="text-on-background antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar (Suppressed nav links due to transactional intent) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto bg-surface shadow-sm">
+<div class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary">
+            GVSwift
+        </div>
+<div class="flex items-center gap-stack-md text-primary">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest hidden md:inline-block">Secure Checkout</span>
+</div>
+</header>
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col lg:flex-row gap-gutter">
+<!-- Left Side: Forms -->
+<div class="w-full lg:w-2/3 flex flex-col gap-stack-lg">
+<!-- Shipping Information -->
+<section class="bg-surface-container-lowest p-stack-md rounded shadow-[0_4px_20px_rgba(86,25,34,0.05)] border border-surface-variant">
+<h2 class="font-title-md text-title-md text-primary mb-stack-md flex items-center gap-2 border-b border-surface-variant pb-4">
+<span class="material-symbols-outlined fill text-secondary-container">local_shipping</span>
+                    Shipping Information
+                </h2>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<div class="col-span-1 md:col-span-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="email">Email Address</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="email" placeholder="your@email.com" type="email"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="firstName">First Name</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="firstName" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="lastName">Last Name</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="lastName" type="text"/>
+</div>
+<div class="col-span-1 md:col-span-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="address">Street Address</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="address" placeholder="House number and street name" type="text"/>
+</div>
+<div class="col-span-1 md:col-span-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="apartment">Apartment, suite, etc. (optional)</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="apartment" type="text"/>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="city">City</label>
+<input class="w-full bg-background border border-outline px-4 py-3 rounded text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" id="city" type="text"/>
+</div>
+<!-- Pincode Verification Field -->
+<div class="relative">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit uppercase tracking-wider" for="pincode">Postal / Zip Code</label>
+<div class="relative flex items-center">
+<input class="w-full bg-background border border-[#2e7d32] pr-10 pl-4 py-3 rounded text-body-md focus:outline-none transition-colors" id="pincode" type="text" value="10012"/>
+<span class="material-symbols-outlined fill text-[#2e7d32] absolute right-3">check_circle</span>
+</div>
+<p class="font-label-sm text-label-sm text-[#2e7d32] mt-unit flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span> Verified for COD Delivery
+                        </p>
+</div>
+<div class="col-span-1 md:col-span-2 mt-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="w-5 h-5 border border-outline rounded bg-background flex items-center justify-center group-hover:border-primary transition-colors">
+<!-- Checked state hidden by default, shown for demo -->
+</div>
+<span class="font-body-md text-body-md text-on-surface">Save this information for next time</span>
+</label>
+</div>
+</form>
+</section>
+<!-- Payment Method -->
+<section class="bg-surface-container-lowest p-stack-md rounded shadow-[0_4px_20px_rgba(86,25,34,0.05)] border border-surface-variant">
+<h2 class="font-title-md text-title-md text-primary mb-stack-md flex items-center gap-2 border-b border-surface-variant pb-4">
+<span class="material-symbols-outlined fill text-secondary-container">payments</span>
+                    Payment Method
+                </h2>
+<div class="border border-primary bg-primary/5 rounded p-4 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full flex items-start justify-end p-2">
+<span class="material-symbols-outlined fill text-primary">verified_user</span>
+</div>
+<label class="flex items-start gap-4 cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center mt-1 bg-background shrink-0">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div>
+<span class="block font-title-md text-title-md text-primary">Cash on Delivery (COD)</span>
+<span class="block font-body-md text-body-md text-on-surface-variant mt-1 max-w-[80%]">Pay with cash upon delivery. Our couriers do not carry change, please have exact amount ready.</span>
+</div>
+</label>
+</div>
+<div class="mt-4 border border-outline-variant rounded p-4 opacity-60 cursor-not-allowed">
+<label class="flex items-center gap-4">
+<div class="w-5 h-5 rounded-full border border-outline-variant bg-background shrink-0"></div>
+<span class="block font-title-md text-title-md text-on-surface-variant">Credit Card</span>
+<div class="ml-auto flex gap-1">
+<span class="material-symbols-outlined">credit_card</span>
+</div>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Side: Sticky Order Summary -->
+<div class="w-full lg:w-1/3">
+<div class="sticky top-[100px] bg-surface-container-lowest p-stack-md rounded shadow-[0_8px_30px_rgba(86,25,34,0.08)] border border-primary-fixed-dim/30">
+<h2 class="font-title-md text-title-md text-primary mb-stack-md border-b border-surface-variant pb-4">Order Summary</h2>
+<!-- Product Item -->
+<div class="flex gap-4 mb-stack-md pb-stack-md border-b border-surface-variant border-dashed">
+<div class="w-20 h-28 bg-surface-container border border-surface-variant rounded shrink-0 relative overflow-hidden group">
+<div class="bg-cover bg-center w-full h-full transform group-hover:scale-105 transition-transform duration-500" data-alt="A meticulously crafted deep navy blue wool mantle draped elegantly on a minimalist tailor's dummy, set against a pristine cream background. The texture of the heavy archival wool is highly detailed, conveying warmth and premium quality. Soft, diffused, high-key gallery lighting casts gentle shadows, emphasizing the skeuomorphic luxury and editorial minimalism of the garment. The mood is sophisticated and timeless." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBp01OHanlZ_rJ9qNMSuoahulgyx6uftcbuR9rHXXkP0RO024HRTJVpQ8MW2mnOaxGFiXVWtGkrrUC5Rj9VgTT1WDIuOMTZ7abjFbFkMU3u47zqygODYXFsbPrMk9qeaFMw6Aj4gfUXrD4QGs9JNKLChJehZ7TIdGrkSW22v5Bs1j1bQRQoEtWtqDZ2EfrS9D4Hq58TLCcJwnPEEGeMNacq0LoOgcXQq5epQdQ9i8jggCqJJhCat9aR2s8LXqZod_vrzVpTo6X-hRpb')"></div>
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-surface-variant rounded-full flex items-center justify-center font-label-sm text-label-sm text-on-surface border border-surface-container-lowest shadow-sm">1</div>
+</div>
+<div class="flex-grow flex flex-col justify-between py-1">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface leading-tight mb-1">Archival Wool Mantle</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Color: Midnight Navy</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mt-1">Size: M</p>
+</div>
+<p class="font-body-md text-body-md font-semibold text-primary">$1,250.00</p>
+</div>
+</div>
+<!-- Totals -->
+<div class="space-y-3 mb-stack-md">
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>Subtotal</span>
+<span>$1,250.00</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>Shipping</span>
+<span class="text-primary italic">Complimentary</span>
+</div>
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>Estimated Taxes</span>
+<span>$106.25</span>
+</div>
+</div>
+<div class="flex justify-between items-end border-t border-surface-variant pt-4 mb-stack-lg">
+<span class="font-title-md text-title-md text-on-surface">Total</span>
+<span class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">$1,356.25</span>
+</div>
+<button class="w-full bg-primary text-on-primary font-title-md text-title-md py-4 rounded shadow-md hover:bg-on-primary-fixed-variant active:shadow-inner transition-all flex items-center justify-center gap-2 group">
+                    Complete Order
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<div class="mt-4 flex justify-center items-center gap-2 text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Secure &amp; Encrypted</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between items-start gap-stack-md max-w-container-max mx-auto bg-surface-container-lowest border-t border-outline-variant mt-auto">
+<div>
+<div class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">GVSwift</div>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 GVSwift Heritage. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap gap-x-6 gap-y-2">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-all uppercase tracking-wider focus:ring-2 focus:ring-primary outline-none" href="#">Contact Us</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-all uppercase tracking-wider focus:ring-2 focus:ring-primary outline-none" href="#">Shipping &amp; Returns</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-all uppercase tracking-wider focus:ring-2 focus:ring-primary outline-none" href="#">FAQ</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-all uppercase tracking-wider focus:ring-2 focus:ring-primary outline-none" href="#">Privacy Policy</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Heritage Collection - GVSwift</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;family=Work+Sans:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#e9c349",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary-fixed-variant": "#574500",
+                        "surface-dim": "#dcd9d8",
+                        "background": "#fcf9f8",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#241a00",
+                        "inverse-surface": "#303030",
+                        "on-primary-fixed": "#3c0610",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-container": "#745c00",
+                        "primary": "#561922",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#f499a0",
+                        "on-tertiary-fixed-variant": "#5a4137",
+                        "outline-variant": "#d8c1c2",
+                        "surface-container-high": "#eae7e7",
+                        "secondary-fixed": "#ffe088",
+                        "error": "#ba1a1a",
+                        "surface": "#fcf9f8",
+                        "surface-container-highest": "#e4e2e1",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#ffdbce",
+                        "primary-fixed-dim": "#ffb2b8",
+                        "surface-tint": "#92484f",
+                        "outline": "#867273",
+                        "on-surface-variant": "#534343",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#583f35",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#722f37",
+                        "tertiary-fixed-dim": "#e3bfb2",
+                        "on-background": "#1b1c1b",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#ffb2b8",
+                        "on-surface": "#1b1c1b",
+                        "primary-fixed": "#ffdadb",
+                        "on-tertiary-fixed": "#2a170f",
+                        "secondary-container": "#fed65b",
+                        "surface-container": "#f0edec",
+                        "tertiary": "#402920",
+                        "secondary": "#735c00",
+                        "on-primary-fixed-variant": "#753139",
+                        "on-tertiary-container": "#ceab9e",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "stack-sm": "12px",
+                        "stack-md": "24px",
+                        "stack-lg": "48px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["\"Source Serif 4\""],
+                        "label-sm": ["Work Sans"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "headline-lg-mobile": ["Libre Caslon Text"],
+                        "body-md": ["\"Source Serif 4\""],
+                        "body-lg": ["\"Source Serif 4\""],
+                        "display-lg": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-desktop h-20 max-w-container-max mx-auto bg-surface shadow-sm transition-all duration-300">
+<a class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight" href="#">GVSwift</a>
+<ul class="hidden md:flex items-center gap-8">
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">New Arrivals</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Collections</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Couture</a></li>
+<li><a class="font-label-sm text-label-sm text-primary border-b-2 border-primary pb-1 transition-all duration-300" href="#">Heritage</a></li>
+</ul>
+<div class="flex items-center gap-4">
+<button class="text-primary hover:opacity-80 transition-opacity"><span class="material-symbols-outlined">search</span></button>
+<button class="text-primary hover:opacity-80 transition-opacity"><span class="material-symbols-outlined">person</span></button>
+<button class="text-primary hover:opacity-80 transition-opacity"><span class="material-symbols-outlined">shopping_bag</span></button>
+</div>
+</nav>
+<main class="pt-32 pb-stack-lg max-w-container-max mx-auto px-margin-desktop">
+<header class="text-center mb-stack-lg py-stack-md">
+<h1 class="font-display-lg text-display-lg text-primary mb-stack-sm">The Heritage Collection</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                A curated selection of archival pieces and artisanal garments, embodying the unhurried craftsmanship and timeless elegance of our founding legacy.
+            </p>
+</header>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center py-stack-md border-b border-outline-variant/30 mb-stack-lg gap-4 sticky top-20 bg-background z-40">
+<div class="flex flex-wrap items-center gap-3">
+<button class="font-label-sm text-label-sm px-4 py-2 bg-surface-container border border-primary text-primary rounded-sm transition-colors">All Products</button>
+<button class="font-label-sm text-label-sm px-4 py-2 bg-transparent border border-outline/20 text-on-surface-variant hover:border-primary/50 hover:text-primary rounded-sm transition-colors cursor-pointer">Apparel</button>
+<button class="font-label-sm text-label-sm px-4 py-2 bg-transparent border border-outline/20 text-on-surface-variant hover:border-primary/50 hover:text-primary rounded-sm transition-colors cursor-pointer">Footwear</button>
+<button class="font-label-sm text-label-sm px-4 py-2 bg-transparent border border-outline/20 text-on-surface-variant hover:border-primary/50 hover:text-primary rounded-sm transition-colors cursor-pointer">Heritage</button>
+<button class="font-label-sm text-label-sm px-4 py-2 bg-transparent border border-outline/20 text-on-surface-variant hover:border-primary/50 hover:text-primary rounded-sm transition-colors cursor-pointer">Accessories</button>
+</div>
+<div class="flex items-center gap-2 group cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sort by:</span>
+<div class="flex items-center border-b border-outline/40 pb-1 group-hover:border-primary transition-colors">
+<span class="font-label-sm text-label-sm text-primary">Featured</span>
+<span class="material-symbols-outlined text-primary text-[18px]">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-gutter">
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A high-fashion editorial photograph of an 'Archival Wool Mantle'. The garment is draped elegantly on a minimalist tailor's form against a pristine, high-key cream background. Lighting is soft and directional, highlighting the rich texture of the heavy wool and subtle skeuomorphic stitching details. The mood is luxurious, artisanal, and refined, aligning with a premium digital heritage aesthetic. Colors: deep burgundy accents against neutral off-whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx2h23Arv5TFa7GwsLMWF2qvzCLeH03th_J8azxQmbeuvGy5O_9153KLJMuyKgf3_zgJvWOybTehKe6mM5FUymBhq5GsAtUYRYcZFeSSeUFIMbmupC8N_l7LhBtVpT-UtHE-i0WTbnLAe4cyD3wJdoyR-RnlzL3aQN1XuioYBbYd3s-3O5xu-04Vqdhn0jcSq53MnhYCQfc4K0G-auZiyzszoY1WurvyPrLTv5-2qSztx-7HEDzpOhEpp0acUZMfi_O1IGpmJm7HtS"/>
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<span class="material-symbols-outlined text-primary bg-surface/80 p-2 rounded-full backdrop-blur-sm">favorite</span>
+</div>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Heritage Apparel</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Archival Wool Mantle</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$1,250</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A close-up product shot of a pair of 'Guildsman Oxford Boots'. Crafted from premium, hand-burnished leather in deep oxblood red, resting on a textured, light stone surface. Ambient lighting creates a soft depth, echoing an editorial minimalist style. The composition emphasizes the fine craftsmanship and physical weight of the boots, set within a sophisticated, high-contrast light mode environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPqpJfw7FiYNR8o_gyFno8Nuwkqy7jRJeyPVTENJ-Oxz9lA00jzIzlFXi7lQ5fH6t_KcEUvuozqjVdT4gn3EmDUKBCcgAuG2ML8u7vTd307FJayZzz97DyWu0sRAhy0uwUM5Ok34bqydYJGE3j8yW6GgwDn9DgC8ZmhCkjzaHRZFK_c8OxQDlC5ZBG2a03mkSFO2AtwodSdD0sXhhpo6l1OmmmQWHrTARuj2h2ulP2h-utqCNiI9a-9RteeiP7pX39TGhqqHNb9mkO"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Footwear</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Guildsman Oxford Boot</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$895</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A beautifully styled lifestyle image featuring an 'Estate Leather Briefcase'. The briefcase, made of rich, dark cordovan leather, sits on a smooth marble table bathed in natural window light. The scene implies a timeless, unhurried luxury. The background is slightly out of focus, maintaining an airy, minimalist feel with high-contrast elements that suit a premium e-commerce catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDUTU2L7Wv7v4-rmq9ylCGCTWgDMCkPtsNkoiSIm5dX3gjRdFaxar-Ns1H7tJQ7hxo3Vkngt_Ra6IOM8pToURhOu2m5wDJZyEWmDcfGX_REklKQe16BQl_CM5J2hzhceLV8NeyzbxCQ94UIz2vdYZ7A1dQNi5ywiIEETZ73YkefCEQ59Hgx1XryXefBc8zwxPxGFl5W13SoIOfukW7GEWjsDqthTk3nlWmqv8gKdGbo3G4QCaSbIWXKyXZTKssnrCRDdc5gFY2qEQ1"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Accessories</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Estate Leather Briefcase</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$1,450</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A sophisticated portrait crop showcasing a 'Heritage Tweed Blazer' worn by an unseen model. The focus is strictly on the fabric's intricate weave and classic tailoring. The backdrop is an empty, subtly textured light grey wall, allowing the piece to stand out. Soft, diffused ambient shadows provide volume without harshness, perfectly capturing an editorial digital heritage vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs4fePrJfNIjy9LulzMC62-zvyqnfemnmB7T-7jTTuxoULKoHkAH7CFblow4ISTrisb4v0K2Y70o-YcOuFIKdvrk10nMfnDIcrDB5ABqBHa8vEI3cmoOTqXR8Na7MgYyaIb0AIBCOQqtFyy0_mT7VqVzf6ByAAANgKV4GEqBlYo6ZVM2DBWHPCkl_aJktBtYVJ1bgHuN5OWQYDfBv5GZzgOyorQZ3G08D-ZFqLBVbs9MwiYJWyGnuH5XRQFD-hethoDnyvZgoeYRzn"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Heritage Apparel</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Heritage Tweed Blazer</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$950</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="An editorial minimalist shot of a 'Silk Estate Scarf' neatly folded on a textured cream paper background. The fabric features a subtle, elegant pattern in deep wine red and soft gold. Lighting highlights the slight sheen of the silk, creating soft shadows that convey physical depth. The overall aesthetic is premium, calm, and meticulously crafted." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXE0gz9V371zcSaUY-reWI_oPMPtX9BeguT9e0TZdgPXYr3TbHRbu6AG_aeFkqgIJkhD0DD7_-wWlzGguISg2WL4E2Jg2lxJ-omeTap1AeQ5U54caQo9rFtfDIwHiQwHf1aLfFgUB6HTt0tS7qOmUzHaFn6Ut_jYhp05usIj4bSICjbEgZkCdfzZJPk3AblslnSvVJS_wOMnFHp-XQU9UNFzXy2HMCeHDo-4uAItzkNX5z28fNXVV4cw1ryYETZpsftco2WT23QFRj"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Accessories</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Silk Estate Scarf</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$285</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A clean, gallery-style photograph of a 'Cashmere V-Neck Sweater' in a muted stone color. The garment is laid flat, retaining a sense of volume through careful lighting. The background is pristine white with a very soft ambient shadow grounding the sweater. The image evokes a sense of high-end tactile quality and timeless design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsCqSyDN2Yug8E0TumQgo6l_qjGdPhzKD6j1op_DtDA_C_eE6ONCpXfOMmwZ3DWGuJLyse1yeT7lSzQSyv2K4n2Jy92PJqYGFHnrjWmId0-l9OIPuvbFXlEQt3t7zJ7inAdHlqedGtt-LdCXOacstvRJ2NHCTFhf8lxl9lIUaH3ZuzQMZwheL_gb02B0AT1VPb5gyNFpB6irxaYMP2jGs74DHqaFIMNJeFGAwevXpdlKyO7xJh10EkHS38JuRX10cU2XBlPsyHg1t8"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Apparel</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Cashmere V-Neck</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$650</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A sharp, focused image of 'Artisan Leather Gloves' resting gracefully on top of vintage wooden wine crates. The rich brown leather contrasts with the rough texture of the wood. The lighting mimics natural cellar light—moody yet clear, emphasizing the stitching and supple nature of the material, fitting a premium digital heritage catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4cI14JUdQQor-ggxkFXFQq9tUxmvcjk2jsYysBPj5I_DRkAxFrsmee4S-bkAilnZWOD5td15ON5Cj_H9fkuZJijJBTf6u8o0Olu9AIkmfY8zA22VFbOtnSD99Kaly_L3bLKaUeHI9pmxeEXeHNtvPFve-gOQmitGVU3T6ZIr8wgTCf6IhZw13PYUxN6l1DoUO2Q9Xbvp_TZAnolwn49jD7dOCHkyNqs0imZUJLe54X131B6WpVItL3kVm871XQTlwL25C9HQffkOK"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Accessories</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Artisan Leather Gloves</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$320</p>
+</div>
+</article>
+<article class="group flex flex-col bg-surface-container-lowest rounded-sm overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(86,25,34,0.12)] hover:ring-1 hover:ring-primary/20 cursor-pointer">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" data-alt="A minimalist presentation of a 'Classic Tailored Trouser' folded neatly. The fabric is a deep charcoal with a subtle herringbone pattern. The setting is stark and clean, relying on a delicate interplay of light and shadow to showcase the fabric's drape and quality. The overall mood is sophisticated, architectural, and highly refined." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8bfZVBGMdlU9ZxqyhYGXet3Ao4o9Bt8iZwUVLYvueiI9FTEsCB1ijkB1zyYONKuz7Xt0G-wpM0Y9L8b2ahBkQIRT1Ui9iGg514IUGiWhPflWwPEtwHP2KqhLaiDItWPgxR0BlumEBbXCNS46KL5ypa7-fUDrBJteIbP5J5_MQ9M1oB9tjXNdM6zemyhAsknQdgeONjMKy-CGrhHGAd-cPOvTU09lp6fuVZrdzuU5HitA9rr-veSMdQPyE3lqY7-_wM2a9dqk7WS9t"/>
+</div>
+<div class="p-stack-sm flex flex-col flex-grow justify-between">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-widest">Apparel</p>
+<h2 class="font-title-md text-title-md text-on-background mb-1">Classic Tailored Trouser</h2>
+</div>
+<p class="font-body-md text-body-md font-bold text-primary mt-stack-sm">$480</p>
+</div>
+</article>
+</div>
+<div class="flex justify-center items-center gap-2 mt-stack-lg pt-stack-md">
+<button class="w-10 h-10 flex items-center justify-center border border-outline/30 rounded-sm text-on-surface-variant hover:border-primary hover:text-primary transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-primary bg-primary/5 text-primary rounded-sm font-label-sm text-label-sm transition-colors">1</button>
+<button class="w-10 h-10 flex items-center justify-center border border-transparent text-on-surface-variant hover:bg-surface-variant rounded-sm font-label-sm text-label-sm transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center border border-transparent text-on-surface-variant hover:bg-surface-variant rounded-sm font-label-sm text-label-sm transition-colors">3</button>
+<span class="text-on-surface-variant px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center border border-outline/30 rounded-sm text-on-surface-variant hover:border-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</main>
+<footer class="w-full px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between items-start gap-stack-md max-w-container-max mx-auto bg-surface-container border-t border-outline-variant">
+<div class="flex flex-col gap-stack-sm">
+<span class="font-headline-lg text-headline-lg text-primary tracking-tight">GVSwift</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">
+                Dedicated to the preservation of artisanal craft and digital heritage.
+            </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-4">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Shop</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Collections</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Couture</a>
+<a class="font-label-sm text-label-sm text-primary font-bold hover:text-primary underline transition-all focus:ring-2 focus:ring-primary" href="#">Heritage</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Our Story</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Sustainability</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Press</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Contact Us</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">Shipping &amp; Returns</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline transition-all" href="#">FAQ</a>
+</div>
+<div class="mt-stack-md md:mt-0 pt-stack-sm w-full md:w-auto text-left md:text-right border-t border-outline/20 md:border-none">
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">© 2024 GVSwift Heritage. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, EB_Garamond } from "next/font/google";
+import { Inter, EB_Garamond } from "next/font/google";
 import "./globals.css";
 
 const SITE_URL = "https://gvswift.vercel.app";
@@ -7,16 +7,21 @@ const SITE_TITLE = "GVSwift";
 const SITE_DESCRIPTION =
   "Shop GVSwift for fast fashion essentials with Cash on Delivery availability across India.";
 
-const manrope = Manrope({
+/* ── Body font: Inter (replaces Manrope) ── */
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
+/* ── Display / Heading font: EB Garamond ── */
 const ebGaramond = EB_Garamond({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -38,7 +43,6 @@ export const metadata: Metadata = {
 import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
-import LoginBanner from "@/components/ui/LoginBanner";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -53,13 +57,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${ebGaramond.variable}`}
+      className={`${inter.variable} ${ebGaramond.variable}`}
     >
       <body className="antialiased">
         <ToastProvider>
           <WishlistProvider>
-            {/* Login welcome popup — shows once per session after login, dismissed with X */}
-            <LoginBanner />
             {children}
             <CookieConsentBanner />
           </WishlistProvider>

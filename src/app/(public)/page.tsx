@@ -2,9 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
+import { Footer } from "@/components/ui/Footer";
 import { getProducts } from "@/features/catalog/service";
 import { getServerSession } from "@/lib/auth/session";
-import { getWishlistedIds } from "@/lib/wishlist";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 
 export const metadata = {
@@ -19,110 +20,381 @@ export default async function HomePage() {
     getProducts({ limit: "8" }),
   ]);
   const { products } = productsResult;
-  
-  const wishlistedIds = session ? await getWishlistedIds(session.id) : [];
+
+  let wishlistedIds: string[] = [];
+  if (session) {
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data: wishlistItems } = await supabase
+        .from("wishlists")
+        .select("product_id")
+        .eq("user_id", session.id);
+      wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
+    } catch (e) {
+      console.error("Failed to fetch wishlisted IDs on server:", e);
+    }
+  }
 
   return (
-    <div className="homepage-wrapper bg-default min-h-screen flex flex-col">
+    <div className="homepage-wrapper">
       <Navbar />
 
-      <main className="flex-grow">
-        {/* ── HERO SECTION ────────────────────────────────────────────────── */}
-        <section className="relative min-h-[85vh] flex items-center pt-24 pb-32 px-margin-mobile md:px-margin-desktop overflow-hidden max-w-container-max mx-auto">
-          <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-            {/* Text Content */}
-            <div className="md:col-span-5 z-10 flex flex-col items-start fade-in-up visible">
-              <span className="font-semibold text-accent uppercase tracking-widest text-xs mb-6 block" style={{ fontFamily: "var(--font-body)", letterSpacing: "0.2em" }}>
+      <main>
+        {/* ── HERO ──────────────────────────────────────────────────────────── */}
+        {/* PDF p.1: left text, right large product image, cream bg, no border radius on section */}
+        <section
+          style={{
+            background: "var(--color-bg)",
+            borderBottom: "1px solid var(--color-border)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "80px 24px 96px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1.2fr",
+              gap: "72px",
+              alignItems: "center",
+            }}
+            className="hero-grid-responsive"
+          >
+            {/* Left: Text block */}
+            <div className="fade-in-up visible">
+              {/* "INTRODUCING" eyebrow */}
+              <span
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-body)",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "20px",
+                }}
+              >
                 Introducing
               </span>
-              <h1 className="text-3xl md:text-3xl text-primary mb-8" style={{ fontFamily: "var(--font-heading)", fontStyle: "italic", fontWeight: 400, lineHeight: 1.15 }}>
+
+              {/* PDF: large Garamond serif heading, not italic */}
+              <h1
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(44px, 5.5vw, 68px)",
+                  fontWeight: 400,
+                  fontStyle: "normal",
+                  lineHeight: 1.07,
+                  color: "var(--color-text-primary)",
+                  marginBottom: "28px",
+                  letterSpacing: "-0.01em",
+                }}
+              >
                 The New Standard
               </h1>
-              <p className="text-base text-secondary mb-12 max-w-md" style={{ lineHeight: "1.7" }}>
-                A masterclass in modern heritage. Uncompromising Visakhapatnam craftsmanship meets minimalist architecture for the discerning few.
+
+              <p
+                style={{
+                  fontSize: "15px",
+                  lineHeight: 1.72,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "44px",
+                  maxWidth: "360px",
+                }}
+              >
+                A masterclass in modern heritage. Uncompromising craftsmanship
+                meets minimalist architecture for the discerning few.
               </p>
-              <Link href="/products" className="btn btn-primary btn-premium" style={{ padding: "12px 36px" }}>
+
+              {/* PDF: pill-shaped dark wine CTA, uppercase small caps */}
+              <Link
+                href="/products"
+                className="btn btn-primary btn-premium"
+                style={{ padding: "14px 40px", fontSize: "12px", letterSpacing: "0.1em" }}
+              >
                 Explore Collection
               </Link>
             </div>
 
-            {/* Hero Image */}
-            <div className="md:col-span-7 relative h-[50vh] md:h-[70vh] w-full rounded-lg overflow-hidden group hover-lift border border-border">
+            {/* Right: Large product image — rounded corners, matches PDF */}
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                aspectRatio: "4 / 5",
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "1px solid var(--color-border)",
+                background: "var(--color-surface)",
+                boxShadow: "var(--shadow-md)",
+              }}
+              className="hover-lift"
+            >
               <Image
                 src="/silks_satins.png"
-                alt="Silks & Satins Premium Textures"
+                alt="GVSwift — The New Standard"
                 fill
                 priority
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 767px) 90vw, 50vw"
+                style={{ objectFit: "cover" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
             </div>
           </div>
+
+          <style>{`
+            @media (max-width: 767px) {
+              .hero-grid-responsive {
+                grid-template-columns: 1fr !important;
+                gap: 36px !important;
+                padding: 56px 20px 64px !important;
+              }
+            }
+          `}</style>
         </section>
 
-        {/* ── PRODUCT BENTO GRID: THE AUTUMN EDIT ──────────────────────────── */}
-        <section className="py-24 px-margin-mobile md:px-margin-desktop bg-default border-t border-b border-border">
-          <div className="max-w-container-max mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+        {/* ── AUTUMN EDIT BENTO ─────────────────────────────────────────────── */}
+        {/* PDF p.2: "CURATED SELECTION" eyebrow, "The Autumn Edit" heading, VIEW ALL right,
+            large image card left with glass overlay card, small product card right */}
+        <section
+          style={{
+            background: "var(--color-surface)",
+            borderBottom: "1px solid var(--color-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "80px 24px",
+            }}
+          >
+            {/* Section header */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginBottom: "40px",
+                flexWrap: "wrap",
+                gap: "12px",
+              }}
+            >
               <div>
-                <span className="font-semibold text-accent uppercase tracking-widest text-xs mb-4 block" style={{ fontFamily: "var(--font-body)", letterSpacing: "0.15em" }}>
+                <span
+                  style={{
+                    display: "block",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    color: "var(--color-text-secondary)",
+                    marginBottom: "8px",
+                  }}
+                >
                   Curated Selection
                 </span>
-                <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "36px", fontStyle: "italic", fontWeight: 400, color: "var(--color-primary)" }}>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "clamp(30px, 3.5vw, 42px)",
+                    fontWeight: 400,
+                    fontStyle: "normal",
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.15,
+                  }}
+                >
                   The Autumn Edit
                 </h2>
               </div>
-              <Link href="/products" className="hidden md:inline-flex items-center gap-2 font-semibold text-xs text-accent uppercase tracking-widest nav-link-hover" style={{ paddingBottom: "4px" }}>
+              <Link
+                href="/products"
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-secondary)",
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
                 View All &rarr;
               </Link>
             </div>
 
             {/* Bento Grid */}
             <div className="autumn-edit-grid">
-              {/* Featured Product 1 (Large Card - col-span-8 equivalent) */}
-              <div className="relative rounded-lg overflow-hidden group hover-lift border border-border aspect-[16/10] min-h-[400px]">
+              {/* Large featured card — PDF: full bleed image, glass panel bottom-left */}
+              <div
+                className="hover-lift"
+                style={{
+                  position: "relative",
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  border: "1px solid var(--color-border)",
+                  minHeight: "460px",
+                  background: "var(--color-bg)",
+                }}
+              >
                 <Image
                   src="/structured_wool_blazer.png"
                   alt="The Heritage Overcoat"
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-102"
+                  sizes="(max-width: 767px) 90vw, 55vw"
+                  style={{ objectFit: "cover" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                  <div className="glass-panel p-6 rounded-md w-full max-w-sm" style={{ border: "1px solid rgba(238, 223, 219, 0.4)" }}>
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", color: "var(--color-text-primary)", marginBottom: "4px" }}>
+                {/* Glass overlay card at bottom — matches PDF exactly */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "24px",
+                    left: "24px",
+                    right: "24px",
+                  }}
+                >
+                  <div
+                    className="glass-panel"
+                    style={{
+                      padding: "20px 24px",
+                      borderRadius: "14px",
+                      maxWidth: "280px",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontFamily: "var(--font-heading)",
+                        fontSize: "19px",
+                        fontWeight: 400,
+                        color: "var(--color-text-primary)",
+                        marginBottom: "4px",
+                      }}
+                    >
                       The Heritage Overcoat
                     </h3>
-                    <p className="text-xs text-secondary mb-4">Wine Red Cashmere Blend</p>
-                    <Link href="/products" className="btn btn-secondary" style={{ width: "100%", padding: "8px 16px", minHeight: "38px" }}>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: "var(--color-text-secondary)",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      Wine Red Cashmere Blend
+                    </p>
+                    <Link
+                      href="/products"
+                      className="btn btn-secondary"
+                      style={{
+                        padding: "8px 24px",
+                        minHeight: "34px",
+                        fontSize: "11px",
+                        letterSpacing: "0.1em",
+                        width: "100%",
+                      }}
+                    >
                       Discover
                     </Link>
                   </div>
                 </div>
               </div>
 
-              {/* Product 2 (Small Card - col-span-4 equivalent) */}
-              <div className="relative rounded-lg overflow-hidden group hover-lift border border-border bg-surface aspect-[10/10] min-h-[400px] flex flex-col p-8 justify-between">
+              {/* Small product card — PDF: name top, image middle, price + plus-btn bottom */}
+              <div
+                className="hover-lift"
+                style={{
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  border: "1px solid var(--color-border)",
+                  background: "var(--color-bg)",
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "28px",
+                  minHeight: "460px",
+                  justifyContent: "space-between",
+                }}
+              >
                 <div>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "24px", color: "var(--color-text-primary)", marginBottom: "2px" }}>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "22px",
+                      fontWeight: 400,
+                      color: "var(--color-text-primary)",
+                      marginBottom: "4px",
+                    }}
+                  >
                     Architect Briefcase
                   </h3>
-                  <p className="text-xs text-secondary">Structured Leather</p>
+                  <p style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
+                    Structured Leather
+                  </p>
                 </div>
-                
-                <div className="relative flex-grow my-6 rounded-md overflow-hidden aspect-video bg-default border border-border/40">
+
+                {/* Product image */}
+                <div
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    aspectRatio: "4 / 3",
+                    borderRadius: "14px",
+                    overflow: "hidden",
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    margin: "24px 0",
+                    flexGrow: 1,
+                  }}
+                >
                   <Image
                     src="/accessory_suite.png"
                     alt="Architect Briefcase"
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 767px) 80vw, 35vw"
+                    style={{ objectFit: "cover" }}
                   />
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-lg text-primary">₹1,03,500</span>
-                  <Link href="/products" className="btn btn-primary" style={{ padding: "8px 20px", minHeight: "38px", borderRadius: "20px" }}>
-                    View Details
+                {/* Price + add button */}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 500,
+                      color: "var(--color-text-primary)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    ₹1,03,500
+                  </span>
+                  <Link
+                    href="/products"
+                    aria-label="Browse collection"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      border: "1px solid var(--color-border)",
+                      background: "var(--color-bg)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "22px",
+                      color: "var(--color-text-primary)",
+                      textDecoration: "none",
+                      transition: "background 0.2s, border-color 0.2s",
+                    }}
+                  >
+                    +
                   </Link>
                 </div>
               </div>
@@ -130,54 +402,181 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── EDITORIAL FEATURE / QUOTE SECTION ───────────────────────────── */}
-        <section className="py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div className="order-2 md:order-1 fade-in-up visible">
-              <div className="bg-surface p-12 rounded-lg border border-border relative">
-                <span className="absolute -top-10 -left-6 z-0 select-none opacity-10 text-[120px] font-serif color-primary">“</span>
-                <div className="relative z-10">
-                  <p className="text-xl text-primary italic mb-8" style={{ fontFamily: "var(--font-heading)", lineHeight: "1.5" }}>
-                    &quot;GVSwift redefines the boundary between accessory and architecture. Each piece is a masterclass in intentional design, meant to be inherited, not replaced.&quot;
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-[1px] bg-primary" />
-                    <span className="font-semibold text-xs tracking-widest text-primary uppercase" style={{ fontFamily: "var(--font-body)" }}>
-                      The Artisan Journal
-                    </span>
-                  </div>
-                </div>
+        {/* ── EDITORIAL QUOTE ───────────────────────────────────────────────── */}
+        {/* PDF p.3: large closing-quote icon top-left, italic Garamond quote left,
+            close-up product image right, minimal footer below */}
+        <section
+          style={{
+            background: "var(--color-bg)",
+            borderBottom: "1px solid var(--color-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "88px 24px",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "64px",
+              alignItems: "center",
+            }}
+            className="editorial-grid-responsive"
+          >
+            {/* Quote panel */}
+            <div
+              style={{
+                background: "var(--color-surface)",
+                borderRadius: "20px",
+                border: "1px solid var(--color-border)",
+                padding: "52px 44px",
+                position: "relative",
+              }}
+            >
+              {/* Large decorative quotemark — PDF shows it top-left, large, faint */}
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: "20px",
+                  left: "28px",
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "96px",
+                  lineHeight: 1,
+                  color: "var(--color-text-secondary)",
+                  opacity: 0.2,
+                  userSelect: "none",
+                  pointerEvents: "none",
+                }}
+              >
+                &ldquo;
+              </span>
+              <p
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(16px, 1.8vw, 20px)",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  lineHeight: 1.65,
+                  color: "var(--color-text-primary)",
+                  marginBottom: "32px",
+                  position: "relative",
+                  paddingTop: "16px",
+                }}
+              >
+                &ldquo;GVSwift redefines the boundary between accessory and
+                architecture. Each piece is a masterclass in intentional design,
+                meant to be inherited, not replaced.&rdquo;
+              </p>
+              {/* Attribution: rule + small caps */}
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <div
+                  style={{
+                    width: "36px",
+                    height: "1px",
+                    background: "var(--color-accent)",
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "var(--color-accent)",
+                  }}
+                >
+                  The Artisan Journal
+                </span>
               </div>
             </div>
-            
-            <div className="order-1 md:order-2 h-[400px] rounded-lg overflow-hidden relative border border-border">
+
+            {/* Close-up texture/material image */}
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                aspectRatio: "4 / 3",
+                borderRadius: "20px",
+                overflow: "hidden",
+                border: "1px solid var(--color-border)",
+              }}
+            >
               <Image
                 src="/premium_footwear.png"
-                alt="Artisan Craftsmanship Detail"
+                alt="Artisan craftsmanship — material detail"
                 fill
-                className="object-cover"
+                sizes="(max-width: 767px) 90vw, 45vw"
+                style={{ objectFit: "cover" }}
               />
             </div>
           </div>
+
+          <style>{`
+            @media (max-width: 767px) {
+              .editorial-grid-responsive {
+                grid-template-columns: 1fr !important;
+                gap: 32px !important;
+                padding: 56px 20px !important;
+              }
+            }
+          `}</style>
         </section>
 
-        {/* ── TRENDING NOW (DOCKABLE FEATURED PRODUCTS) ───────────────────── */}
-        <section className="pb-24 px-margin-mobile md:px-margin-desktop bg-default border-t border-border">
-          <div className="max-w-container-max mx-auto pt-16">
-            <div className="flex justify-between items-center mb-12">
-              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "36px", fontStyle: "italic", fontWeight: 400, color: "var(--color-primary)" }}>
-                Trending Now
-              </h2>
-              <Link href="/products" className="font-semibold text-xs text-accent uppercase tracking-widest nav-link-hover" style={{ paddingBottom: "4px" }}>
-                BROWSE ALL
-              </Link>
-            </div>
-
-            {products.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <p className="text-secondary">Products coming soon. Check back shortly!</p>
+        {/* ── TRENDING NOW ──────────────────────────────────────────────────── */}
+        {/* PDF p.6/7: standard 4-col product grid with category label + name + price */}
+        {products.length > 0 && (
+          <section
+            style={{
+              background: "var(--color-bg)",
+              borderBottom: "1px solid var(--color-border)",
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "1200px",
+                margin: "0 auto",
+                padding: "80px 24px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  marginBottom: "44px",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                }}
+              >
+                <h2
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "clamp(28px, 3.5vw, 40px)",
+                    fontWeight: 400,
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.15,
+                  }}
+                >
+                  Trending Now
+                </h2>
+                <Link
+                  href="/products"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "var(--color-text-secondary)",
+                    textDecoration: "none",
+                  }}
+                >
+                  Browse All &rarr;
+                </Link>
               </div>
-            ) : (
+
               <div className="product-grid">
                 {products.map((product) => (
                   <ProductCard
@@ -187,15 +586,12 @@ export default async function HomePage() {
                   />
                 ))}
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
       </main>
 
-      {/* Footer */}
-      <div style={{ marginTop: "auto" }}>
-        <footer style={{ borderTop: "1px solid var(--color-border)" }} />
-      </div>
+      <Footer />
     </div>
   );
 }

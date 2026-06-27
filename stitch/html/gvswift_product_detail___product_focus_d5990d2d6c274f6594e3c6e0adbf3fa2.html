@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>GVSwift - Heritage Coat</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from instructions -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "primary": "#561922",
+                    "surface-container": "#f0eded",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f3f0ef",
+                    "on-surface": "#1c1b1b",
+                    "secondary-container": "#e6e2dd",
+                    "primary-fixed-dim": "#ffb2b8",
+                    "on-secondary-container": "#666460",
+                    "tertiary-container": "#5f3e19",
+                    "tertiary": "#452805",
+                    "tertiary-fixed-dim": "#eebd8e",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e5e2e1",
+                    "surface-container-high": "#eae7e7",
+                    "on-tertiary-fixed": "#2c1600",
+                    "on-primary-fixed-variant": "#753139",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#3c0610",
+                    "error": "#ba1a1a",
+                    "outline": "#867273",
+                    "on-surface-variant": "#534343",
+                    "on-tertiary-fixed-variant": "#61401b",
+                    "secondary-fixed-dim": "#c9c6c1",
+                    "on-secondary-fixed": "#1c1c19",
+                    "on-tertiary-container": "#d9aa7c",
+                    "on-secondary-fixed-variant": "#484743",
+                    "primary-container": "#722f37",
+                    "surface-dim": "#dcd9d9",
+                    "error-container": "#ffdad6",
+                    "secondary": "#605e5b",
+                    "surface-container-highest": "#e5e2e1",
+                    "inverse-primary": "#ffb2b8",
+                    "tertiary-fixed": "#ffdcbd",
+                    "surface-bright": "#fcf9f8",
+                    "on-primary-container": "#f499a0",
+                    "background": "#fcf9f8",
+                    "surface-tint": "#92484f",
+                    "primary-fixed": "#ffdadb",
+                    "surface-container-low": "#f6f3f2",
+                    "outline-variant": "#d8c1c2",
+                    "inverse-surface": "#313030",
+                    "on-background": "#1c1b1b",
+                    "secondary-fixed": "#e6e2dd",
+                    "surface": "#fcf9f8",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "unit": "8px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["EB Garamond"],
+                    "headline-md": ["EB Garamond"],
+                    "body-md": ["Manrope"],
+                    "display-lg-mobile": ["EB Garamond"],
+                    "label-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "caption": ["Manrope"],
+                    "display-lg": ["EB Garamond"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d8c1c2; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #867273; }
+        
+        /* Ensure smooth scrolling */
+        html { scroll-behavior: smooth; }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased overflow-x-hidden md:h-screen md:flex md:flex-col">
+<!-- TopNavBar (From JSON) -->
+<nav class="bg-surface dark:bg-inverse-surface w-full sticky top-0 z-50 border-b border-outline-variant dark:border-on-surface-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto shrink-0">
+<div class="flex items-center gap-8">
+<a class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim tracking-tighter" href="#">GVSWIFT</a>
+<div class="hidden md:flex gap-6 font-label-md text-label-md uppercase tracking-widest">
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary dark:border-primary-fixed-dim pb-1 cursor-pointer active:scale-95 transition-transform hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">COLLECTION</a>
+<a class="text-secondary dark:text-secondary-fixed-dim cursor-pointer active:scale-95 transition-transform hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">HERITAGE</a>
+<a class="text-secondary dark:text-secondary-fixed-dim cursor-pointer active:scale-95 transition-transform hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">STORES</a>
+<a class="text-secondary dark:text-secondary-fixed-dim cursor-pointer active:scale-95 transition-transform hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300" href="#">JOURNAL</a>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="text-primary dark:text-primary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">shopping_bag</span>
+</button>
+<button class="text-primary dark:text-primary-fixed-dim hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-300 cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">person</span>
+</button>
+</div>
+</nav>
+<!-- Main Content: Split Screen on Desktop -->
+<main class="flex-grow flex flex-col md:flex-row overflow-hidden relative">
+<!-- Left Pane: Fixed Hero Image -->
+<section class="w-full md:w-1/2 h-[60vh] md:h-full bg-surface-container-lowest flex items-center justify-center p-4 md:p-margin-desktop sticky top-20 md:top-0">
+<div class="w-full h-full relative rounded-xl overflow-hidden group cursor-pointer">
+<img class="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105" data-alt="A meticulously crafted Wine Red trench coat displayed on a minimalist, floating dark wooden hanger. The background is a soft, pristine cream color, emphasizing the rich, deep hue and luxurious drape of the fabric. The lighting is editorial and high-key, highlighting subtle tailoring details. No human figures are present, focusing entirely on the architectural form of the garment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqctk8F8dLmG5YjB_gRcpVYGVn3_kLKxnjylZsBZsfYcWjEC7ha38wFszEL3eD2I16rg-YIQ0aBQLYUfdjfoME6GSWq8pr2q21DX1yAKhHakxQHMzvJeAFcGT5fOcVtN0Pn4xJd6BRyoWpUt8GODS4iUvTlki-5XQOZnhrwwkl8W64-a5yzrjplrQm2-Q1HgghJzRNPKun8w8pPwvas_bpbTGEEloqRAppGblcDzTO6cCPjPpQzwbJyMMGd50ZPy4Dowo0OfZkKMgu">
+<div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+</div>
+</section>
+<!-- Right Pane: Scrollable Details -->
+<section class="w-full md:w-1/2 md:h-full md:overflow-y-auto bg-surface relative z-10 px-margin-mobile py-8 md:px-margin-desktop md:py-16 flex flex-col gap-12 transition-all duration-1000">
+<!-- Header Info -->
+<div class="flex flex-col gap-4">
+<div class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2">
+<span class="">Collection</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="">Outerwear</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">The Heritage Overcoat</h1>
+<p class="font-headline-sm text-headline-sm text-primary mt-2">$1,250.00</p>
+</div>
+<!-- Selectors -->
+<div class="flex flex-col gap-8 border-y border-outline-variant py-8">
+<!-- Color -->
+<div class="flex flex-col gap-3">
+<span class="font-label-md text-label-md text-on-surface uppercase">Color: <span class="text-secondary font-body-md normal-case ml-2">Signature Wine</span></span>
+<div class="flex gap-3">
+<button aria-label="Select Signature Wine" class="w-8 h-8 rounded-full bg-primary ring-1 ring-offset-2 ring-primary bg-surface transition-all active:scale-95"></button>
+<button aria-label="Select Obsidian" class="w-8 h-8 rounded-full bg-[#1A1A1A] hover:ring-1 ring-offset-2 ring-outline-variant transition-all active:scale-95"></button>
+</div>
+</div>
+<!-- Size -->
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface uppercase">Size</span>
+<button class="font-label-md text-label-md text-secondary underline hover:text-primary transition-colors">Fit Guide</button>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="w-12 h-12 rounded-full border border-outline text-secondary hover:border-primary hover:text-primary transition-all flex items-center justify-center font-body-md active:scale-95">38</button>
+<button class="w-12 h-12 rounded-full border-2 border-primary text-primary transition-all flex items-center justify-center font-body-md font-medium active:scale-95">40</button>
+<button class="w-12 h-12 rounded-full border border-outline text-secondary hover:border-primary hover:text-primary transition-all flex items-center justify-center font-body-md active:scale-95">42</button>
+<button class="w-12 h-12 rounded-full border border-outline text-secondary hover:border-primary hover:text-primary transition-all flex items-center justify-center font-body-md active:scale-95">44</button>
+</div>
+</div>
+<!-- Action -->
+<button class="w-full py-4 rounded-full bg-primary text-on-primary font-label-md text-label-md uppercase tracking-widest hover:bg-on-surface transition-colors duration-300 flex items-center justify-center gap-2 active:scale-[0.98] active:scale-95">
+<span class="">Add to Bag</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<!-- Storytelling -->
+<div class="flex flex-col gap-6 bg-surface-container-low p-8 rounded-xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-3xl">history_edu</span>
+<p class="font-headline-sm text-headline-sm text-on-surface italic">"A study in timeless architecture. Woven from the finest heritage wool, it drapes not just on the body, but across eras."</p>
+<p class="font-body-md text-body-md text-secondary leading-relaxed">
+                    Crafted in small batches, the Heritage Overcoat is a testament to unhurried artisanship. Every seam is considered, every detail refined over decades of tailoring tradition. Designed to be a foundational piece in the discerning wardrobe.
+                </p>
+</div>
+<!-- Texture Gallery -->
+<div class="flex flex-col gap-4">
+<h3 class="font-label-md text-label-md uppercase tracking-widest text-on-surface">Material Details</h3>
+<div class="grid grid-cols-2 gap-4">
+<img class="w-full aspect-square object-cover rounded-lg border border-outline-variant/50" data-alt="Macro photography of deep wine red wool fabric. The weave is tight and luxurious, showing a subtle diagonal twill pattern. Soft, diffused lighting enhances the texture and depth of the material." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiDkFoco5aFtX42JlJboPoVvs-PC_mMdhScV5V0AA_WDEwFsnivjIisMWbv-OvSUEpKBkg5lAW2ILHugVixQSFutAWx5P5dlJj3J7-0nJKcukR4WpMUYdT3xW9pUJaNAhu9Xa4cIEEgWI4dZ7FttgMGheaVnXwfMTfKfbH14n6_Xr8bU0Aei6-vgkgq08TKX90CTtztOOiu6QEh7k_-7JioBI3_Q9l9iz9FlcTODEfUDqoJNfbkziwoj7qmgYslXw1EVzni-txzc7S">
+<img class="w-full aspect-square object-cover rounded-lg border border-outline-variant/50" data-alt="Close-up shot of a meticulously hand-stitched buttonhole on a thick, dark red fabric. The thread is slightly lighter, highlighting the craftsmanship. The aesthetic is clean, macro, and focused purely on construction quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKVD2G94ekhs4pobDfpq5lia0cgo0_aYL4uphxVDqVDT5hc6EPeK2JkdN6z-4A9dro2kJkt7iOfWvPSy0cFooZR_tV6EenlpMrwCJMdF3aByOFmqjb7zNgclNYMFzq48qFVIruoff5cqvULZcnwiaT2pYBsXy8h8PHbW_9h_CaIicBTQT86nTi6wKwm6fspiQ181KJND75u86GVlauVS-PTVeFSKsBx3cD8r9KHZH6pkHhyUIhEGm73B78WvBEMiu9gTdHaEBbuUqB">
+</div>
+</div>
+<!-- Functional Fit / Accordions -->
+<div class="flex flex-col border-t border-outline-variant mt-4">
+<button class="flex justify-between items-center py-6 hover:text-primary transition-colors group">
+<span class="font-label-md text-label-md uppercase tracking-widest">Fit &amp; Dimensions</span>
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-300">expand_more</span>
+</button>
+<button class="flex justify-between items-center py-6 border-t border-outline-variant hover:text-primary transition-colors group">
+<span class="font-label-md text-label-md uppercase tracking-widest">Shipping &amp; Returns</span>
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-300">expand_more</span>
+</button>
+</div>
+<!-- Footer (Appended to scroll view) -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full py-16 border-t border-outline-variant flex flex-col items-center gap-8 px-margin-mobile mt-12 rounded-t-xl">
+<h4 class="font-headline-sm text-headline-sm text-primary">GVSWIFT</h4>
+<div class="flex flex-wrap justify-center gap-6 font-body-md text-body-md text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a>
+<a class="hover:text-primary transition-colors" href="#">Sustainability</a>
+</div>
+<p class="font-caption text-caption text-secondary tracking-widest uppercase">© 2024 GVSWIFT PREMIUM. CRAFTED IN INDIA.</p>
+</footer>
+</section>
+</main>
+
+
+</body></html>

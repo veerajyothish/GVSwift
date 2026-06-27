@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GVSwift - Archival Wool Mantle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "outline": "#867273",
+                        "primary-fixed-dim": "#ffb2b8",
+                        "on-error": "#ffffff",
+                        "tertiary": "#452805",
+                        "on-tertiary-fixed": "#2c1600",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#e6e2dd",
+                        "inverse-primary": "#ffb2b8",
+                        "tertiary-fixed-dim": "#eebd8e",
+                        "on-surface-variant": "#534343",
+                        "primary": "#561922",
+                        "on-primary-fixed": "#3c0610",
+                        "tertiary-container": "#5f3e19",
+                        "surface-bright": "#fcf9f8",
+                        "on-background": "#1c1b1b",
+                        "on-secondary-container": "#666460",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e5e2e1",
+                        "surface": "#fcf9f8",
+                        "primary-container": "#722f37",
+                        "secondary-fixed": "#e6e2dd",
+                        "inverse-surface": "#313030",
+                        "on-secondary-fixed": "#1c1c19",
+                        "on-secondary-fixed-variant": "#484743",
+                        "surface-tint": "#92484f",
+                        "tertiary-fixed": "#ffdcbd",
+                        "surface-container": "#f0eded",
+                        "outline-variant": "#d8c1c2",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "secondary": "#605e5b",
+                        "primary-fixed": "#ffdadb",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-container": "#d9aa7c",
+                        "surface-container-low": "#f6f3f2",
+                        "on-surface": "#1c1b1b",
+                        "on-primary-container": "#f499a0",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#753139",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-fixed-dim": "#c9c6c1",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#61401b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Manrope"],
+                        "display-lg": ["EB Garamond"],
+                        "body-lg": ["Manrope"],
+                        "caption": ["Manrope"],
+                        "headline-sm": ["EB Garamond"],
+                        "headline-md": ["EB Garamond"],
+                        "display-lg-mobile": ["EB Garamond"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            /* Hide scrollbar for a cleaner look on mobile, but keep functionality */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        .snap-x-mandatory {
+            scroll-snap-type: x mandatory;
+        }
+        .snap-center {
+            scroll-snap-align: center;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased font-body-md text-body-md flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center px-margin-mobile h-16 w-full text-primary dark:text-primary-fixed-dim">
+<button aria-label="Menu" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md uppercase tracking-widest text-primary dark:text-primary-fixed-dim">GVSWIFT</h1>
+<button aria-label="Shopping Bag" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 text-primary dark:text-primary-fixed-dim">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-16 pb-24"> <!-- Padding for top nav and sticky bottom button -->
+<!-- Image Gallery (Horizontal Scroll) -->
+<section class="w-full overflow-hidden mb-8 relative">
+<div class="flex overflow-x-auto snap-x-mandatory hide-scrollbar h-[530px]">
+<!-- Image 1 -->
+<div class="w-full flex-shrink-0 snap-center relative">
+<img class="w-full h-full object-cover" data-alt="A high-fashion editorial shot of a luxurious Archival Wool Mantle in a rich wine red hue. The mantle is draped elegantly on an unseen form, highlighting the impeccable tailoring and heavy drape of the premium wool. The background is a soft, minimalist cream color, lit with studio lighting that casts subtle, refined shadows to emphasize texture. The overall aesthetic is modern heritage luxury, evoking a sense of timeless elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGnKfE0w_cvp1d_RsnWEQqjM2Hf3E90GA-AeXtedLGaN1LEEKszjA4TEdtxMQoneZ3kTLzQA8QRCPS4l9zW9GuF-PNifoduzAs787xfDpjejpFlnFklDrNfOsTaGtAZDmagvnW9yWIjOPmqlqkm2gzI0eIRbVYu3hSsam6VN_AGTDs9AwNP5J1lOx5sEVnf7Jqxh8Ak2GUIt6jcMDkeSM_bl5ozjmHbNBKMX7p9mawgF0GseMXnl2ksNf2BDqpwHe8Q4n0358YKJEX"/>
+</div>
+<!-- Image 2 -->
+<div class="w-full flex-shrink-0 snap-center relative">
+<img class="w-full h-full object-cover" data-alt="Close-up detail shot of the Archival Wool Mantle, focusing on the intricate stitching and the soft texture of the wine red wool fabric. A subtle glint of a dark tortoiseshell button is visible near the collar. The lighting is soft and directional, creating a warm, inviting atmosphere against a blurred, creamy background. This highlights the craftsmanship and high-end materials characteristic of a luxury fashion brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNXiaAEjv1NH_ma4tUqXgFIOwbG2K0xwg7A4PvBZsBrw_K1RyAmR-ly1A_JxlO06mCPSDeVgv--PUbvdNfqiAilq1SoZ05Fq7XJaLookVMafSuLn12AtJbGeONZDkYbFT_Dm59ZMtau4TzOqgJgydX-SOiyJF2vYMrZfeKTTqfjqaupNehf7pMnPUkbvTwd0dROj9LrnZbnTbVzNq30mHzEoKE2rEmtmVG2yi6SYJTJbQVISGXKq7gKwHMs1xjU3or0GXaVHq8xxbs"/>
+</div>
+</div>
+<!-- Pagination Dots (Simulated) -->
+<div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+</section>
+<!-- Product Details Container -->
+<section class="px-margin-mobile flex flex-col gap-y-6">
+<!-- Title & Price -->
+<div>
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary mb-2">Archival Wool Mantle</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">$1,250</p>
+</div>
+<!-- Description -->
+<div>
+<p class="font-body-md text-body-md text-on-background leading-relaxed">
+                    Crafted from heavyweight virgin wool sourced from historic mills, the Archival Mantle offers a sweeping silhouette that nods to heritage tailoring while remaining resolutely modern. Its unstructured drape provides effortless elegance.
+                </p>
+</div>
+<hr class="border-t border-outline-variant/50 w-full"/>
+<!-- Color Selection -->
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase mb-4">Color: Heritage Wine</h3>
+<div class="flex gap-4">
+<!-- Selected Color -->
+<button aria-label="Select Heritage Wine" class="w-12 h-12 rounded-full border-2 border-primary p-1 flex items-center justify-center focus:outline-none">
+<span class="block w-full h-full rounded-full bg-primary-container"></span>
+</button>
+<!-- Unselected Color -->
+<button aria-label="Select Midnight Charcoal" class="w-12 h-12 rounded-full border border-outline-variant p-1 flex items-center justify-center hover:border-primary transition-colors focus:outline-none">
+<span class="block w-full h-full rounded-full bg-inverse-surface"></span>
+</button>
+</div>
+</div>
+<hr class="border-t border-outline-variant/50 w-full"/>
+<!-- Size Selection -->
+<div>
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase">Size</h3>
+<a class="font-label-md text-label-md text-primary underline underline-offset-4" href="#">Size Guide</a>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<button class="py-3 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:border-primary hover:text-primary transition-colors focus:outline-none">XS</button>
+<button class="py-3 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:border-primary hover:text-primary transition-colors focus:outline-none">S</button>
+<button class="py-3 border-2 border-primary bg-surface-container-low rounded-xl font-label-md text-label-md text-primary transition-colors focus:outline-none">M</button>
+<button class="py-3 border border-outline-variant rounded-xl font-label-md text-label-md text-on-surface-variant hover:border-primary hover:text-primary transition-colors focus:outline-none">L</button>
+</div>
+</div>
+<!-- Details Expandable (Simulated) -->
+<div class="mt-4 border border-outline-variant rounded-xl p-4 flex justify-between items-center">
+<span class="font-label-md text-label-md uppercase text-primary">Composition &amp; Care</span>
+<span class="material-symbols-outlined text-primary">add</span>
+</div>
+</section>
+</main>
+<!-- Sticky Bottom Bar -->
+<div class="fixed bottom-0 w-full bg-surface/90 backdrop-blur-md border-t border-outline-variant/50 p-4 pb-8 z-40">
+<button class="w-full bg-primary text-on-primary py-4 rounded-full font-label-md text-label-md uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all duration-200 flex justify-center items-center gap-2 shadow-sm">
+<span>Add to Bag</span>
+<span>·</span>
+<span>$1,250</span>
+</button>
+</div>
+</body></html>
