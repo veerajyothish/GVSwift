@@ -193,7 +193,7 @@ export default async function HomePage() {
                     marginBottom: "8px",
                   }}
                 >
-                  Curated Selection
+                  Visual Inspiration
                 </span>
                 <h2
                   style={{
@@ -205,7 +205,7 @@ export default async function HomePage() {
                     lineHeight: 1.15,
                   }}
                 >
-                  The Autumn Edit
+                  Editorial Reference
                 </h2>
               </div>
               <Link
@@ -223,13 +223,13 @@ export default async function HomePage() {
                   gap: "6px",
                 }}
               >
-                View All &rarr;
+                Discover Store &rarr;
               </Link>
             </div>
-
+ 
             {/* Bento Grid */}
             <div className="autumn-edit-grid">
-              {/* Large featured card — PDF: full bleed image, glass panel bottom-left */}
+              {/* Large featured card — Reference Image */}
               <div
                 className="hover-lift"
                 style={{
@@ -243,158 +243,71 @@ export default async function HomePage() {
               >
                 <Image
                   src="/structured_wool_blazer.png"
-                  alt="The Heritage Overcoat"
+                  alt="Reference Wool Coat"
                   fill
                   sizes="(max-width: 767px) 90vw, 55vw"
                   style={{ objectFit: "cover" }}
                 />
-                {/* Glass overlay card at bottom — matches PDF exactly */}
+                {/* Minimal reference caption */}
                 <div
                   style={{
                     position: "absolute",
-                    bottom: "24px",
-                    left: "24px",
-                    right: "24px",
+                    bottom: "20px",
+                    left: "20px",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    background: "rgba(253, 250, 245, 0.85)",
+                    backdropFilter: "blur(4px)",
+                    fontSize: "12px",
+                    color: "var(--color-text-secondary)",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    fontWeight: 500,
+                    border: "1px solid var(--color-border)",
                   }}
                 >
-                  <div
-                    className="glass-panel"
-                    style={{
-                      padding: "20px 24px",
-                      borderRadius: "14px",
-                      maxWidth: "280px",
-                    }}
-                  >
-                    <h3
-                      style={{
-                        fontFamily: "var(--font-heading)",
-                        fontSize: "19px",
-                        fontWeight: 400,
-                        color: "var(--color-text-primary)",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      The Heritage Overcoat
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "13px",
-                        color: "var(--color-text-secondary)",
-                        marginBottom: "16px",
-                      }}
-                    >
-                      Wine Red Cashmere Blend
-                    </p>
-                    <Link
-                      href="/products"
-                      className="btn btn-secondary"
-                      style={{
-                        padding: "8px 24px",
-                        minHeight: "34px",
-                        fontSize: "11px",
-                        letterSpacing: "0.1em",
-                        width: "100%",
-                      }}
-                    >
-                      Discover
-                    </Link>
-                  </div>
+                  Reference Image 01 &middot; Wool Coat
                 </div>
               </div>
-
-              {/* Small product card — PDF: name top, image middle, price + plus-btn bottom */}
+ 
+              {/* Second featured card — Reference Image */}
               <div
                 className="hover-lift"
                 style={{
+                  position: "relative",
                   borderRadius: "20px",
                   overflow: "hidden",
                   border: "1px solid var(--color-border)",
-                  background: "var(--color-bg)",
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "28px",
                   minHeight: "460px",
-                  justifyContent: "space-between",
+                  background: "var(--color-bg)",
                 }}
               >
-                <div>
-                  <h3
-                    style={{
-                      fontFamily: "var(--font-heading)",
-                      fontSize: "22px",
-                      fontWeight: 400,
-                      color: "var(--color-text-primary)",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    Architect Briefcase
-                  </h3>
-                  <p style={{ fontSize: "13px", color: "var(--color-text-secondary)" }}>
-                    Structured Leather
-                  </p>
-                </div>
-
-                {/* Product image */}
+                <Image
+                  src="/accessory_suite.png"
+                  alt="Reference Leathercraft"
+                  fill
+                  sizes="(max-width: 767px) 90vw, 55vw"
+                  style={{ objectFit: "cover" }}
+                />
+                {/* Minimal reference caption */}
                 <div
                   style={{
-                    position: "relative",
-                    width: "100%",
-                    aspectRatio: "4 / 3",
-                    borderRadius: "14px",
-                    overflow: "hidden",
-                    background: "var(--color-surface)",
+                    position: "absolute",
+                    bottom: "20px",
+                    left: "20px",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    background: "rgba(253, 250, 245, 0.85)",
+                    backdropFilter: "blur(4px)",
+                    fontSize: "12px",
+                    color: "var(--color-text-secondary)",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    fontWeight: 500,
                     border: "1px solid var(--color-border)",
-                    margin: "24px 0",
-                    flexGrow: 1,
                   }}
                 >
-                  <Image
-                    src="/accessory_suite.png"
-                    alt="Architect Briefcase"
-                    fill
-                    sizes="(max-width: 767px) 80vw, 35vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                </div>
-
-                {/* Price + add button */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 500,
-                      color: "var(--color-text-primary)",
-                      fontVariantNumeric: "tabular-nums",
-                    }}
-                  >
-                    ₹1,03,500
-                  </span>
-                  <Link
-                    href="/products"
-                    aria-label="Browse collection"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      border: "1px solid var(--color-border)",
-                      background: "var(--color-bg)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "22px",
-                      color: "var(--color-text-primary)",
-                      textDecoration: "none",
-                      transition: "background 0.2s, border-color 0.2s",
-                    }}
-                  >
-                    +
-                  </Link>
+                  Reference Image 02 &middot; Leathercraft
                 </div>
               </div>
             </div>

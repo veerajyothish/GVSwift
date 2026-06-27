@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -64,19 +65,18 @@ export default function LoginClient() {
     /* PDF p.15-style auth layout: cream bg, centred card, wordmark above */
     <div className="auth-container">
       {/* Brand wordmark */}
-      <Link href="/" style={{ textDecoration: "none", marginBottom: "40px", display: "block", textAlign: "center" }}>
-        <span
+      <Link href="/" style={{ textDecoration: "none", marginBottom: "40px", display: "flex", justifyContent: "center" }}>
+        <Image
+          src="/logo.png"
+          alt="GVSwift Logo"
+          width={175}
+          height={40}
           style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "32px",
-            fontWeight: 700,
-            fontStyle: "italic",
-            color: "var(--color-accent)",
-            letterSpacing: "0.06em",
+            height: "40px",
+            width: "auto",
+            objectFit: "contain",
           }}
-        >
-          GVSwift
-        </span>
+        />
       </Link>
 
       {/* Card */}

@@ -41,12 +41,14 @@ interface ProductCardProps {
   product: Product;
   initialWishlisted?: boolean;
   categoryName?: string;
+  priority?: boolean;
 }
 
 export default function ProductCard({
   product,
   initialWishlisted = false,
   categoryName,
+  priority = false,
 }: ProductCardProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -166,6 +168,7 @@ export default function ProductCard({
             src={imageUrl}
             alt={primaryImage?.altText || product.name}
             fill
+            priority={priority}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{ objectFit: "cover", transition: "transform 0.4s ease" }}
           />

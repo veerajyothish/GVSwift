@@ -10,8 +10,9 @@ import { getServerSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { MobileMenu } from "./MobileMenu";
 import { NavbarIconsAndSearch } from "./NavbarIconsAndSearch";
-import BannerBar from "./BannerBar";
+import { getPrismaUserBySupabaseId } from "@/lib/auth/guards";
 import SearchBar from "./SearchBar";
+import Image from "next/image";
 
 export async function Navbar() {
   const session = await getServerSession();
@@ -24,10 +25,7 @@ export async function Navbar() {
   if (session) {
     isLoggedIn = true;
     try {
-      const user = await prisma.user.findUnique({
-        where: { supabaseId: session.id },
-        select: { id: true, role: true },
-      });
+      const user = await getPrismaUserBySupabaseId(session.id);
       if (user) {
         isAdmin = user.role === "ADMIN";
         const cart = await prisma.cart.findFirst({
@@ -48,7 +46,6 @@ export async function Navbar() {
 
   return (
     <>
-      <BannerBar />
       <nav className="site-navbar" aria-label="Main navigation">
         <div
           style={{
@@ -63,22 +60,26 @@ export async function Navbar() {
           }}
         >
           {/* ── Logo (left) ──────────────────────────────────────────────── */}
-          {/* PDF: "GVSwift" or "GVSWIFT" in italic Garamond, wine red */}
           <Link
             href="/"
             style={{
-              fontFamily: "var(--font-heading)",
-              fontSize: "22px",
-              fontWeight: 700,
-              fontStyle: "italic",
-              color: "var(--color-accent)",
-              letterSpacing: "0.02em",
-              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
               flexShrink: 0,
             }}
             aria-label="GVSwift home"
           >
-            GVSwift
+            <Image
+              src="/logo.png"
+              alt="GVSwift Logo"
+              width={140}
+              height={32}
+              style={{
+                height: "32px",
+                width: "auto",
+                objectFit: "contain",
+              }}
+            />
           </Link>
 
           {/* ── Centre nav links (desktop only) ──────────────────────────── */}

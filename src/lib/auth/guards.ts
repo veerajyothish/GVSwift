@@ -26,6 +26,16 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import type { User } from "@prisma/client";
+import { cache } from "react";
+
+/**
+ * Request-memoized helper to fetch a user from Prisma by their Supabase ID.
+ */
+export const getPrismaUserBySupabaseId = cache(async (supabaseId: string) => {
+  return prisma.user.findUnique({
+    where: { supabaseId },
+  });
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Server Component / Page guards (use redirect() for navigation)
@@ -44,9 +54,7 @@ export async function requireUser(): Promise<User> {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { supabaseId: session.id },
-  });
+  const user = await getPrismaUserBySupabaseId(session.id);
 
   if (!user) {
     // Auth user exists in Supabase but no matching Prisma record.
@@ -77,9 +85,7 @@ export async function requireAdmin(): Promise<User> {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { supabaseId: session.id },
-  });
+  const user = await getPrismaUserBySupabaseId(session.id);
 
   if (!user) {
     redirect("/login");
@@ -126,9 +132,7 @@ export async function requireUserForApi(): Promise<ApiGuardResult> {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { supabaseId: session.id },
-  });
+  const user = await getPrismaUserBySupabaseId(session.id);
 
   if (!user) {
     return {
@@ -192,9 +196,7 @@ export async function requireAdminForApi(): Promise<ApiGuardResult> {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { supabaseId: session.id },
-  });
+  const user = await getPrismaUserBySupabaseId(session.id);
 
   if (!user) {
     return {

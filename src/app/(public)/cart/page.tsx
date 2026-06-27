@@ -8,6 +8,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { getCart } from "@/features/cart/service";
 import CartPageClient from "./CartPageClient";
 import { Metadata } from "next";
+import BackButton from "@/components/ui/BackButton";
 
 export const metadata: Metadata = { title: "Shopping Cart | GVSwift" };
 
@@ -24,6 +25,7 @@ export default async function CartPage() {
         minHeight: "60vh",
       }}
     >
+      <BackButton />
       <header style={{ marginBottom: "36px" }}>
         <h1
           style={{

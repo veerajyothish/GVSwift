@@ -5,6 +5,7 @@ import { ProductDetailClient } from "@/components/product/ProductDetailClient";
 import { Navbar } from "@/components/ui/Navbar";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
+import BackButton from "@/components/ui/BackButton";
 
 interface ProductDetailPageProps {
   params: Promise<{
@@ -60,9 +61,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           margin: "0 auto",
           padding: "20px 24px 0",
           width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         <Breadcrumb items={breadcrumbItems} />
+        <BackButton />
       </div>
 
       {/* Main product layout — PDF p.4/5: large image left (sticky), info right */}

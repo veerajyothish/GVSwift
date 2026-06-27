@@ -6,6 +6,8 @@
  */
 
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
 import { getCart } from "@/features/cart/service";
@@ -23,6 +25,7 @@ import { Metadata } from "next";
 import { getOrCreateLoyaltyAccount, getLoyaltySettings } from "@/lib/loyalty";
 import { getServerSession } from "@/lib/auth/session";
 import { VerificationBanner } from "@/components/ui/VerificationBanner";
+import BackButton from "@/components/ui/BackButton";
 
 export const metadata: Metadata = {
   title: "Secure Checkout | GVSwift",
@@ -160,22 +163,25 @@ export default async function CheckoutPage() {
       <header
         style={{
           borderBottom: "1px solid var(--color-border)",
-          padding: "20px 24px",
-          textAlign: "center",
+          padding: "16px 24px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <span
-          style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "22px",
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-            color: "var(--color-accent)",
-            fontStyle: "italic",
-          }}
-        >
-          GVSWIFT
-        </span>
+        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+          <Image
+            src="/logo.png"
+            alt="GVSwift Logo"
+            width={140}
+            height={32}
+            style={{
+              height: "32px",
+              width: "auto",
+              objectFit: "contain",
+            }}
+          />
+        </Link>
       </header>
 
       <main
@@ -185,6 +191,9 @@ export default async function CheckoutPage() {
           padding: "48px 24px 80px",
         }}
       >
+        <div style={{ marginBottom: "24px" }}>
+          <BackButton />
+        </div>
         {/* PDF p.13: "① Shipping Information" section label above form */}
         <div
           style={{
@@ -241,21 +250,24 @@ export default async function CheckoutPage() {
         style={{
           borderTop: "1px solid var(--color-border)",
           padding: "20px 24px",
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           background: "var(--color-surface)",
         }}
       >
-        <span
+        <Image
+          src="/logo.png"
+          alt="GVSwift Logo"
+          width={88}
+          height={20}
           style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "15px",
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            color: "var(--color-text-secondary)",
+            height: "20px",
+            width: "auto",
+            objectFit: "contain",
+            opacity: 0.6,
           }}
-        >
-          GVSWIFT
-        </span>
+        />
       </footer>
     </div>
   );

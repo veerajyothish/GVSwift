@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
+import BackButton from "@/components/ui/BackButton";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -122,6 +123,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <Navbar />
 
       <main style={{ flex: 1 }}>
+        <div style={{ maxWidth: "1200px", margin: "24px auto 0", padding: "0 24px" }}>
+          <BackButton />
+        </div>
         {/* ── Page Header ──────────────────────────────────────────────────── */}
         {/* PDF p.6: centered, Garamond italic heading, muted subtitle, cream bg */}
         <header
@@ -390,7 +394,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <>
               {/* PDF p.6/7: 4-col grid on desktop, cards show category label above name */}
               <div className="product-grid">
-                {products.map((product) => {
+                {products.map((product, index) => {
                   const categoryName =
                     categories.find((c) => c.id === product.categoryId)?.name ||
                     "Apparel";
@@ -400,6 +404,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       product={product}
                       categoryName={categoryName}
                       initialWishlisted={wishlistedIds.includes(product.id)}
+                      priority={index < 4}
                     />
                   );
                 })}

@@ -10,6 +10,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface SectionState {
   shop: boolean;
@@ -40,17 +41,22 @@ export function Footer() {
             <Link
               href="/"
               style={{
-                fontFamily: "var(--font-heading)",
-                fontSize: "22px",
-                fontWeight: 700,
-                fontStyle: "italic",
-                color: "var(--color-accent)",
-                textDecoration: "none",
-                display: "inline-block",
+                display: "inline-flex",
+                alignItems: "center",
                 marginBottom: "8px",
               }}
             >
-              GVSwift
+              <Image
+                src="/logo.png"
+                alt="GVSwift Logo"
+                width={122}
+                height={28}
+                style={{
+                  height: "28px",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
             </Link>
             <p
               style={{

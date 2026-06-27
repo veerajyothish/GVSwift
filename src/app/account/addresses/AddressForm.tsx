@@ -88,7 +88,7 @@ export default function AddressForm({
     const fetchByCoords = async (lat: number, lon: number) => {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`,
-        { headers: { "Accept-Language": "en" } }
+        { headers: { "Accept-Language": "en", "User-Agent": "GVSwift-App/1.0" } }
       );
       if (!res.ok) throw new Error("Nominatim failed");
       const data = await res.json();
@@ -96,9 +96,10 @@ export default function AddressForm({
     };
 
     const fetchByIP = async () => {
-      const res = await fetch("https://ipapi.co/json/");
+      const res = await fetch("https://ipwho.is/");
       if (!res.ok) throw new Error("IP API failed");
       const data = await res.json();
+      if (!data.success) throw new Error("IP Geolocation unsuccessful");
       const pincode = (data.postal || "").replace(/\D/g, "").slice(0, 6);
       setFormData((prev) => ({
         ...prev,
@@ -137,7 +138,7 @@ export default function AddressForm({
           setLocating(false);
         }
       },
-      { timeout: 8000, maximumAge: 60000 }
+      { timeout: 8000, maximumAge: 0, enableHighAccuracy: true }
     );
   };
 

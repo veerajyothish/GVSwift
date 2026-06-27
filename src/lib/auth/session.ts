@@ -15,6 +15,7 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { cache } from "react";
 
 /**
  * Returns the verified Supabase Auth user for the current request.
@@ -22,8 +23,9 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
  *
  * Always calls getUser() (not getSession()) to validate with Supabase's
  * servers — see https://supabase.com/docs/guides/auth/server-side/nextjs
+ * Wrapped in React cache to memoize the request per-render-cycle.
  */
-export async function getServerSession(): Promise<SupabaseUser | null> {
+export const getServerSession = cache(async (): Promise<SupabaseUser | null> => {
   const supabase = await createSupabaseServerClient();
 
   const {
@@ -36,7 +38,7 @@ export async function getServerSession(): Promise<SupabaseUser | null> {
   }
 
   return user;
-}
+});
 
 /**
  * Returns true if the current request has a valid Supabase session.

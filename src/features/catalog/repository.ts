@@ -120,7 +120,7 @@ const listProductsCached = unstable_cache(
     return fetchProductsDirect(params);
   },
   ["products-list"],
-  { revalidate: 30, tags: ["products"] }
+  { revalidate: 120, tags: ["products"] }
 );
 
 /**
@@ -157,7 +157,7 @@ const getProductBySlugCached = unstable_cache(
     }) as Promise<ProductWithVariantsAndImages | null>;
   },
   ["product-by-slug"],
-  { revalidate: 60, tags: ["products"] }
+  { revalidate: 120, tags: ["products"] }
 );
 
 /**
@@ -211,7 +211,7 @@ const getProductByIdCached = unstable_cache(
     }) as Promise<ProductWithVariantsAndImages | null>;
   },
   ["product-by-id"],
-  { revalidate: 60, tags: ["products"] }
+  { revalidate: 120, tags: ["products"] }
 );
 
 /**

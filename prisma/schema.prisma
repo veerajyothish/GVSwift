@@ -481,6 +481,19 @@ model Banner {
   updatedAt DateTime   @updatedAt
 }
 
+model WelcomeOffer {
+  id              String   @id @default(cuid())
+  title           String   @default("Welcome back! 🎉")
+  subtitle        String   @default("You have an exclusive deal waiting today.")
+  offerText       String   @default("FLAT ₹100 OFF on your first order")
+  offerSubtext    String   @default("Valid until July 25 · Applied automatically at checkout")
+  ctaText         String   @default("Shop Now")
+  ctaUrl          String   @default("/products")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 /// B12: Referral & Loyalty
 
 model ReferralCode {

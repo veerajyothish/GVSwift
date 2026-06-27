@@ -10,6 +10,7 @@ import AccountSidebar from "./AccountSidebar";
 import { requireUser } from "@/lib/auth/guards";
 import { getServerSession } from "@/lib/auth/session";
 import { VerificationBanner } from "@/components/ui/VerificationBanner";
+import BackButton from "@/components/ui/BackButton";
 
 export default async function AccountLayout({
   children,
@@ -40,6 +41,7 @@ export default async function AccountLayout({
             padding: "48px 24px 0",
           }}
         >
+          <BackButton />
           <h1
             style={{
               fontFamily: "var(--font-heading)",
