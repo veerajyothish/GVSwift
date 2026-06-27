@@ -167,12 +167,12 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                   }}
                 >
                   <Image
-                    src="/monogram.png"
-                    alt="GVSwift Monogram"
-                    width={28}
-                    height={28}
+                    src="/logo.png"
+                    alt="GVSwift"
+                    width={100}
+                    height={24}
                     style={{
-                      height: "28px",
+                      height: "24px",
                       width: "auto",
                       objectFit: "contain",
                     }}

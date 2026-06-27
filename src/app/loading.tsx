@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 export default function Loading() {
   return (
@@ -58,19 +59,14 @@ export default function Loading() {
       >
         {/* Logo */}
         <div className="animate-pulse-slow">
-          <h1
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "36px",
-              fontWeight: 500,
-              color: "var(--color-primary, #561922)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              margin: 0,
-            }}
-          >
-            GVSwift
-          </h1>
+          <Image
+            src="/logo.png"
+            alt="GVSwift"
+            width={200}
+            height={46}
+            style={{ height: "46px", width: "auto", objectFit: "contain" }}
+            priority
+          />
         </div>
 
         {/* Loading Indicator */}

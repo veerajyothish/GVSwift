@@ -1,5 +1,6 @@
 import { requireAdmin } from "@/lib/auth/guards";
 import Link from "next/link";
+import Image from "next/image";
 import { SignOutButton } from "@/components/ui/SignOutButton";
 
 export default async function AdminLayout({
@@ -31,9 +32,15 @@ export default async function AdminLayout({
       <header className="admin-header" aria-label="Admin navigation">
         <div className="site-navbar-inner flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <Link href="/admin" className="site-navbar-brand">
-              <span className="site-navbar-logo">GV</span>
-              <span className="site-navbar-name">Admin</span>
+            <Link href="/admin" className="site-navbar-brand" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Image
+                src="/logo.png"
+                alt="GVSwift Logo"
+                width={110}
+                height={26}
+                style={{ height: "26px", width: "auto", objectFit: "contain" }}
+              />
+              <span className="site-navbar-name" style={{ fontSize: "13px", letterSpacing: "0.08em", color: "var(--color-text-secondary)" }}>Admin</span>
             </Link>
 
             <nav className="flex items-center gap-3" aria-label="Admin sections">
