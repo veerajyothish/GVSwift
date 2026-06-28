@@ -1,63 +1,53 @@
 "use client";
 
-/**
- * ProductCard — optimised for speed:
- * - Correct `sizes` attribute so Next.js serves 300px images not 1920px
- * - `loading="lazy"` on images below fold
- * - Transitions use `will-change: transform` only on hover (not always)
- * - Removed redundant state re-renders
- */
-
 import React, { useState, useCallback } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
-import { useToast } from "@/components/ui/Toast";
-import { Button } from "@/components/ui/Button";
 
 interface ProductImage {
+  id?: string;
   url: string;
-  altText: string | null;
+  altText?: string | null;
   isPrimary: boolean;
 }
+
 interface ProductVariant {
   id: string;
   sku: string;
   stock: number;
   priceDeltaPaise: number;
 }
+
 interface Product {
   id: string;
   name: string;
   slug: string;
   basePricePaise: number;
   avgRating?: number | null;
+  reviewCount?: number;
+  description?: string | null;
   categoryId?: string | null;
   images?: ProductImage[];
   variants?: ProductVariant[];
 }
+
 interface ProductCardProps {
   product: Product;
-  initialWishlisted?: boolean;
   categoryName?: string;
-  /** Pass true for first ~4 cards visible on load (above fold) */
   priority?: boolean;
+  initialWishlisted?: boolean; // Keep for backward-compatibility with callers
 }
 
 export default function ProductCard({
   product,
-  categoryName,
   priority = false,
 }: ProductCardProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const { isWishlisted, toggleWishlist } = useWishlist();
-
   const wishlisted = isWishlisted(product.id);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [hovered, setHovered] = useState(false);
 
   const totalStock =
@@ -79,81 +69,11 @@ export default function ProductCard({
     }
   }, [product.id, toggleWishlist]);
 
-  const getFirstInStockVariant = useCallback(() =>
-    product.variants?.find((v) => v.stock > 0) || product.variants?.[0],
-  [product.variants]);
-
-  const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isOutOfStock) return;
-    const variant = getFirstInStockVariant();
-    if (!variant) return;
-    setIsAddingToCart(true);
-
-    // Optimistic cart count increment
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("gvswift-cart-add-one"));
-    }
-
-    try {
-      const res = await fetch("/api/v1/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, variantId: variant.id, quantity: 1 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add item");
-      toast.success(`Added to cart!`, "Added to Cart");
-
-      // Sync actual cart count in background
-      fetch("/api/v1/cart")
-        .then((r) => r.json())
-        .then((cartData) => {
-          if (cartData && Array.isArray(cartData.items)) {
-            const count = cartData.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
-            window.dispatchEvent(new CustomEvent("gvswift-cart-updated", { detail: count }));
-          }
-        })
-        .catch(() => {});
-
-    } catch (err: unknown) {
-      // Revert optimistic count
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("gvswift-cart-remove-one"));
-      }
-      toast.error(err instanceof Error ? err.message : "Could not add item", "Error");
-    } finally {
-      setIsAddingToCart(false);
-    }
-  }, [product.id, isOutOfStock, getFirstInStockVariant, toast]);
-
-  const handleBuyNow = useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isOutOfStock) return;
-    const variant = getFirstInStockVariant();
-    if (!variant) return;
-    setIsBuyingNow(true);
-    try {
-      const res = await fetch("/api/v1/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, variantId: variant.id, quantity: 1 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to add item");
-      router.push("/checkout");
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Could not process Buy Now", "Error");
-      setIsBuyingNow(false);
-    }
-  }, [product.id, isOutOfStock, getFirstInStockVariant, router, toast]);
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={() => router.push(`/products/${product.slug}`)}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -164,7 +84,6 @@ export default function ProductCard({
         overflow: "hidden",
         position: "relative",
         cursor: "pointer",
-        // Only apply will-change on hover to avoid GPU memory waste
         willChange: hovered ? "transform" : "auto",
         transform: hovered ? "translateY(-4px)" : "translateY(0)",
         boxShadow: hovered
@@ -186,6 +105,7 @@ export default function ProductCard({
       >
         <Link
           href={`/products/${product.slug}`}
+          onClick={(e) => e.stopPropagation()}
           style={{ display: "block", width: "100%", height: "100%" }}
         >
           <Image
@@ -194,8 +114,6 @@ export default function ProductCard({
             fill
             priority={priority}
             loading={priority ? "eager" : "lazy"}
-            // Correct sizes — card is 25vw on desktop, 50vw on mobile
-            // This prevents loading 1920px images for 300px cards
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{
               objectFit: "cover",
@@ -253,24 +171,26 @@ export default function ProductCard({
           flexGrow: 1,
         }}
       >
-        {categoryName && (
-          <span
-            style={{
-              fontSize: "10px",
-              fontWeight: 600,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "var(--color-text-secondary)",
-              display: "block",
-            }}
-          >
-            {categoryName}
-          </span>
-        )}
+        {/* Brand name */}
+        <span
+          style={{
+            fontSize: "10px",
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "var(--color-accent)",
+            display: "block",
+            marginBottom: "2px",
+          }}
+        >
+          GVSwift
+        </span>
 
+        {/* Product name */}
         <h3 style={{ margin: 0 }}>
           <Link
             href={`/products/${product.slug}`}
+            onClick={(e) => e.stopPropagation()}
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "14px",
@@ -278,7 +198,7 @@ export default function ProductCard({
               color: "var(--color-text-primary)",
               textDecoration: "none",
               display: "-webkit-box",
-              WebkitLineClamp: 2,
+              WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               lineHeight: 1.4,
@@ -288,43 +208,73 @@ export default function ProductCard({
           </Link>
         </h3>
 
+        {/* Short description (1 line, truncated) */}
+        {product.description ? (
+          <p
+            style={{
+              fontSize: "12px",
+              color: "var(--color-text-secondary)",
+              margin: "2px 0 4px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              lineHeight: 1.4,
+            }}
+          >
+            {product.description}
+          </p>
+        ) : (
+          <p
+            style={{
+              fontSize: "12px",
+              color: "var(--color-text-secondary)",
+              margin: "2px 0 4px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              lineHeight: 1.4,
+              opacity: 0,
+            }}
+          >
+            &nbsp;
+          </p>
+        )}
+
+        {/* Rating (stars + count, if available) */}
+        {product.avgRating !== undefined && product.avgRating !== null && product.avgRating > 0 ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px" }}>
+            <div style={{ display: "flex", gap: "1px" }}>
+              {Array.from({ length: 5 }).map((_, i) => {
+                const fill = i < Math.round(product.avgRating ?? 0);
+                return (
+                  <span key={i} style={{ color: "var(--color-accent)", fontSize: "12px" }}>
+                    {fill ? "★" : "☆"}
+                  </span>
+                );
+              })}
+            </div>
+            <span style={{ color: "var(--color-text-secondary)", fontSize: "11px" }}>
+              ({product.reviewCount ?? 0})
+            </span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px", opacity: 0 }}>
+            <span>&nbsp;</span>
+          </div>
+        )}
+
+        {/* Price */}
         <span
           style={{
-            fontSize: "15px",
+            fontSize: "14px",
             fontWeight: 600,
             color: "var(--color-text-primary)",
             fontVariantNumeric: "tabular-nums",
-            marginTop: "4px",
+            marginTop: "auto",
           }}
         >
           {formattedPrice}
         </span>
-
-        {!isOutOfStock && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "12px" }}>
-            <Button
-              variant="primary"
-              style={{ width: "100%", minHeight: "36px", fontSize: "12px", borderRadius: "9999px" }}
-              loading={isBuyingNow}
-              onClick={handleBuyNow}
-            >
-              Buy Now
-            </Button>
-            <Button
-              variant="secondary"
-              style={{ width: "100%", minHeight: "36px", fontSize: "12px", borderRadius: "9999px" }}
-              loading={isAddingToCart}
-              onClick={handleAddToCart}
-            >
-              Add to Cart
-            </Button>
-          </div>
-        )}
-        {isOutOfStock && (
-          <span style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "8px" }}>
-            Sold Out
-          </span>
-        )}
       </div>
     </div>
   );

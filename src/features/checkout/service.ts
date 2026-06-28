@@ -42,7 +42,6 @@ import { sendOrderPlacedEmail } from "@/features/notifications/service";
 import { RiskEntityType, RiskLevel, PaymentMethod } from "@prisma/client";
 import {
   getOrCreateLoyaltyAccount,
-  awardPoints,
   getLoyaltySettings,
 } from "@/lib/loyalty";
 

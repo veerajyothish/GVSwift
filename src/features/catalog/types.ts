@@ -4,6 +4,7 @@ export type ProductWithVariantsAndImages = Product & {
   variants: ProductVariant[];
   images: ProductImage[];
   avgRating?: number | null;
+  reviewCount?: number;
   category?: Category | null;
 };
 

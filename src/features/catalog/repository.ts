@@ -89,6 +89,9 @@ async function fetchProductsDirect(
       _avg: {
         rating: true,
       },
+      _count: {
+        id: true,
+      },
     });
 
     productsWithRatings = products.map((product) => {
@@ -96,6 +99,7 @@ async function fetchProductsDirect(
       return {
         ...product,
         avgRating: match?._avg.rating ?? null,
+        reviewCount: match?._count.id ?? 0,
       };
     });
   }
