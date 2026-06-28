@@ -13,6 +13,7 @@ import { AppError } from "@/lib/errors";
 import { OrderStatus, Role, Prisma } from "@prisma/client";
 import { logAuditEvent } from "@/features/admin/audit-log";
 import { sendOrderStatusChangeEmail } from "@/features/notifications/service";
+import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 
 /* ── Transition Configuration ────────────────────────────────────────── */
 
@@ -330,6 +331,55 @@ export async function transitionOrderStatus(
 
     if (orderForEmail) {
       sendOrderStatusChangeEmail(orderForEmail);
+    }
+
+    // Award loyalty points ONLY on transitions to DELIVERED status
+    if (actualToStatus === OrderStatus.DELIVERED) {
+      const awardLoyaltyPoints = async () => {
+        try {
+          const settings = await getLoyaltySettings();
+
+          // 1. Award purchase points if not already awarded
+          const existingPurchasePoints = await prisma.pointsLedger.findFirst({
+            where: { orderId, delta: { gt: 0 } },
+          });
+
+          if (!existingPurchasePoints) {
+            const amountPaidRupees = Math.floor(result.order.totalPaise / 100);
+            const pointsEarned = amountPaidRupees * settings.pointsPerRupee;
+            if (pointsEarned > 0) {
+              await awardPoints(
+                result.order.userId,
+                pointsEarned,
+                `Purchase — Order #${orderId.slice(-8).toUpperCase()}`,
+                orderId
+              );
+            }
+          }
+
+          // 2. Award referral bonus if not already awarded
+          const referralUse = await prisma.referralUse.findUnique({
+            where: { referredUserId: result.order.userId },
+            include: { referralCode: { select: { userId: true } } },
+          });
+          if (referralUse && referralUse.pointsAwarded === 0) {
+            const referrerId = referralUse.referralCode.userId;
+            await awardPoints(
+              referrerId,
+              settings.referralBonus,
+              `Referral bonus — friend placed their first order`,
+              orderId
+            );
+            await prisma.referralUse.update({
+              where: { id: referralUse.id },
+              data: { pointsAwarded: settings.referralBonus },
+            });
+          }
+        } catch (err) {
+          console.error("[StateMachine] Failed to award loyalty points on delivery:", err);
+        }
+      };
+      void awardLoyaltyPoints();
     }
   }
 

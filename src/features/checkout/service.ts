@@ -494,52 +494,7 @@ export async function createOrder(
 
   sendOrderPlacedEmail(finalOrder);
 
-  // ── B12: Award purchase points (best-effort, post-transaction, non-blocking) ──
-  const awardPurchasePoints = async () => {
-    try {
-      if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
-      const amountPaidRupees = Math.floor(totalPaise / 100);
-      const pointsEarned = amountPaidRupees * loyaltySettings.pointsPerRupee;
-      if (pointsEarned > 0) {
-        await awardPoints(
-          userId,
-          pointsEarned,
-          `Purchase — Order #${orderId.slice(-8).toUpperCase()}`,
-          orderId
-        );
-      }
-    } catch (err) {
-      console.error("[Checkout] Failed to award purchase points:", err);
-    }
-  };
 
-  const awardReferralBonus = async () => {
-    try {
-      const referralUse = await prisma.referralUse.findUnique({
-        where: { referredUserId: userId },
-        include: { referralCode: { select: { userId: true } } },
-      });
-      if (referralUse && referralUse.pointsAwarded === 0) {
-        const referrerId = referralUse.referralCode.userId;
-        if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
-        await awardPoints(
-          referrerId,
-          loyaltySettings.referralBonus,
-          `Referral bonus — friend placed their first order`,
-          orderId
-        );
-        await prisma.referralUse.update({
-          where: { id: referralUse.id },
-          data: { pointsAwarded: loyaltySettings.referralBonus },
-        });
-      }
-    } catch (err) {
-      console.error("[Checkout] Failed to award referral bonus:", err);
-    }
-  };
-
-  // Fire all post-order background tasks without blocking the response
-  void Promise.all([awardPurchasePoints(), awardReferralBonus()]);
 
   // ── 10. Best-effort risk flag seeding (non-blocking) ──────────────────
   const seedRiskFlags = async () => {
