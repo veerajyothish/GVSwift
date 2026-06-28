@@ -141,6 +141,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           </h2>
           <button
             onClick={() => setEditing(!editing)}
+            disabled={saving}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -154,7 +155,8 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
               letterSpacing: "0.05em",
               textTransform: "uppercase",
               color: "var(--color-text-secondary)",
-              cursor: "pointer",
+              cursor: saving ? "not-allowed" : "pointer",
+              opacity: saving ? 0.6 : 1,
             }}
           >
             ✏ {editing ? "Cancel" : "Edit"}
@@ -193,7 +195,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
                     type="text"
                     value={firstName}
                     onChange={(e) => setName(`${e.target.value} ${lastName}`.trim())}
-                    disabled={!editing}
+                    disabled={!editing || saving}
                     style={fieldStyle}
                     placeholder="Eleanor"
                   />
@@ -204,7 +206,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
                     type="text"
                     value={lastName}
                     onChange={(e) => setName(`${firstName} ${e.target.value}`.trim())}
-                    disabled={!editing}
+                    disabled={!editing || saving}
                     style={fieldStyle}
                     placeholder="Vance"
                   />
@@ -241,7 +243,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  disabled={!editing}
+                  disabled={!editing || saving}
                   style={fieldStyle}
                   placeholder="+91 98765 43210"
                 />
@@ -290,17 +292,17 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           <div>
             <label style={labelStyle}>Current Password</label>
             <input type="password" className="input-field" value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password" />
+              onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password" disabled={pwLoading} />
           </div>
           <div>
             <label style={labelStyle}>New Password</label>
             <input type="password" className="input-field" value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" autoComplete="new-password" />
+              onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" autoComplete="new-password" disabled={pwLoading} />
           </div>
           <div>
             <label style={labelStyle}>Confirm New Password</label>
             <input type="password" className="input-field" value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" autoComplete="new-password" />
+              onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm new password" autoComplete="new-password" disabled={pwLoading} />
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <Button type="submit" variant="primary" loading={pwLoading} className="btn-premium" style={{ minWidth: "180px" }}>

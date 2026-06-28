@@ -5,8 +5,9 @@
  * Right-side icons: account (circle dashed outline on PDF p.1), shopping bag.
  * Both wine-red, clean SVG, badge dot on cart.
  */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface NavbarIconsAndSearchProps {
   isLoggedIn: boolean;
@@ -18,6 +19,36 @@ export function NavbarIconsAndSearch({
   isLoggedIn,
   cartCount,
 }: NavbarIconsAndSearchProps) {
+  const [clientCartCount, setClientCartCount] = useState(cartCount);
+  const { wishlistedIds } = useWishlist();
+  const wishlistCount = wishlistedIds.length;
+
+  useEffect(() => {
+    // Keep local state in sync when page props change
+    setClientCartCount(cartCount);
+  }, [cartCount]);
+
+  useEffect(() => {
+    const handleAddOne = () => setClientCartCount((c) => c + 1);
+    const handleRemoveOne = () => setClientCartCount((c) => Math.max(0, c - 1));
+    const handleUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "number") {
+        setClientCartCount(detail);
+      }
+    };
+
+    window.addEventListener("gvswift-cart-add-one", handleAddOne);
+    window.addEventListener("gvswift-cart-remove-one", handleRemoveOne);
+    window.addEventListener("gvswift-cart-updated", handleUpdate);
+
+    return () => {
+      window.removeEventListener("gvswift-cart-add-one", handleAddOne);
+      window.removeEventListener("gvswift-cart-remove-one", handleRemoveOne);
+      window.removeEventListener("gvswift-cart-updated", handleUpdate);
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -27,6 +58,60 @@ export function NavbarIconsAndSearch({
         flexShrink: 0,
       }}
     >
+      {/* Wishlist heart icon (desktop only) — Moved inside Client Component for instant count updates */}
+      {isLoggedIn && (
+        <Link
+          href="/account/wishlist"
+          aria-label="Wishlist"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "40px",
+            height: "40px",
+            color: "var(--color-accent)",
+            position: "relative",
+            textDecoration: "none",
+            flexShrink: 0,
+          }}
+          className="navbar-desktop-links"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+          {wishlistCount > 0 && (
+            <span
+              style={{
+                position: "absolute",
+                top: "4px",
+                right: "4px",
+                width: "15px",
+                height: "15px",
+                borderRadius: "50%",
+                background: "var(--color-accent)",
+                color: "#fff",
+                fontSize: "9px",
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {wishlistCount}
+            </span>
+          )}
+        </Link>
+      )}
+
       {/* Account icon — PDF p.1: dashed circle on desktop when logged in */}
       <Link
         href={isLoggedIn ? "/account" : "/login"}
@@ -64,7 +149,7 @@ export function NavbarIconsAndSearch({
       {/* Cart / shopping bag icon — PDF p.1/4 */}
       <Link
         href="/cart"
-        aria-label={`Shopping cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+        aria-label={`Shopping cart${clientCartCount > 0 ? `, ${clientCartCount} items` : ""}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -93,7 +178,7 @@ export function NavbarIconsAndSearch({
           <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
 
-        {cartCount > 0 && (
+        {clientCartCount > 0 && (
           <span
             aria-hidden
             style={{
@@ -113,7 +198,7 @@ export function NavbarIconsAndSearch({
               lineHeight: 1,
             }}
           >
-            {cartCount > 9 ? "9+" : cartCount}
+            {clientCartCount > 9 ? "9+" : clientCartCount}
           </span>
         )}
       </Link>

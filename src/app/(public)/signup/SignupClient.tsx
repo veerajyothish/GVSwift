@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +8,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignupClient() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -69,8 +70,10 @@ export default function SignupClient() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Signup failed."); setLoading(false); return; }
-      router.push("/");
-      router.refresh();
+      
+      startTransition(() => {
+        router.push("/");
+      });
     } catch {
       setError("Network error. Please try again.");
       setLoading(false);
@@ -152,7 +155,13 @@ export default function SignupClient() {
             <input id="confirm-password" type="password" className="input-field" placeholder="Re-enter your password"
               value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" disabled={loading} />
           </div>
-          <Button type="submit" variant="primary" loading={loading} style={{ width: "100%", minHeight: "48px", marginTop: "8px" }}>
+          <Button 
+            type="submit" 
+            variant="primary" 
+            loading={loading || isPending} 
+            disabled={loading || isPending || googleLoading} 
+            style={{ width: "100%", minHeight: "48px", marginTop: "8px" }}
+          >
             Create Account
           </Button>
         </form>

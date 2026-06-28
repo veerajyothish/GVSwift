@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,6 +11,7 @@ export default function LoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") ?? "/";
+  const [isPending, startTransition] = useTransition();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,9 +53,14 @@ export default function LoginClient() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Login failed."); setLoading(false); return; }
-      if (data.user?.role === "ADMIN") router.push("/admin");
-      else router.push(redirectTo);
-      router.refresh();
+      
+      startTransition(() => {
+        if (data.user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push(redirectTo);
+        }
+      });
     } catch {
       setError("Network error. Please try again.");
       setLoading(false);
@@ -144,7 +150,13 @@ export default function LoginClient() {
               value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" disabled={loading} />
           </div>
 
-          <Button type="submit" variant="primary" loading={loading} style={{ width: "100%", minHeight: "48px", marginTop: "8px" }}>
+          <Button 
+            type="submit" 
+            variant="primary" 
+            loading={loading || isPending} 
+            disabled={loading || isPending || googleLoading} 
+            style={{ width: "100%", minHeight: "48px", marginTop: "8px" }}
+          >
             Sign In
           </Button>
         </form>

@@ -9,7 +9,7 @@
  * Info box: scroll-icon + italic quote card (PDF p.4/5), MATERIAL DETAILS grid below,
  *   FIT & DIMENSIONS / SHIPPING & RETURNS accordion rows (PDF p.5).
  */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ProductWithVariantsAndImages } from "@/features/catalog/types";
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { useRouter } from "next/navigation";
 import { RecentlyViewed } from "./RecentlyViewed";
+import WishlistToggle from "./WishlistToggle";
 
 interface ProductDetailClientProps {
   product: ProductWithVariantsAndImages;
@@ -25,11 +26,13 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   
   // Safe initial selected variant
   const initialVariantId = product?.variants?.[0]?.id || "";
   const [selectedVariantId, setSelectedVariantId] = useState(initialVariantId);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
@@ -80,6 +83,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const handleAddToCart = async () => {
     if (isOutOfStock || !product?.id || !selectedVariant?.id) return;
     setIsAddingToCart(true);
+    setIsAdded(true);
+    
+    // Optimistic cart count increment
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("gvswift-cart-add-one"));
+    }
+
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
@@ -88,15 +98,46 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       });
       if (res.status === 401) {
         toast.error("Please sign in to add items to your cart.", "Sign in required");
-        setTimeout(() => router.push("/login"), 1200);
+        // Revert optimistic update
+        setIsAdded(false);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("gvswift-cart-remove-one"));
+        }
+        setTimeout(() => {
+          startTransition(() => {
+            router.push("/login");
+          });
+        }, 1200);
         return;
       }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
+      
       toast.success(`Added ${product.name || "item"} to your cart!`, "Added to Cart");
+      
+      // Fetch latest cart count to synchronize precisely
+      fetch("/api/v1/cart")
+        .then((r) => r.json())
+        .then((cartData) => {
+          if (cartData && Array.isArray(cartData.items)) {
+            const count = cartData.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            window.dispatchEvent(new CustomEvent("gvswift-cart-updated", { detail: count }));
+          }
+        })
+        .catch(() => {});
+
+      // Keep success state visible for 2 seconds
+      setTimeout(() => setIsAdded(false), 2000);
+
     } catch (err: unknown) {
+      setIsAdded(false);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("gvswift-cart-remove-one"));
+      }
       toast.error((err as Error).message || "Could not add item", "Error");
-    } finally { setIsAddingToCart(false); }
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleBuyNow = async () => {
@@ -110,13 +151,25 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       });
       if (res.status === 401) {
         toast.error("Please sign in to continue to checkout.", "Sign in required");
-        setTimeout(() => router.push("/login"), 1200);
+        setTimeout(() => {
+          startTransition(() => {
+            router.push("/login");
+          });
+        }, 1200);
         setIsBuyingNow(false);
         return;
       }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
-      router.push("/checkout");
+
+      // Optimistic cart count increment
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("gvswift-cart-add-one"));
+      }
+
+      startTransition(() => {
+        router.push("/checkout");
+      });
     } catch (err: unknown) {
       toast.error((err as Error).message || "Could not process request", "Error");
       setIsBuyingNow(false);
@@ -179,6 +232,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               priority
               sizes="(max-width: 767px) 100vw, 50vw"
               style={{ objectFit: "cover" }}
+            />
+            {/* Wishlist Heart Overlay */}
+            <WishlistToggle
+              productId={product.id}
+              style={{
+                position: "absolute",
+                top: "16px",
+                right: "16px",
+                zIndex: 10,
+              }}
             />
             {isOutOfStock && (
               <span
@@ -354,8 +417,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <div ref={ctaRef} style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "0 20px" }}>
               <Button
                 variant={isOutOfStock ? "secondary" : "primary"}
-                disabled={isOutOfStock || !selectedVariant}
-                loading={isBuyingNow}
+                disabled={isOutOfStock || !selectedVariant || isPending}
+                loading={isBuyingNow || isPending}
                 onClick={handleBuyNow}
                 className="btn-premium"
                 style={{ width: "100%", minHeight: "52px", fontSize: "13px", letterSpacing: "0.08em" }}
@@ -364,13 +427,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </Button>
               <Button
                 variant="secondary"
-                disabled={isOutOfStock || !selectedVariant}
+                disabled={isOutOfStock || !selectedVariant || isPending}
                 loading={isAddingToCart}
                 onClick={handleAddToCart}
                 className="btn-premium"
-                style={{ width: "100%", minHeight: "44px", fontSize: "12px" }}
+                style={{
+                  width: "100%",
+                  minHeight: "44px",
+                  fontSize: "12px",
+                  backgroundColor: isAdded ? "var(--color-success)" : undefined,
+                  borderColor: isAdded ? "var(--color-success)" : undefined,
+                  color: isAdded ? "#fff" : undefined,
+                  transition: "background-color 0.2s, border-color 0.2s",
+                }}
               >
-                {isOutOfStock ? "Sold Out" : "Add to Cart"}
+                {isOutOfStock ? "Sold Out" : isAdded ? "Added ✓" : "Add to Cart"}
               </Button>
             </div>
 

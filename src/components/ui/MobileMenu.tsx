@@ -19,6 +19,7 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) {
+  const [clientCartCount, setClientCartCount] = useState(cartCount);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -27,6 +28,32 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Sync state when props change
+    setClientCartCount(cartCount);
+  }, [cartCount]);
+
+  useEffect(() => {
+    const handleAddOne = () => setClientCartCount((c) => c + 1);
+    const handleRemoveOne = () => setClientCartCount((c) => Math.max(0, c - 1));
+    const handleUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "number") {
+        setClientCartCount(detail);
+      }
+    };
+
+    window.addEventListener("gvswift-cart-add-one", handleAddOne);
+    window.addEventListener("gvswift-cart-remove-one", handleRemoveOne);
+    window.addEventListener("gvswift-cart-updated", handleUpdate);
+
+    return () => {
+      window.removeEventListener("gvswift-cart-add-one", handleAddOne);
+      window.removeEventListener("gvswift-cart-remove-one", handleRemoveOne);
+      window.removeEventListener("gvswift-cart-updated", handleUpdate);
+    };
   }, []);
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -187,8 +214,8 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                     <Link href="/account/wishlist" onClick={close} className="mobile-drawer-link">Wishlist</Link>
                     <Link href="/cart" onClick={close} className="mobile-drawer-link" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span>Cart</span>
-                      {cartCount > 0 && (
-                        <span className="mobile-drawer-badge">{cartCount}</span>
+                      {clientCartCount > 0 && (
+                        <span className="mobile-drawer-badge">{clientCartCount}</span>
                       )}
                     </Link>
                     {isAdmin && (

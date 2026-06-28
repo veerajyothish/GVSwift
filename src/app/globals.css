@@ -1707,6 +1707,11 @@ button, a, [role="button"], input[type="submit"], input[type="button"] {
   transform: scale(0.96) !important;
   transition: transform 0.05s ease !important;
 }
+button:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.1s;
+}
+
 
 /* No hover effects on touch devices (saves unnecessary paint) */
 @media (hover: none) {

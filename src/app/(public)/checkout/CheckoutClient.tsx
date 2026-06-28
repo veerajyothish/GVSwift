@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -86,6 +86,7 @@ export default function CheckoutClient({
 }: CheckoutClientProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   const [addresses, setAddresses] = useState<Address[]>(initialAddresses);
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
@@ -378,11 +379,30 @@ export default function CheckoutClient({
       setIsModalOpen(false);
       setFormData(defaultFormData);
       
+      // Optimistically append the new address so it displays immediately without flashing/reloading
+      const newAddress: Address = {
+        id: data.id,
+        fullName: data.fullName,
+        line1: data.line1,
+        line2: data.line2,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode,
+        phone: data.phone,
+        isDefault: data.isDefault,
+        isServiceable: true,
+        isCodBlocked: false,
+        requiresApproval: false,
+      };
+      setAddresses((prev) => [...prev, newAddress]);
+
       // Auto-select this newly created address
       setSelectedAddressId(data.id);
       
-      // Refresh server component so risk levels are resolved
-      router.refresh();
+      // Refresh server component in the background so risk levels are resolved
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (err: unknown) {
       const error = err as Error;
       toast.error(error.message || "Could not add address", "Error");
@@ -442,8 +462,10 @@ export default function CheckoutClient({
 
       toast.success("Order placed successfully!");
       
-      // Redirect to the order details page as part of TICKET-302 implementation
-      router.push(`/account/orders/${data.order.id}`);
+      // Redirect to the order details page wrapped in transition
+      startTransition(() => {
+        router.push(`/account/orders/${data.order.id}`);
+      });
     } catch (err: unknown) {
       const error = err as Error;
       setServerError(error.message || "Failed to place order. Please try again.");
@@ -459,7 +481,8 @@ export default function CheckoutClient({
     selectedAddress?.isCodBlocked ||
     !selectedAddress?.isServiceable ||
     isOverCodLimit ||
-    submittingOrder;
+    submittingOrder ||
+    isPending;
 
   return (
     <div className="checkout-grid">
@@ -1056,7 +1079,7 @@ export default function CheckoutClient({
             variant="primary"
             onClick={handlePlaceOrder}
             disabled={isPlaceOrderDisabled}
-            loading={submittingOrder}
+            loading={submittingOrder || isPending}
             style={{ width: "100%", padding: "14px 28px", fontSize: "15px" }}
             className="btn-premium"
           >

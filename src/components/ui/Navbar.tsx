@@ -20,7 +20,6 @@ export async function Navbar() {
   let isLoggedIn = false;
   let isAdmin = false;
   let cartCount = 0;
-  let wishlistCount = 0;
 
   if (session) {
     isLoggedIn = true;
@@ -35,9 +34,6 @@ export async function Navbar() {
         if (cart) {
           cartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         }
-        wishlistCount = await prisma.wishlistItem.count({
-          where: { userId: user.id },
-        });
       }
     } catch (e) {
       console.error("Navbar data fetch failed:", e);
@@ -109,60 +105,6 @@ export async function Navbar() {
 
           {/* ── Right: icons + mobile hamburger ──────────────────────────── */}
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            {/* Wishlist heart icon (desktop) */}
-            {isLoggedIn && (
-              <Link
-                href="/account/wishlist"
-                aria-label="Wishlist"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "40px",
-                  height: "40px",
-                  color: "var(--color-accent)",
-                  position: "relative",
-                  textDecoration: "none",
-                  flexShrink: 0,
-                }}
-                className="navbar-desktop-links"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-                {wishlistCount > 0 && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "4px",
-                      right: "4px",
-                      width: "15px",
-                      height: "15px",
-                      borderRadius: "50%",
-                      background: "var(--color-accent)",
-                      color: "#fff",
-                      fontSize: "9px",
-                      fontWeight: 700,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {wishlistCount}
-                  </span>
-                )}
-              </Link>
-            )}
-
             {/* Icons: account + cart */}
             <NavbarIconsAndSearch
               isLoggedIn={isLoggedIn}

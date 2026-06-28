@@ -20,8 +20,9 @@ import * as repo from "./repository";
 import type { ListProductsParams } from "./types";
 
 /* ── Product listing — 5 minute cache ──────────────────────────────────────── */
-export const getCachedProducts = unstable_cache(
-  async (params: ListProductsParams) => {
+const getProductsCachedInternal = unstable_cache(
+  async (serializedParams: string) => {
+    const params = JSON.parse(serializedParams) as ListProductsParams;
     return repo.listProducts(params, true);
   },
   ["catalog-products"],
@@ -30,6 +31,17 @@ export const getCachedProducts = unstable_cache(
     tags: ["products"],
   }
 );
+
+export async function getCachedProducts(params: ListProductsParams) {
+  const sortedParams: Record<string, unknown> = {};
+  Object.keys(params)
+    .sort()
+    .forEach((key) => {
+      sortedParams[key] = (params as Record<string, unknown>)[key];
+    });
+  const serialized = JSON.stringify(sortedParams);
+  return getProductsCachedInternal(serialized);
+}
 
 /* ── Product detail by slug — 5 minute cache ───────────────────────────────── */
 export const getCachedProductBySlug = unstable_cache(

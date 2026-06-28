@@ -14,7 +14,9 @@ function getResend() {
 }
 
 const notificationStatuses = new Set<OrderStatus>([
+  OrderStatus.CONFIRMED,
   OrderStatus.SHIPPED,
+  OrderStatus.OUT_FOR_DELIVERY,
   OrderStatus.DELIVERED,
   OrderStatus.CANCELLED,
 ]);
@@ -109,13 +111,19 @@ export function sendOrderStatusChangeEmail(order: OrderForEmail) {
 
   sendEmail({
     to: order.user.email,
-    subject: `GVSwift order ${order.status.toLowerCase().replaceAll("_", " ")}`,
+    subject: `GVSwift order status update: ${order.status.toLowerCase().replaceAll("_", " ")}`,
     idempotencyKey: `order-status-${order.id}-${order.status}`,
     react: (
       <OrderStatusChangeEmail
         orderId={order.id}
         status={order.status}
         orderUrl={`${siteUrl()}/orders/${order.id}`}
+        totalPaise={order.totalPaise}
+        items={order.items.map((item) => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          lineTotalPaise: item.lineTotalPaise,
+        }))}
         trackingReference={order.trackingReference}
       />
     ),

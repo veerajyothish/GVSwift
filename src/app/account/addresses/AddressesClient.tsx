@@ -103,7 +103,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
             textDecoration: "none",
           }}
         >
-          <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>add</span>
+          <span style={{ fontSize: "18px", fontWeight: "bold" }}>+</span>
           Add New Address
         </Link>
       </div>

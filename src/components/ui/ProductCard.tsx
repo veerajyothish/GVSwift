@@ -48,17 +48,14 @@ interface ProductCardProps {
 
 export default function ProductCard({
   product,
-  initialWishlisted = false,
   categoryName,
   priority = false,
 }: ProductCardProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { wishlistedIds, refresh, toggleWishlist } = useWishlist();
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
-  const isCurrentlyWishlisted =
-    wishlistedIds.includes(product.id) || initialWishlisted;
-  const [wishlisted, setWishlisted] = useState(isCurrentlyWishlisted);
+  const wishlisted = isWishlisted(product.id);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -75,14 +72,12 @@ export default function ProductCard({
   const handleWishlist = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setWishlisted((prev) => !prev);
     try {
       await toggleWishlist(product.id);
-      await refresh();
     } catch {
-      setWishlisted(isCurrentlyWishlisted);
+      // Revert is handled inside context
     }
-  }, [product.id, toggleWishlist, refresh, isCurrentlyWishlisted]);
+  }, [product.id, toggleWishlist]);
 
   const getFirstInStockVariant = useCallback(() =>
     product.variants?.find((v) => v.stock > 0) || product.variants?.[0],
@@ -95,6 +90,12 @@ export default function ProductCard({
     const variant = getFirstInStockVariant();
     if (!variant) return;
     setIsAddingToCart(true);
+
+    // Optimistic cart count increment
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("gvswift-cart-add-one"));
+    }
+
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
@@ -104,9 +105,27 @@ export default function ProductCard({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
       toast.success(`Added to cart!`, "Added to Cart");
+
+      // Sync actual cart count in background
+      fetch("/api/v1/cart")
+        .then((r) => r.json())
+        .then((cartData) => {
+          if (cartData && Array.isArray(cartData.items)) {
+            const count = cartData.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            window.dispatchEvent(new CustomEvent("gvswift-cart-updated", { detail: count }));
+          }
+        })
+        .catch(() => {});
+
     } catch (err: unknown) {
+      // Revert optimistic count
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("gvswift-cart-remove-one"));
+      }
       toast.error(err instanceof Error ? err.message : "Could not add item", "Error");
-    } finally { setIsAddingToCart(false); }
+    } finally {
+      setIsAddingToCart(false);
+    }
   }, [product.id, isOutOfStock, getFirstInStockVariant, toast]);
 
   const handleBuyNow = useCallback(async (e: React.MouseEvent) => {
