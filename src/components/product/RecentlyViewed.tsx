@@ -63,10 +63,11 @@ export function RecentlyViewed({ excludeProductId }: { excludeProductId?: string
         Recently Viewed Products
       </h2>
       <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "20px" }}>
-        {products.map((product) => {
-          const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
+        {products?.map((product) => {
+          const images = product?.images || [];
+          const primaryImage = images.find((img) => img.isPrimary) || images[0];
           const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
-          const formattedPrice = `₹${(product.basePricePaise / 100).toLocaleString("en-IN")}`;
+          const formattedPrice = `₹${((product?.basePricePaise || 0) / 100).toLocaleString("en-IN")}`;
           
           return (
             <Link key={product.id} href={`/products/${product.slug}`}>

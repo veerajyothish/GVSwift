@@ -25,7 +25,10 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const [selectedVariantId, setSelectedVariantId] = useState(product.variants[0]?.id || "");
+  
+  // Safe initial selected variant
+  const initialVariantId = product?.variants?.[0]?.id || "";
+  const [selectedVariantId, setSelectedVariantId] = useState(initialVariantId);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
@@ -45,32 +48,37 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   /* Recently viewed cookie */
   useEffect(() => {
+    if (!product?.id) return;
     const getCookie = (name: string) => {
+      if (typeof document === "undefined") return null;
       const v = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
       return v ? v.pop() ?? null : null;
     };
     const setCookie = (name: string, value: string, days = 30) => {
+      if (typeof document === "undefined") return;
       const exp = new Date(Date.now() + days * 86400000).toUTCString();
       document.cookie = `${name}=${value}; expires=${exp}; path=/; SameSite=Lax`;
     };
     const ids = (getCookie("recently_viewed") ?? "").split(",").filter(Boolean);
     const updated = [product.id, ...ids.filter((id) => id !== product.id)].slice(0, 8);
     setCookie("recently_viewed", updated.join(","), 30);
-  }, [product.id]);
+  }, [product?.id]);
 
-  const selectedVariant = product.variants.find((v) => v.id === selectedVariantId) || product.variants[0];
-  const pricePaise = product.basePricePaise + (selectedVariant?.priceDeltaPaise || 0);
+  const variants = product?.variants || [];
+  const selectedVariant = variants.find((v) => v.id === selectedVariantId) || variants[0];
+  const pricePaise = (product?.basePricePaise ?? 0) + (selectedVariant?.priceDeltaPaise || 0);
   const formattedPrice = `₹${(pricePaise / 100).toLocaleString("en-IN")}`;
   const stock = selectedVariant?.stock ?? 0;
   const isOutOfStock = stock === 0;
 
   const parseVariantSku = (sku: string) => {
+    if (!sku) return { size: "Default", color: "Default" };
     const parts = sku.split("-");
     return { size: parts[parts.length - 1] || sku, color: parts[parts.length - 2] || "Default" };
   };
 
   const handleAddToCart = async () => {
-    if (isOutOfStock) return;
+    if (isOutOfStock || !product?.id || !selectedVariant?.id) return;
     setIsAddingToCart(true);
     try {
       const res = await fetch("/api/v1/cart", {
@@ -80,14 +88,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
-      toast.success(`Added ${product.name} to your cart!`, "Added to Cart");
+      toast.success(`Added ${product.name || "item"} to your cart!`, "Added to Cart");
     } catch (err: unknown) {
       toast.error((err as Error).message || "Could not add item", "Error");
     } finally { setIsAddingToCart(false); }
   };
 
   const handleBuyNow = async () => {
-    if (isOutOfStock) return;
+    if (isOutOfStock || !product?.id || !selectedVariant?.id) return;
     setIsBuyingNow(true);
     try {
       const res = await fetch("/api/v1/cart", {
@@ -104,7 +112,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     }
   };
 
-  const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
+  const images = product?.images || [];
+  const primaryImage = images.find((img) => img.isPrimary) || images[0];
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
 
   return (
@@ -154,7 +163,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           >
             <Image
               src={imageUrl}
-              alt={primaryImage?.altText || product.name}
+              alt={primaryImage?.altText || product?.name || "Product Image"}
               fill
               priority
               sizes="(max-width: 767px) 100vw, 50vw"
@@ -197,7 +206,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               }}
             >
               Collection
-              {product.category?.name && (
+              {product?.category?.name && (
                 <> <span style={{ opacity: 0.5 }}>›</span> {product.category.name}</>
               )}
             </p>
@@ -214,7 +223,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 marginBottom: "16px",
               }}
             >
-              {product.name}
+              {product?.name}
             </h1>
 
             {/* Price — PDF p.4: wine-red, larger */}
@@ -244,12 +253,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 marginBottom: "8px",
               }}
             >
-              {product.name}
+              {product?.name}
             </h1>
             <p style={{ fontSize: "18px", fontWeight: 500, color: "var(--color-text-secondary)", marginBottom: "16px" }}>
               {formattedPrice}
             </p>
-            {product.description && (
+            {product?.description && (
               <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", lineHeight: 1.65, marginBottom: "20px" }}>
                 {product.description}
               </p>
@@ -281,7 +290,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </div>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {product.variants.map((variant) => {
+                {variants.map((variant) => {
                   const { size } = parseVariantSku(variant.sku);
                   const isSelected = variant.id === selectedVariantId;
                   const outOfStock = variant.stock === 0;
@@ -296,7 +305,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         padding: "0 16px",
                         borderRadius: "9999px",
                         border: `1px solid ${isSelected ? "var(--color-accent)" : "var(--color-border)"}`,
-                        background: isSelected ? "transparent" : "transparent",
+                        background: "transparent",
                         color: isSelected ? "var(--color-accent)" : "var(--color-text-primary)",
                         fontSize: "14px",
                         fontWeight: isSelected ? 600 : 400,
@@ -334,7 +343,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <div ref={ctaRef} style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "0 20px" }}>
               <Button
                 variant={isOutOfStock ? "secondary" : "primary"}
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || !selectedVariant}
                 loading={isBuyingNow}
                 onClick={handleBuyNow}
                 className="btn-premium"
@@ -344,7 +353,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </Button>
               <Button
                 variant="secondary"
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || !selectedVariant}
                 loading={isAddingToCart}
                 onClick={handleAddToCart}
                 className="btn-premium"
@@ -357,7 +366,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             {/* ── Description quote box — PDF p.4/5: scroll icon + italic quote ── */}
             <div style={{ margin: "0 20px", background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", padding: "20px" }}>
               <div style={{ marginBottom: "12px", color: "var(--color-text-secondary)", fontSize: "20px" }}>📜</div>
-              {product.description ? (
+              {product?.description ? (
                 <>
                   <p
                     style={{
@@ -442,7 +451,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Recently viewed */}
       <div style={{ maxWidth: "1200px", margin: "0 auto 56px", padding: "0 24px" }}>
-        <RecentlyViewed excludeProductId={product.id} />
+        <RecentlyViewed excludeProductId={product?.id || ""} />
       </div>
 
       {/* ── Sticky mobile buy bar — PDF p.21: "ADD TO BAG · ₹1,250" full-width pill ── */}
@@ -465,7 +474,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       >
         <Button
           variant={isOutOfStock ? "secondary" : "primary"}
-          disabled={isOutOfStock}
+          disabled={isOutOfStock || !selectedVariant}
           loading={isBuyingNow}
           onClick={handleBuyNow}
           className="btn-premium"
