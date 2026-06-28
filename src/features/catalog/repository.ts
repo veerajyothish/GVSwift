@@ -128,8 +128,12 @@ const listProductsCached = unstable_cache(
  * By default, soft-deleted/inactive products are excluded.
  */
 export async function listProducts(
-  params: ListProductsParams = {}
+  params: ListProductsParams = {},
+  bypassCache = false
 ): Promise<PaginatedProductsResult> {
+  if (bypassCache) {
+    return fetchProductsDirect(params);
+  }
   const sortedParams: Record<string, unknown> = {};
   Object.keys(params)
     .sort()
@@ -166,9 +170,10 @@ const getProductBySlugCached = unstable_cache(
  */
 export async function getProductBySlug(
   slug: string,
-  includeInactive = false
+  includeInactive = false,
+  bypassCache = false
 ): Promise<ProductWithVariantsAndImages | null> {
-  const product = includeInactive
+  const product = (includeInactive || bypassCache)
     ? ((await prisma.product.findUnique({
         where: { slug },
         include: {
@@ -259,7 +264,12 @@ const listCategoriesCached = unstable_cache(
 /**
  * Lists all categories (flat array).
  */
-export async function listCategories() {
+export async function listCategories(bypassCache = false) {
+  if (bypassCache) {
+    return prisma.category.findMany({
+      orderBy: { name: "asc" },
+    });
+  }
   return listCategoriesCached();
 }
 

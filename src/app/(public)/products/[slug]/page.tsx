@@ -6,6 +6,7 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 
@@ -78,7 +79,13 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const { slug } = await params;
 
   // Use cached query — 60s revalidation
-  const product = await getCachedProductBySlug(slug);
+  let product;
+  try {
+    product = await getCachedProductBySlug(slug);
+  } catch (err) {
+    console.error("Product page error:", err);
+    throw err;
+  }
 
   if (!product) notFound();
 
