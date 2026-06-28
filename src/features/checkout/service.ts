@@ -262,11 +262,12 @@ export async function createOrder(
   // ── B12: Points redemption validation ─────────────────────────────────
   let loyaltySettings = null;
   let pointsDiscountPaise = 0;
-  const redeemPoints = pointsToRedeem ?? 0;
+  const rawRedeemPoints = pointsToRedeem ?? 0;
+  const redeemPoints = Math.floor(rawRedeemPoints / 100) * 100;
+  const account = await getOrCreateLoyaltyAccount(userId);
 
   if (redeemPoints > 0) {
     loyaltySettings = await getLoyaltySettings();
-    const account = await getOrCreateLoyaltyAccount(userId);
     if (account.balance < redeemPoints) {
       throw new AppError(
         "VALIDATION_ERROR",
@@ -275,7 +276,7 @@ export async function createOrder(
       );
     }
     // Calculate discount: rupeesPer100Points per 100 points
-    pointsDiscountPaise = Math.floor((redeemPoints / 100) * loyaltySettings.rupeesPer100Points * 100);
+    pointsDiscountPaise = (redeemPoints / 100) * loyaltySettings.rupeesPer100Points * 100;
   }
 
   const totalPaise = Math.max(0, subtotalPaise - discountPaise - pointsDiscountPaise) + shippingPaise + codFeePaise;
@@ -413,7 +414,6 @@ export async function createOrder(
 
       // ── B12: Deduct redeemed points inside transaction ─────────────────
       if (redeemPoints > 0) {
-        const account = await getOrCreateLoyaltyAccount(userId);
         await tx.pointsLedger.create({
           data: {
             loyaltyAccountId: account.id,
