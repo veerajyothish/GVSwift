@@ -36,6 +36,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: SITE_TITLE, template: "%s | GVSwift" },
   description: SITE_DESCRIPTION,
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/monogram.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: { url: "/monogram.png", sizes: "180x180" },
+  },
   openGraph: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,

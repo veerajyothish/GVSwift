@@ -260,7 +260,7 @@ export async function createOrder(
   const codFeePaise = 0;
 
   // ── B12: Points redemption validation ─────────────────────────────────
-  let loyaltySettings = null;
+  let loyaltySettings: Awaited<ReturnType<typeof getLoyaltySettings>> | null = null;
   let pointsDiscountPaise = 0;
   const rawRedeemPoints = pointsToRedeem ?? 0;
   const redeemPoints = Math.floor(rawRedeemPoints / 100) * 100;
