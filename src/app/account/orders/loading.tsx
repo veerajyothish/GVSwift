@@ -1,34 +1,87 @@
-import React from 'react';
+/**
+ * /account/orders loading.tsx — Order list skeleton
+ * Matches: heading + subtitle, then order cards stacked.
+ * Each card: top meta row (order# + date + amount + status badge), product thumb + name + Track btn.
+ */
+import React from "react";
 
-export default function Loading() {
+function OrderCardSkeleton() {
   return (
-    <div className="flex flex-col gap-5 w-full">
-      <header className="mb-8">
-        <div className="h-8 bg-gray-100 rounded w-1/4 animate-pulse mb-3" />
-        <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse" />
+    <div
+      style={{
+        background: "var(--color-bg)",
+        border: "1px solid var(--color-border)",
+        borderRadius: "var(--radius-lg)",
+        padding: "24px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      }}
+    >
+      {/* Top meta row */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+          gap: "12px",
+          paddingBottom: "16px",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        <div style={{ display: "flex", gap: "28px", flexWrap: "wrap" }}>
+          {["100px", "120px", "90px"].map((w, i) => (
+            <div key={i} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <span className="sk sk-h12" style={{ width: "60px" }} />
+              <span className="sk sk-h16" style={{ width: w }} />
+            </div>
+          ))}
+        </div>
+        {/* Status pill */}
+        <span className="sk sk-pill sk-h28" style={{ width: "90px" }} />
+      </div>
+
+      {/* Product row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span
+            className="sk"
+            style={{ width: "64px", height: "64px", borderRadius: "var(--radius-md)", flexShrink: 0 }}
+          />
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <span className="sk sk-h16" style={{ width: "180px" }} />
+            <span className="sk sk-h12" style={{ width: "60px" }} />
+          </div>
+        </div>
+        <span className="sk sk-pill sk-h44" style={{ width: "140px" }} />
+      </div>
+    </div>
+  );
+}
+
+export default function OrdersLoading() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Header */}
+      <header
+        style={{ paddingBottom: "20px", borderBottom: "1px solid var(--color-border)" }}
+      >
+        <span className="sk sk-h36" style={{ width: "220px", marginBottom: "8px" }} />
+        <span className="sk sk-h16 sk-w40" />
       </header>
 
-      <div className="flex flex-col gap-6 w-full">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="border border-gray-100 rounded-xl p-6 flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center animate-pulse"
-          >
-            <div className="flex gap-4 items-center w-full sm:w-auto">
-              {/* small square thumbnail */}
-              <div className="bg-gray-100 rounded-lg w-20 h-24 flex-shrink-0" />
-              {/* 3 text bars */}
-              <div className="flex flex-col gap-2 w-full">
-                <div className="h-4 bg-gray-100 rounded w-36" />
-                <div className="h-3 bg-gray-100 rounded w-24" />
-                <div className="h-3 bg-gray-100 rounded w-48" />
-              </div>
-            </div>
-            {/* status pill */}
-            <div className="h-8 bg-gray-100 rounded-full w-24 flex-shrink-0" />
-          </div>
-        ))}
-      </div>
+      {/* Order cards */}
+      {Array.from({ length: 4 }).map((_, i) => (
+        <OrderCardSkeleton key={i} />
+      ))}
     </div>
   );
 }

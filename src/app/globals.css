@@ -1568,3 +1568,166 @@ h1, h2, h3 {
 .detail-image-container {
   contain: layout style;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SKELETON LOADING SYSTEM
+   Design tokens: bg #F5F0EB, shimmer #E8DDD9, radius 8px, 1.5s loop
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer-sweep {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0;  }
+}
+
+.sk {
+  background: linear-gradient(
+    90deg,
+    #F5F0EB 0px,
+    #E8DDD9 80px,
+    #F5F0EB 160px
+  );
+  background-size: 400px 100%;
+  animation: shimmer-sweep 1.5s ease-in-out infinite;
+  border-radius: 8px;
+  display: block;
+}
+
+/* Height shorthands */
+.sk-h4  { height: 4px; }
+.sk-h8  { height: 8px; }
+.sk-h12 { height: 12px; }
+.sk-h14 { height: 14px; }
+.sk-h16 { height: 16px; }
+.sk-h20 { height: 20px; }
+.sk-h24 { height: 24px; }
+.sk-h28 { height: 28px; }
+.sk-h32 { height: 32px; }
+.sk-h36 { height: 36px; }
+.sk-h44 { height: 44px; }
+.sk-h48 { height: 48px; }
+.sk-h64 { height: 64px; }
+.sk-h80 { height: 80px; }
+
+/* Width shorthands */
+.sk-w20  { width: 20%; }
+.sk-w30  { width: 30%; }
+.sk-w40  { width: 40%; }
+.sk-w50  { width: 50%; }
+.sk-w60  { width: 60%; }
+.sk-w70  { width: 70%; }
+.sk-w80  { width: 80%; }
+.sk-w100 { width: 100%; }
+
+/* Shape variants */
+.sk-circle  { border-radius: 9999px; }
+.sk-pill    { border-radius: 9999px; }
+.sk-card    { border-radius: var(--radius-lg); }
+.sk-img-3-4 { aspect-ratio: 3 / 4; width: 100%; }
+.sk-img-1-1 { aspect-ratio: 1 / 1; width: 100%; }
+
+/* Product card skeleton */
+.sk-product-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sk-product-card-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PAGE TRANSITION ANIMATIONS
+   View Transitions API + CSS fallback
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Native View Transitions API (Chrome 111+, Edge 111+) */
+@view-transition {
+  navigation: auto;
+}
+
+/* Outgoing page: fade out quickly */
+::view-transition-old(root) {
+  animation: vt-fade-out 120ms ease-out forwards;
+}
+
+/* Incoming page: fade + subtle slide up */
+::view-transition-new(root) {
+  animation: vt-fade-slide-in 180ms ease-out forwards;
+}
+
+@keyframes vt-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
+@keyframes vt-fade-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* CSS fallback animate-in for elements that self-animate on mount */
+.animate-in {
+  animation: animate-in-fade 200ms ease-out both;
+}
+.animate-in-slide {
+  animation: animate-in-slide 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.delay-50  { animation-delay: 50ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+
+@keyframes animate-in-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes animate-in-slide {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BUTTON + TOUCH PERFORMANCE
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Eliminates 300ms tap delay on all mobile browsers */
+button, a, [role="button"], input[type="submit"], input[type="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Instant active press feedback — no transition lag */
+.btn:active:not(:disabled) {
+  transform: scale(0.96) !important;
+  transition: transform 0.05s ease !important;
+}
+
+/* No hover effects on touch devices (saves unnecessary paint) */
+@media (hover: none) {
+  .hover-lift:hover { transform: none !important; box-shadow: none !important; }
+  .card-interactive:hover { transform: none !important; }
+}
+
+/* Footer deferred — prevent content-visibility flash */
+.site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 340px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sk { animation: none !important; background: #F5F0EB; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  .animate-in, .animate-in-slide { animation: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

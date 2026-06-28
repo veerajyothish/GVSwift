@@ -1,126 +1,186 @@
+/**
+ * /admin loading.tsx — Admin dashboard skeleton
+ * Matches PDF p.16: "Overview" heading, 4 KPI cards, chart + right-col, table section.
+ */
 import React from "react";
-import Image from "next/image";
 
-export default function Loading() {
+export default function AdminLoading() {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        width: "100%",
-        backgroundColor: "#fcf9f8",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Styles for custom pulse and progress animations */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.7; transform: scale(0.98); }
-        }
-        @keyframes progress-loading {
-          0% { transform: translateX(-100%); }
-          50% { transform: translateX(-20%); }
-          100% { transform: translateX(100%); }
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .animate-progress {
-          animation: progress-loading 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-      `}} />
-
-      {/* Subtle background radial gradient */}
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+      {/* Header */}
       <div
         style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "radial-gradient(circle at center, rgba(86, 25, 34, 0.03) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Central Content */}
-      <div
-        style={{
-          zIndex: 10,
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "48px",
-          maxWidth: "400px",
-          padding: "0 20px",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          paddingBottom: "24px",
+          borderBottom: "1px solid var(--color-border)",
+          flexWrap: "wrap",
+          gap: "16px",
         }}
       >
-        {/* Logo */}
-        <div className="animate-pulse-slow">
-          <Image
-            src="/logo.png"
-            alt="GVSwift"
-            width={200}
-            height={46}
-            style={{ height: "46px", width: "auto", objectFit: "contain" }}
-            priority
-          />
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <span className="sk sk-h44" style={{ width: "220px" }} />
+          <span className="sk sk-h16 sk-w50" />
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <span className="sk sk-pill sk-h36" style={{ width: "140px" }} />
+          <span className="sk sk-pill sk-h36" style={{ width: "100px" }} />
+        </div>
+      </div>
+
+      {/* 4 KPI cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gap: "20px",
+        }}
+      >
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              background: "var(--color-bg)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-lg)",
+              padding: "24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span className="sk sk-h12" style={{ width: "100px" }} />
+              <span className="sk" style={{ width: "32px", height: "32px", borderRadius: "8px" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <span className="sk sk-h32" style={{ width: "120px" }} />
+              <span className="sk sk-h12 sk-w50" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart + right col */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 320px",
+          gap: "24px",
+          alignItems: "start",
+        }}
+        className="admin-chart-grid"
+      >
+        {/* Chart card */}
+        <div
+          style={{
+            background: "var(--color-bg)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "var(--radius-lg)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              padding: "20px 24px",
+              borderBottom: "1px solid var(--color-border)",
+            }}
+          >
+            <span className="sk sk-h24" style={{ width: "180px" }} />
+          </div>
+          <div style={{ padding: "20px 24px" }}>
+            <span className="sk" style={{ width: "100%", height: "220px", borderRadius: "var(--radius-md)" }} />
+          </div>
         </div>
 
-        {/* Loading Indicator */}
+        {/* Right column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {/* Inventory health */}
+          <span className="sk" style={{ width: "100%", height: "100px", borderRadius: "var(--radius-lg)" }} />
+          {/* Quick actions */}
+          <div
+            style={{
+              background: "var(--color-bg)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-lg)",
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--color-border)" }}>
+              <span className="sk sk-h20" style={{ width: "120px" }} />
+            </div>
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  padding: "16px 20px",
+                  borderBottom: "1px solid var(--color-border)",
+                }}
+              >
+                <span className="sk sk-circle" style={{ width: "36px", height: "36px", flexShrink: 0 }} />
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <span className="sk sk-h16 sk-w60" />
+                  <span className="sk sk-h12 sk-w80" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent orders section */}
+      <div>
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "24px",
-            width: "100%",
+            justifyContent: "space-between",
+            marginBottom: "16px",
           }}
         >
-          {/* Progress Bar Container */}
-          <div
-            style={{
-              height: "2px",
-              width: "180px",
-              backgroundColor: "rgba(86, 25, 34, 0.1)",
-              borderRadius: "9999px",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {/* Animated Inner Bar */}
+          <span className="sk sk-h24" style={{ width: "200px" }} />
+          <span className="sk sk-h16" style={{ width: "80px" }} />
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {[1, 2, 3].map((i) => (
             <div
-              className="animate-progress"
+              key={i}
               style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                height: "100%",
-                width: "100%",
-                backgroundColor: "var(--color-primary, #561922)",
-                borderRadius: "9999px",
-                transformOrigin: "left",
+                background: "var(--color-bg)",
+                border: "1px solid var(--color-border)",
+                borderRadius: "var(--radius-lg)",
+                padding: "20px 24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
               }}
-            />
-          </div>
-
-          {/* Loading Subtext */}
-          <p
-            style={{
-              fontFamily: "var(--font-heading, 'EB Garamond', serif)",
-              fontSize: "18px",
-              color: "var(--color-text-secondary, #605e5b)",
-              fontStyle: "italic",
-              opacity: 0.8,
-              margin: 0,
-            }}
-          >
-            Crafting your experience...
-          </p>
+            >
+              <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <span className="sk" style={{ width: "22px", height: "22px" }} />
+                <span className="sk sk-h20 sk-w50" />
+              </div>
+              <span className="sk sk-h14 sk-w100" />
+              <span className="sk sk-h14 sk-w70" />
+              <span className="sk sk-h16 sk-w40" />
+            </div>
+          ))}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .admin-chart-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,13 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
-import { getProducts, getCategories } from "@/features/catalog/service";
+import { getCachedProducts, getCachedCategories } from "@/features/catalog/cached-queries";
 import { searchProducts } from "@/features/catalog/search";
 import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
-import BackButton from "@/components/ui/BackButton";
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -20,11 +19,92 @@ interface ProductsPageProps {
   }>;
 }
 
+/* ── Product grid as its own async component so Suspense can wrap it ── */
+async function ProductGrid({
+  products,
+  wishlistedIds,
+  categories,
+}: {
+  products: Awaited<ReturnType<typeof getCachedProducts>>["products"];
+  wishlistedIds: string[];
+  categories: Awaited<ReturnType<typeof getCachedCategories>>;
+}) {
+  if (products.length === 0) {
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "80px 20px",
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "var(--radius-lg)",
+          maxWidth: "480px",
+          margin: "0 auto",
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "var(--font-heading)",
+            fontSize: "24px",
+            fontStyle: "italic",
+            color: "var(--color-accent)",
+            marginBottom: "12px",
+          }}
+        >
+          No products found
+        </p>
+        <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
+          We couldn&apos;t find any products matching your selection.
+        </p>
+        <Link href="/products" className="btn btn-primary btn-premium" style={{ display: "inline-flex" }}>
+          View All Products
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="product-grid animate-in">
+      {products.map((product, idx) => {
+        const categoryName = categories.find((c) => c.id === product.categoryId)?.name || "";
+        return (
+          <ProductCard
+            key={product.id}
+            product={product}
+            categoryName={categoryName}
+            initialWishlisted={wishlistedIds.includes(product.id)}
+            priority={idx < 4}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Skeleton fallback for product grid ── */
+function ProductGridSkeleton() {
+  return (
+    <div className="product-grid">
+      {Array.from({ length: 12 }).map((_, i) => (
+        <div key={i} className="sk-product-card">
+          <div className="sk sk-img-3-4" style={{ borderRadius: 0 }} />
+          <div className="sk-product-card-body">
+            <span className="sk sk-h12 sk-w40" />
+            <span className="sk sk-h16 sk-w100" />
+            <span className="sk sk-h16 sk-w60" />
+            <span className="sk sk-h20 sk-w30" style={{ marginTop: "4px" }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const [session, params, categories] = await Promise.all([
     getServerSession(),
     searchParams,
-    getCategories(),
+    getCachedCategories(),
   ]);
 
   let currentCategoryId = params.categoryId ?? "";
@@ -35,9 +115,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       where: { slug: categorySlug },
       select: { id: true },
     });
-    if (matchedCategory) {
-      currentCategoryId = matchedCategory.id;
-    }
+    if (matchedCategory) currentCategoryId = matchedCategory.id;
   }
 
   const currentPage = Math.max(1, params.page ? parseInt(params.page, 10) : 1);
@@ -48,18 +126,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const wishlistPromise: Promise<string[]> = session
     ? createSupabaseServerClient()
         .then(async (supabase) => {
-          const { data: wishlistItems } = await supabase
+          const { data } = await supabase
             .from("wishlists")
             .select("product_id")
             .eq("user_id", session.id);
-          return (wishlistItems?.map((w) => w.product_id) ?? []) as string[];
+          return (data?.map((w) => w.product_id) ?? []) as string[];
         })
-        .catch((e) => {
-          console.error("Failed to fetch wishlisted IDs on server:", e);
-          return [] as string[];
-        })
+        .catch(() => [] as string[])
     : Promise.resolve([] as string[]);
 
+  // Use cached query for non-search, search bypasses cache (dynamic)
   const productsPromise = currentSearch
     ? searchProducts({
         query: currentSearch,
@@ -69,10 +145,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         sort: currentSort,
         maxPrice: currentMaxPrice ? parseInt(currentMaxPrice, 10) : undefined,
       })
-    : getProducts({
-        page: currentPage.toString(),
+    : getCachedProducts({
+        page: currentPage,
         categoryId: currentCategoryId || undefined,
-        limit: "12",
+        limit: 12,
         sort: currentSort,
         maxPrice: currentMaxPrice || undefined,
       });
@@ -90,19 +166,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     sort?: string | null;
     maxPrice?: string | null;
   }) => {
-    const urlParams = new URLSearchParams();
-    const catId =
-      updates.categoryId !== undefined ? updates.categoryId : currentCategoryId;
-    if (catId) urlParams.set("categoryId", catId);
+    const p = new URLSearchParams();
+    const catId = updates.categoryId !== undefined ? updates.categoryId : currentCategoryId;
+    if (catId) p.set("categoryId", catId);
     const pg = updates.page !== undefined ? updates.page : currentPage;
-    if (pg && pg > 1) urlParams.set("page", pg.toString());
-    if (currentSearch) urlParams.set("search", currentSearch);
+    if (pg && pg > 1) p.set("page", pg.toString());
+    if (currentSearch) p.set("search", currentSearch);
     const s = updates.sort !== undefined ? updates.sort : currentSort;
-    if (s && s !== "newest") urlParams.set("sort", s);
+    if (s && s !== "newest") p.set("sort", s);
     const mp = updates.maxPrice !== undefined ? updates.maxPrice : currentMaxPrice;
-    if (mp) urlParams.set("maxPrice", mp);
-    const queryString = urlParams.toString();
-    return `/products${queryString ? `?${queryString}` : ""}`;
+    if (mp) p.set("maxPrice", mp);
+    const qs = p.toString();
+    return `/products${qs ? `?${qs}` : ""}`;
   };
 
   const activeCategory = categories.find((c) => c.id === currentCategoryId);
@@ -112,22 +187,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     : "A curated selection of archival pieces and artisanal garments, embodying the unhurried craftsmanship and timeless elegance of our founding legacy.";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "var(--color-bg)",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div style={{ minHeight: "100vh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <Navbar />
 
       <main style={{ flex: 1 }}>
-        <div style={{ maxWidth: "1200px", margin: "24px auto 0", padding: "0 24px" }}>
-          <BackButton />
-        </div>
-        {/* ── Page Header ──────────────────────────────────────────────────── */}
-        {/* PDF p.6: centered, Garamond italic heading, muted subtitle, cream bg */}
+        {/* Header */}
         <header
           style={{
             borderBottom: "1px solid var(--color-border)",
@@ -135,6 +199,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             padding: "56px 24px 48px",
             textAlign: "center",
           }}
+          className="animate-in"
         >
           <h1
             style={{
@@ -149,107 +214,44 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           >
             {pageTitle}
           </h1>
-          <p
-            style={{
-              fontSize: "15px",
-              lineHeight: 1.65,
-              color: "var(--color-text-secondary)",
-              maxWidth: "560px",
-              margin: "0 auto",
-            }}
-          >
+          <p style={{ fontSize: "15px", lineHeight: 1.65, color: "var(--color-text-secondary)", maxWidth: "560px", margin: "0 auto" }}>
             {pageDesc}
           </p>
         </header>
 
-        <div
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            padding: "40px 24px 80px",
-          }}
-        >
-          {/* ── Category Filter Pills ──────────────────────────────────────── */}
-          {/* PDF p.6: "All Products | Apparel | Footwear | Heritage | Accessories"
-              pills left-aligned, Sort by: Featured right-aligned */}
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px 80px" }}>
+          {/* Category pills + sort */}
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "16px",
-              marginBottom: "40px",
-            }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}
+            className="animate-in delay-50"
           >
-            {/* Category pills */}
-            <nav
-              style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}
-              aria-label="Product categories"
-            >
-              <Link
-                href={buildUrl({ categoryId: null, page: 1 })}
-                className={!currentCategoryId ? "category-link-active" : "category-link"}
-              >
+            <nav style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              <Link href={buildUrl({ categoryId: null, page: 1 })} className={!currentCategoryId ? "category-link-active" : "category-link"}>
                 All Products
               </Link>
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={buildUrl({ categoryId: category.id, page: 1 })}
-                  className={
-                    currentCategoryId === category.id
-                      ? "category-link-active"
-                      : "category-link"
-                  }
-                >
-                  {category.name}
+              {categories.map((cat) => (
+                <Link key={cat.id} href={buildUrl({ categoryId: cat.id, page: 1 })} className={currentCategoryId === cat.id ? "category-link-active" : "category-link"}>
+                  {cat.name}
                 </Link>
               ))}
             </nav>
 
-            {/* Sort control — PDF: "Sort by: Featured ▾" right side */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-              <span
-                style={{
-                  fontSize: "13px",
-                  color: "var(--color-text-secondary)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Sort by:
-              </span>
+              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>Sort by:</span>
               <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                 {[
                   { label: "Featured", value: "newest" },
                   { label: "Price ↑", value: "price-asc" },
                   { label: "Price ↓", value: "price-desc" },
                 ].map((opt) => (
-                  <Link
-                    key={opt.value}
-                    href={buildUrl({ sort: opt.value, page: 1 })}
-                    style={{
-                      fontSize: "13px",
-                      padding: "6px 14px",
-                      borderRadius: "9999px",
-                      border: `1px solid ${
-                        currentSort === opt.value
-                          ? "var(--color-accent)"
-                          : "var(--color-border)"
-                      }`,
-                      background:
-                        currentSort === opt.value
-                          ? "rgba(107,30,46,0.06)"
-                          : "transparent",
-                      color:
-                        currentSort === opt.value
-                          ? "var(--color-accent)"
-                          : "var(--color-text-secondary)",
-                      fontWeight: currentSort === opt.value ? 600 : 400,
-                      textDecoration: "none",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <Link key={opt.value} href={buildUrl({ sort: opt.value, page: 1 })} style={{
+                    fontSize: "13px", padding: "6px 14px", borderRadius: "9999px",
+                    border: `1px solid ${currentSort === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
+                    background: currentSort === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
+                    color: currentSort === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
+                    fontWeight: currentSort === opt.value ? 600 : 400,
+                    textDecoration: "none", whiteSpace: "nowrap",
+                  }}>
                     {opt.label}
                   </Link>
                 ))}
@@ -257,238 +259,74 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </div>
           </div>
 
-          {/* Price range filter */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              flexWrap: "wrap",
-              marginBottom: "36px",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--color-text-secondary)",
-              }}
-            >
+          {/* Price filter */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "36px" }}>
+            <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--color-text-secondary)" }}>
               Price:
             </span>
             {[
               { label: "All", value: "" },
-              { label: "Under ₹5,000", value: "5000" },
-              { label: "Under ₹10,000", value: "10000" },
-              { label: "Under ₹20,000", value: "20000" },
+              { label: "Under ₹500", value: "500" },
+              { label: "Under ₹1,000", value: "1000" },
+              { label: "Under ₹2,000", value: "2000" },
             ].map((opt) => (
-              <Link
-                key={opt.value}
-                href={buildUrl({ maxPrice: opt.value || null, page: 1 })}
-                style={{
-                  fontSize: "12px",
-                  padding: "5px 14px",
-                  borderRadius: "9999px",
-                  border: `1px solid ${
-                    currentMaxPrice === opt.value
-                      ? "var(--color-accent)"
-                      : "var(--color-border)"
-                  }`,
-                  background:
-                    currentMaxPrice === opt.value
-                      ? "rgba(107,30,46,0.06)"
-                      : "transparent",
-                  color:
-                    currentMaxPrice === opt.value
-                      ? "var(--color-accent)"
-                      : "var(--color-text-secondary)",
-                  fontWeight: currentMaxPrice === opt.value ? 600 : 400,
-                  textDecoration: "none",
-                }}
-              >
+              <Link key={opt.value} href={buildUrl({ maxPrice: opt.value || null, page: 1 })} style={{
+                fontSize: "12px", padding: "5px 14px", borderRadius: "9999px",
+                border: `1px solid ${currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
+                background: currentMaxPrice === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
+                color: currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
+                fontWeight: currentMaxPrice === opt.value ? 600 : 400,
+                textDecoration: "none",
+              }}>
                 {opt.label}
               </Link>
             ))}
           </div>
 
-          {/* ── Search Indicator ──────────────────────────────────────────── */}
+          {/* Search indicator */}
           {currentSearch && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginBottom: "28px",
-                padding: "12px 16px",
-                background: "var(--color-surface)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "var(--radius-md)",
-                fontSize: "14px",
-              }}
-            >
-              <span style={{ color: "var(--color-text-secondary)" }}>
-                Results for:
-              </span>
-              <strong style={{ color: "var(--color-text-primary)" }}>
-                &ldquo;{currentSearch}&rdquo;
-              </strong>
-              <Link
-                href={buildUrl({ page: 1 })}
-                style={{
-                  marginLeft: "auto",
-                  fontSize: "12px",
-                  color: "var(--color-error)",
-                  textDecoration: "underline",
-                }}
-              >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "28px", padding: "12px 16px", background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", fontSize: "14px" }}>
+              <span style={{ color: "var(--color-text-secondary)" }}>Results for:</span>
+              <strong style={{ color: "var(--color-text-primary)" }}>&ldquo;{currentSearch}&rdquo;</strong>
+              <Link href={buildUrl({ page: 1 })} style={{ marginLeft: "auto", fontSize: "12px", color: "var(--color-error)", textDecoration: "underline" }}>
                 Clear
               </Link>
             </div>
           )}
 
-          {/* ── Products Grid ─────────────────────────────────────────────── */}
-          {products.length === 0 ? (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "80px 20px",
-                background: "var(--color-surface)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "var(--radius-lg)",
-                maxWidth: "480px",
-                margin: "0 auto",
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "24px",
-                  fontStyle: "italic",
-                  color: "var(--color-accent)",
-                  marginBottom: "12px",
-                }}
-              >
-                No products found
-              </p>
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "var(--color-text-secondary)",
-                  marginBottom: "32px",
-                  lineHeight: 1.6,
-                }}
-              >
-                We couldn&apos;t find any products matching your selection.
-              </p>
-              <Link
-                href="/products"
-                className="btn btn-primary btn-premium"
-                style={{ display: "inline-flex" }}
-              >
-                View All Products
-              </Link>
-            </div>
-          ) : (
-            <>
-              {/* PDF p.6/7: 4-col grid on desktop, cards show category label above name */}
-              <div className="product-grid">
-                {products.map((product, index) => {
-                  const categoryName =
-                    categories.find((c) => c.id === product.categoryId)?.name ||
-                    "Apparel";
-                  return (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      categoryName={categoryName}
-                      initialWishlisted={wishlistedIds.includes(product.id)}
-                      priority={index < 4}
-                    />
-                  );
-                })}
-              </div>
+          {/* Product grid wrapped in Suspense */}
+          <Suspense fallback={<ProductGridSkeleton />}>
+            <ProductGrid products={products} wishlistedIds={wishlistedIds} categories={categories} />
+          </Suspense>
 
-              {/* ── Pagination ────────────────────────────────────────────── */}
-              {/* PDF p.7: numbered pages centred, previous/next arrows */}
-              {totalPages > 1 && (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "6px",
-                    marginTop: "64px",
-                    paddingTop: "28px",
-                    borderTop: "1px solid var(--color-border)",
-                  }}
-                >
-                  {/* Prev arrow */}
-                  {currentPage > 1 ? (
-                    <Link
-                      href={buildUrl({ page: currentPage - 1 })}
-                      className="pagination-btn"
-                      aria-label="Previous page"
-                    >
-                      &lsaquo;
-                    </Link>
-                  ) : (
-                    <button className="pagination-btn" disabled aria-label="Previous page">
-                      &lsaquo;
-                    </button>
-                  )}
-
-                  {/* Page numbers */}
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                    const pg = i + 1;
-                    return (
-                      <Link
-                        key={pg}
-                        href={buildUrl({ page: pg })}
-                        className={`pagination-btn${currentPage === pg ? " active" : ""}`}
-                      >
-                        {pg}
-                      </Link>
-                    );
-                  })}
-                  {totalPages > 5 && (
-                    <>
-                      <span
-                        style={{
-                          padding: "8px 6px",
-                          color: "var(--color-text-secondary)",
-                          fontSize: "14px",
-                        }}
-                      >
-                        …
-                      </span>
-                      <Link
-                        href={buildUrl({ page: totalPages })}
-                        className={`pagination-btn${currentPage === totalPages ? " active" : ""}`}
-                      >
-                        {totalPages}
-                      </Link>
-                    </>
-                  )}
-
-                  {/* Next arrow */}
-                  {currentPage < totalPages ? (
-                    <Link
-                      href={buildUrl({ page: currentPage + 1 })}
-                      className="pagination-btn"
-                      aria-label="Next page"
-                    >
-                      &rsaquo;
-                    </Link>
-                  ) : (
-                    <button className="pagination-btn" disabled aria-label="Next page">
-                      &rsaquo;
-                    </button>
-                  )}
-                </div>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "6px", marginTop: "64px", paddingTop: "28px", borderTop: "1px solid var(--color-border)" }}>
+              {currentPage > 1 ? (
+                <Link href={buildUrl({ page: currentPage - 1 })} className="pagination-btn">&lsaquo;</Link>
+              ) : (
+                <button className="pagination-btn" disabled>&lsaquo;</button>
               )}
-            </>
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                const pg = i + 1;
+                return (
+                  <Link key={pg} href={buildUrl({ page: pg })} className={`pagination-btn${currentPage === pg ? " active" : ""}`}>
+                    {pg}
+                  </Link>
+                );
+              })}
+              {totalPages > 5 && (
+                <>
+                  <span style={{ padding: "8px 6px", color: "var(--color-text-secondary)", fontSize: "14px" }}>…</span>
+                  <Link href={buildUrl({ page: totalPages })} className={`pagination-btn${currentPage === totalPages ? " active" : ""}`}>{totalPages}</Link>
+                </>
+              )}
+              {currentPage < totalPages ? (
+                <Link href={buildUrl({ page: currentPage + 1 })} className="pagination-btn">&rsaquo;</Link>
+              ) : (
+                <button className="pagination-btn" disabled>&rsaquo;</button>
+              )}
+            </div>
           )}
         </div>
       </main>
