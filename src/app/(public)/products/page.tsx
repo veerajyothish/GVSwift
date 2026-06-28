@@ -8,6 +8,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
 
+export const revalidate = 300;
+
+
 interface ProductsPageProps {
   searchParams: Promise<{
     categoryId?: string;

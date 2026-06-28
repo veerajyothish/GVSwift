@@ -168,7 +168,6 @@ export default function ProductCard({
         <Link
           href={`/products/${product.slug}`}
           style={{ display: "block", width: "100%", height: "100%" }}
-          prefetch={false} // prefetch on hover via Next.js default, not on render
         >
           <Image
             src={imageUrl}
@@ -253,7 +252,6 @@ export default function ProductCard({
         <h3 style={{ margin: 0 }}>
           <Link
             href={`/products/${product.slug}`}
-            prefetch={false}
             style={{
               fontFamily: "var(--font-body)",
               fontSize: "14px",

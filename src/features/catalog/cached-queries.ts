@@ -19,50 +19,50 @@ import { unstable_cache } from "next/cache";
 import * as repo from "./repository";
 import type { ListProductsParams } from "./types";
 
-/* ── Product listing — 60 second cache ─────────────────────────────────────── */
+/* ── Product listing — 5 minute cache ──────────────────────────────────────── */
 export const getCachedProducts = unstable_cache(
   async (params: ListProductsParams) => {
     return repo.listProducts(params);
   },
   ["catalog-products"],
   {
-    revalidate: 60,
+    revalidate: 300,
     tags: ["products"],
   }
 );
 
-/* ── Product detail by slug — 60 second cache ──────────────────────────────── */
+/* ── Product detail by slug — 5 minute cache ───────────────────────────────── */
 export const getCachedProductBySlug = unstable_cache(
   async (slug: string) => {
     return repo.getProductBySlug(slug, false);
   },
   ["catalog-product-slug"],
   {
-    revalidate: 60,
+    revalidate: 300,
     tags: ["products"],
   }
 );
 
-/* ── Related products — 60 second cache ─────────────────────────────────────── */
+/* ── Related products — 5 minute cache ─────────────────────────────────────── */
 export const getCachedRelatedProducts = unstable_cache(
   async (categoryId: string, excludeProductId: string, limit = 4) => {
     return repo.getRelatedProducts(categoryId, excludeProductId, limit);
   },
   ["catalog-related"],
   {
-    revalidate: 60,
+    revalidate: 300,
     tags: ["products"],
   }
 );
 
-/* ── Categories — 5 minute cache (rarely change) ───────────────────────────── */
+/* ── Categories — 10 minute cache (rarely change) ──────────────────────────── */
 export const getCachedCategories = unstable_cache(
   async () => {
     return repo.listCategories();
   },
   ["catalog-categories"],
   {
-    revalidate: 300,
+    revalidate: 600,
     tags: ["categories"],
   }
 );
