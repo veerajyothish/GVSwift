@@ -25,6 +25,7 @@ export const CreateProductSchema = z.object({
     .min(2, "Slug must be at least 2 characters")
     .max(100)
     .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase alphanumeric characters and hyphens"),
+  brand: z.string().max(100, "Brand name cannot exceed 100 characters").nullable().optional(),
   description: z.string().max(2000, "Description cannot exceed 2000 characters").nullable().optional(),
   basePricePaise: z.number().int("Price must be an integer").nonnegative("Price cannot be negative"),
   isActive: z.boolean().optional(),
@@ -63,6 +64,7 @@ export const EditProductSchema = z.object({
     .max(100)
     .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase alphanumeric characters and hyphens")
     .optional(),
+  brand: z.string().max(100, "Brand name cannot exceed 100 characters").nullable().optional(),
   description: z.string().max(2000, "Description cannot exceed 2000 characters").nullable().optional(),
   basePricePaise: z.number().int("Price must be an integer").nonnegative("Price cannot be negative").optional(),
   isActive: z.boolean().optional(),

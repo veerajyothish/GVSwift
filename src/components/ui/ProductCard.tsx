@@ -25,6 +25,7 @@ interface Product {
   id: string;
   name: string;
   slug: string;
+  brand?: string | null;
   basePricePaise: number;
   avgRating?: number | null;
   reviewCount?: number;
@@ -172,19 +173,21 @@ export default function ProductCard({
         }}
       >
         {/* Brand name */}
-        <span
-          style={{
-            fontSize: "10px",
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--color-accent)",
-            display: "block",
-            marginBottom: "2px",
-          }}
-        >
-          GVSwift
-        </span>
+        {product.brand && (
+          <span
+            style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--color-accent)",
+              display: "block",
+              marginBottom: "2px",
+            }}
+          >
+            {product.brand}
+          </span>
+        )}
 
         {/* Product name */}
         <h3 style={{ margin: 0 }}>

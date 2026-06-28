@@ -67,6 +67,7 @@ export async function PUT(
         data: {
           name: body.name,
           slug: body.slug,
+          brand: body.brand,
           description: body.description,
           basePricePaise: body.basePricePaise,
           isActive: body.isActive,

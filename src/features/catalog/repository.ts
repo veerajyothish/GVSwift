@@ -283,6 +283,7 @@ export async function listCategories(bypassCache = false) {
 export async function createProduct(data: {
   name: string;
   slug: string;
+  brand?: string | null;
   description?: string | null;
   basePricePaise: number;
   isActive?: boolean;
@@ -294,6 +295,7 @@ export async function createProduct(data: {
     data: {
       name: data.name,
       slug: data.slug,
+      brand: data.brand,
       description: data.description,
       basePricePaise: data.basePricePaise,
       isActive: data.isActive ?? true,
@@ -328,6 +330,7 @@ export async function updateProduct(
   data: {
     name?: string;
     slug?: string;
+    brand?: string | null;
     description?: string | null;
     basePricePaise?: number;
     isActive?: boolean;

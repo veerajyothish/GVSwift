@@ -161,6 +161,7 @@ model Product {
   id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
   slug           String  @unique
+  brand          String?
   description    String?
   basePricePaise Int
   isActive       Boolean @default(true)

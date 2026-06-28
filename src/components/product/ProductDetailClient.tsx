@@ -337,6 +337,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               )}
             </p>
 
+            {product?.brand && (
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  marginBottom: "8px",
+                }}
+              >
+                {product.brand}
+              </span>
+            )}
+
             {/* Product title — PDF p.4: large Garamond serif, not italic */}
             <h1
               style={{
@@ -369,6 +385,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
           {/* PDF p.22 mobile: name + price below image */}
           <div className="pdp-mobile-only" style={{ padding: "20px 20px 0" }}>
+            {product?.brand && (
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  marginBottom: "4px",
+                }}
+              >
+                {product.brand}
+              </span>
+            )}
             <h1
               style={{
                 fontFamily: "var(--font-heading)",

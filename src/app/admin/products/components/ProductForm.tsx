@@ -22,6 +22,7 @@ interface ProductFormProps {
     id: string;
     name: string;
     slug: string;
+    brand: string | null;
     description: string | null;
     basePricePaise: number;
     isActive: boolean;
@@ -49,6 +50,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
   // Basic product details
   const [name, setName] = useState(initialData?.name ?? "");
   const [slug, setSlug] = useState(initialData?.slug ?? "");
+  const [brand, setBrand] = useState(initialData?.brand ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
   const [basePriceRupees, setBasePriceRupees] = useState(
     initialData ? (initialData.basePricePaise / 100).toString() : ""
@@ -255,6 +257,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
       const payload = {
         name: name.trim(),
         slug: slug.trim(),
+        brand: brand.trim() || null,
         description: description.trim() || null,
         basePricePaise,
         isActive,
@@ -346,6 +349,20 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
             value={slug}
             onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))}
             required
+            disabled={isSubmitting}
+          />
+        </div>
+
+        {/* Brand Name */}
+        <div className="input-group">
+          <label className="input-label" htmlFor="prod-brand">Product Brand Name</label>
+          <input
+            id="prod-brand"
+            type="text"
+            className="input-field"
+            placeholder="e.g. Nike, Gucci (Leave blank for no brand)"
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
             disabled={isSubmitting}
           />
         </div>
