@@ -69,10 +69,10 @@ export default function LoginClient() {
         <Image
           src="/logo.png"
           alt="GVSwift Logo"
-          width={175}
-          height={40}
+          width={228}
+          height={52}
           style={{
-            height: "40px",
+            height: "52px",
             width: "auto",
             objectFit: "contain",
           }}

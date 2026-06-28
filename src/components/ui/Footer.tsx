@@ -49,10 +49,10 @@ export function Footer() {
               <Image
                 src="/logo.png"
                 alt="GVSwift Logo"
-                width={122}
-                height={28}
+                width={180}
+                height={42}
                 style={{
-                  height: "28px",
+                  height: "42px",
                   width: "auto",
                   objectFit: "contain",
                 }}

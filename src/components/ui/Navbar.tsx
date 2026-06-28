@@ -72,10 +72,10 @@ export async function Navbar() {
             <Image
               src="/logo.png"
               alt="GVSwift Logo"
-              width={210}
-              height={48}
+              width={240}
+              height={56}
               style={{
-                height: "48px",
+                height: "56px",
                 width: "auto",
                 objectFit: "contain",
               }}

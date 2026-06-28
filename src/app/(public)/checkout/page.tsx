@@ -173,10 +173,10 @@ export default async function CheckoutPage() {
           <Image
             src="/logo.png"
             alt="GVSwift Logo"
-            width={140}
-            height={32}
+            width={192}
+            height={44}
             style={{
-              height: "32px",
+              height: "44px",
               width: "auto",
               objectFit: "contain",
             }}
@@ -259,10 +259,10 @@ export default async function CheckoutPage() {
         <Image
           src="/logo.png"
           alt="GVSwift Logo"
-          width={88}
-          height={20}
+          width={132}
+          height={30}
           style={{
-            height: "20px",
+            height: "30px",
             width: "auto",
             objectFit: "contain",
             opacity: 0.6,

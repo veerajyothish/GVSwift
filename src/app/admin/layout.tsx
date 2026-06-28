@@ -36,9 +36,9 @@ export default async function AdminLayout({
               <Image
                 src="/logo.png"
                 alt="GVSwift Logo"
-                width={110}
-                height={26}
-                style={{ height: "26px", width: "auto", objectFit: "contain" }}
+                width={150}
+                height={36}
+                style={{ height: "36px", width: "auto", objectFit: "contain" }}
               />
               <span className="site-navbar-name" style={{ fontSize: "13px", letterSpacing: "0.08em", color: "var(--color-text-secondary)" }}>Admin</span>
             </Link>

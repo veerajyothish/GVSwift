@@ -12,7 +12,6 @@ import { headers } from "next/headers";
 const Footer = dynamic(
   () => import("@/components/ui/Footer").then((m) => ({ default: m.Footer })),
   {
-    ssr: false,
     loading: () => (
       <div
         style={{

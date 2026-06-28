@@ -150,7 +150,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         categoryId: currentCategoryId || undefined,
         limit: 12,
         sort: currentSort,
-        maxPrice: currentMaxPrice || undefined,
+        maxPrice: currentMaxPrice ? parseInt(currentMaxPrice, 10) : undefined,
       });
 
   const [wishlistedIds, productsResult] = await Promise.all([
