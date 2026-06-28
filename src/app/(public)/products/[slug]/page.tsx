@@ -6,7 +6,6 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 

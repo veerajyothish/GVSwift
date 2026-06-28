@@ -476,28 +476,7 @@ export async function createOrder(
     console.warn("[Checkout] Cart clear failed after order creation:", err);
   }
 
-  // ── 10. Best-effort risk flag seeding ─────────────────────────────────
-  // Missing pincode/phone/user flags are created as LOW after successful
-  // checkout. Existing MEDIUM/HIGH/BLOCKED flags are intentionally preserved.
-  try {
-    const lowRiskEntities = [
-      { entityType: RiskEntityType.PINCODE, entityValue: address.pincode },
-      { entityType: RiskEntityType.PHONE, entityValue: address.phone },
-      { entityType: RiskEntityType.USER, entityValue: userId },
-    ];
 
-    for (const entity of lowRiskEntities) {
-      const existing = await getRiskFlagByEntity(entity.entityType, entity.entityValue);
-      if (!existing) {
-        await createRiskFlag({
-          ...entity,
-          riskLevel: RiskLevel.LOW,
-        });
-      }
-    }
-  } catch (err) {
-    console.error("[Checkout] Failed to seed LOW risk flags after order placement:", err);
-  }
 
   // ── 11. Fetch the final order with items for the response ──────────────
   const finalOrder = await prisma.order.findUniqueOrThrow({
@@ -515,47 +494,72 @@ export async function createOrder(
 
   sendOrderPlacedEmail(finalOrder);
 
-  // ── B12: Award purchase points (best-effort, post-transaction) ────────
-  try {
-    if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
-    // Points earned on the amount actually paid (post all discounts)
-    const amountPaidRupees = Math.floor(totalPaise / 100);
-    const pointsEarned = amountPaidRupees * loyaltySettings.pointsPerRupee;
-    if (pointsEarned > 0) {
-      await awardPoints(
-        userId,
-        pointsEarned,
-        `Purchase — Order #${orderId.slice(-8).toUpperCase()}`,
-        orderId
-      );
-    }
-  } catch (err) {
-    console.error("[Checkout] Failed to award purchase points:", err);
-  }
-
-  // ── B12: Award referral bonus to referrer on first order ──────────────
-  try {
-    const referralUse = await prisma.referralUse.findUnique({
-      where: { referredUserId: userId },
-      include: { referralCode: { select: { userId: true } } },
-    });
-    if (referralUse && referralUse.pointsAwarded === 0) {
-      const referrerId = referralUse.referralCode.userId;
+  // ── B12: Award purchase points (best-effort, post-transaction, non-blocking) ──
+  const awardPurchasePoints = async () => {
+    try {
       if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
-      await awardPoints(
-        referrerId,
-        loyaltySettings.referralBonus,
-        `Referral bonus — friend placed their first order`,
-        orderId
-      );
-      await prisma.referralUse.update({
-        where: { id: referralUse.id },
-        data: { pointsAwarded: loyaltySettings.referralBonus },
-      });
+      const amountPaidRupees = Math.floor(totalPaise / 100);
+      const pointsEarned = amountPaidRupees * loyaltySettings.pointsPerRupee;
+      if (pointsEarned > 0) {
+        await awardPoints(
+          userId,
+          pointsEarned,
+          `Purchase — Order #${orderId.slice(-8).toUpperCase()}`,
+          orderId
+        );
+      }
+    } catch (err) {
+      console.error("[Checkout] Failed to award purchase points:", err);
     }
-  } catch (err) {
-    console.error("[Checkout] Failed to award referral bonus:", err);
-  }
+  };
+
+  const awardReferralBonus = async () => {
+    try {
+      const referralUse = await prisma.referralUse.findUnique({
+        where: { referredUserId: userId },
+        include: { referralCode: { select: { userId: true } } },
+      });
+      if (referralUse && referralUse.pointsAwarded === 0) {
+        const referrerId = referralUse.referralCode.userId;
+        if (!loyaltySettings) loyaltySettings = await getLoyaltySettings();
+        await awardPoints(
+          referrerId,
+          loyaltySettings.referralBonus,
+          `Referral bonus — friend placed their first order`,
+          orderId
+        );
+        await prisma.referralUse.update({
+          where: { id: referralUse.id },
+          data: { pointsAwarded: loyaltySettings.referralBonus },
+        });
+      }
+    } catch (err) {
+      console.error("[Checkout] Failed to award referral bonus:", err);
+    }
+  };
+
+  // Fire all post-order background tasks without blocking the response
+  void Promise.all([awardPurchasePoints(), awardReferralBonus()]);
+
+  // ── 10. Best-effort risk flag seeding (non-blocking) ──────────────────
+  const seedRiskFlags = async () => {
+    try {
+      const lowRiskEntities = [
+        { entityType: RiskEntityType.PINCODE, entityValue: address.pincode },
+        { entityType: RiskEntityType.PHONE, entityValue: address.phone },
+        { entityType: RiskEntityType.USER, entityValue: userId },
+      ];
+      for (const entity of lowRiskEntities) {
+        const existing = await getRiskFlagByEntity(entity.entityType, entity.entityValue);
+        if (!existing) {
+          await createRiskFlag({ ...entity, riskLevel: RiskLevel.LOW });
+        }
+      }
+    } catch (err) {
+      console.error("[Checkout] Failed to seed LOW risk flags after order placement:", err);
+    }
+  };
+  void seedRiskFlags();
 
   return {
     order: finalOrder,

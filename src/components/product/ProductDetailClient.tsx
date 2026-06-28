@@ -86,6 +86,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
       });
+      if (res.status === 401) {
+        toast.error("Please sign in to add items to your cart.", "Sign in required");
+        setTimeout(() => router.push("/login"), 1200);
+        return;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
       toast.success(`Added ${product.name || "item"} to your cart!`, "Added to Cart");
@@ -103,6 +108,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId: product.id, variantId: selectedVariant.id, quantity: 1 }),
       });
+      if (res.status === 401) {
+        toast.error("Please sign in to continue to checkout.", "Sign in required");
+        setTimeout(() => router.push("/login"), 1200);
+        setIsBuyingNow(false);
+        return;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
       router.push("/checkout");
