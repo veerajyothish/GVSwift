@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { performClientLogout } from "@/lib/auth/logout";
 
 /**
  * Client Component logout button.
@@ -9,16 +9,11 @@ import { useRouter } from "next/navigation";
  * Separated from NavbarAuthLinks so the parent can remain a Server Component.
  */
 export function NavbarLogoutButton() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     setLoading(true);
-    try {
-      await fetch("/api/v1/auth/logout", { method: "POST" });
-    } finally {
-      window.location.href = "/login";
-    }
+    await performClientLogout();
   };
 
   return (

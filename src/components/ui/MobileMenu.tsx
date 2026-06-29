@@ -10,6 +10,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
+import { performClientLogout } from "@/lib/auth/logout";
 
 
 interface MobileMenuProps {
@@ -129,12 +130,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
 
   const handleLogout = async () => {
     close();
-    try {
-      await fetch("/api/v1/auth/logout", { method: "POST" });
-      window.location.href = "/login";
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
+    await performClientLogout();
   };
 
   /* Bottom nav tabs — PDF p.18 */
