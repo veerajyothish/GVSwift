@@ -10,6 +10,31 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
+
+const publicRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit:public",
+});
+
+const authRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit:auth",
+});
+
+const ordersRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 m"),
+  analytics: true,
+  prefix: "@upstash/ratelimit:orders",
+});
 
 // Routes where we MUST check auth
 const PROTECTED_PREFIXES = ["/admin", "/account", "/checkout"];
@@ -26,6 +51,39 @@ const PUBLIC_STATIC = [
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // ── Rate Limiting (Upstash Ratelimit) ─────────────────────────────────
+  if (pathname.startsWith("/api/")) {
+    const ip = (request as unknown as { ip?: string }).ip ?? request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+    let limitResult;
+
+    if (pathname.startsWith("/api/auth/") || pathname.startsWith("/api/v1/auth/")) {
+      limitResult = await authRatelimit.limit(ip);
+    } else if (
+      pathname.startsWith("/api/orders/") || 
+      pathname.startsWith("/api/v1/orders/") || 
+      pathname.startsWith("/api/v1/checkout")
+    ) {
+      limitResult = await ordersRatelimit.limit(ip);
+    } else {
+      limitResult = await publicRatelimit.limit(ip);
+    }
+
+    if (!limitResult.success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Too many requests" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "X-RateLimit-Limit": limitResult.limit.toString(),
+            "X-RateLimit-Remaining": limitResult.remaining.toString(),
+            "X-RateLimit-Reset": limitResult.reset.toString(),
+          },
+        }
+      );
+    }
+  }
 
   // ── Fast path: skip auth entirely for static/public routes ──────────
   const isStatic = PUBLIC_STATIC.some((p) => pathname.startsWith(p));

@@ -5,6 +5,7 @@ import { searchProducts } from "@/features/catalog/search";
 import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
 
@@ -129,10 +130,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const wishlistPromise: Promise<string[]> = session
     ? createSupabaseServerClient()
         .then(async (supabase) => {
-          const { data } = await supabase
-            .from("wishlists")
-            .select("product_id")
-            .eq("user_id", session.id);
+          const { data } = await withRetry(async () => {
+            const response = await supabase
+              .from("wishlists")
+              .select("product_id")
+              .eq("user_id", session.id);
+            return response;
+          });
           return (data?.map((w) => w.product_id) ?? []) as string[];
         })
         .catch(() => [] as string[])

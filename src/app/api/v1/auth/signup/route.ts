@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { signupUser } from "@/features/auth/service";
 import { toSafeError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +30,14 @@ export async function POST(request: NextRequest) {
     const referralCode = request.cookies.get("gvs_ref")?.value ?? undefined;
 
     await signupUser(body, referralCode);
+
+    logger.info(
+      {
+        email: body.email,
+        referred: !!referralCode,
+      },
+      "User signed up successfully"
+    );
 
     // Clear the referral cookie after use
     const response = NextResponse.json(

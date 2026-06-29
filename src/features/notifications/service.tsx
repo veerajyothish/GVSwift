@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { OrderPlacedEmail } from "@/emails/order-placed";
 import { OrderStatusChangeEmail } from "@/emails/order-status-change";
 import { SupportReplyEmail } from "@/emails/support-reply";
+import { withRetry } from "@/lib/retry";
 
 let resend: Resend | null = null;
 
@@ -62,13 +63,14 @@ function sendEmail(params: {
   idempotencyKey: string;
 }) {
   const resendClient = getResend();
-  if (!params.to || !resendClient) return;
+  const toEmail = params.to;
+  if (!toEmail || !resendClient) return;
 
-  resendClient.emails
-    .send(
+  withRetry(() =>
+    resendClient.emails.send(
       {
         from: senderAddress(),
-        to: params.to,
+        to: toEmail,
         subject: params.subject,
         react: params.react,
       },
@@ -78,8 +80,9 @@ function sendEmail(params: {
         },
       }
     )
+  )
     .catch((err: unknown) => {
-      console.error("[NotificationService] Email send failed:", err);
+      console.error("[NotificationService] Email send failed after retries:", err);
     });
 }
 

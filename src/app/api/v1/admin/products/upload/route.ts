@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { toSafeError } from "@/lib/errors";
+import { withRetry } from "@/lib/retry";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,33 +21,40 @@ export async function POST(request: NextRequest) {
     const { errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
 
-    // 2. Read Multipart Form Data
+    // 2. Validate Content-Type
+    const contentType = request.headers.get("content-type") ?? "";
+    if (!contentType.includes("multipart/form-data")) {
+      return NextResponse.json(
+        { error: "Content-Type must be multipart/form-data", code: "VALIDATION_ERROR" },
+        { status: 400 }
+      );
+    }
+
+    // 3. Extract & Validate Form Data File
     const formData = await request.formData().catch(() => null);
     if (!formData) {
       return NextResponse.json(
-        { error: "Invalid multipart form data", code: "VALIDATION_ERROR" },
+        { error: "Invalid form data.", code: "VALIDATION_ERROR" },
         { status: 400 }
       );
     }
 
-    const file = formData.get("file") as File | null;
-    if (!file) {
+    const file = formData.get("file");
+    if (!file || !(file instanceof File)) {
       return NextResponse.json(
-        { error: "No file provided in field 'file'", code: "VALIDATION_ERROR" },
+        { error: "Image file is required under field 'file'.", code: "VALIDATION_ERROR" },
         { status: 400 }
       );
     }
 
-    // 3. Size Validation (Max 5MB)
-    const MAX_SIZE = 5 * 1024 * 1024;
-    if (file.size > MAX_SIZE) {
+    // 4. File Size Constraint (5MB)
+    if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "File size exceeds the 5MB limit", code: "VALIDATION_ERROR" },
+        { error: "Image exceeds 5MB size limit.", code: "VALIDATION_ERROR" },
         { status: 400 }
       );
     }
 
-    // 4. File Signature/Magic Numbers Validation
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -63,12 +71,14 @@ export async function POST(request: NextRequest) {
     const fileName = `${crypto.randomUUID()}.${imageType.ext}`;
     const filePath = `products/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("product-images")
-      .upload(filePath, buffer, {
-        contentType: imageType.mime,
-        duplex: "half",
-      });
+    const { error: uploadError } = await withRetry(() =>
+      supabase.storage
+        .from("product-images")
+        .upload(filePath, buffer, {
+          contentType: imageType.mime,
+          duplex: "half",
+        })
+    );
 
     if (uploadError) {
       console.error("[StorageUpload] Supabase upload failed:", uploadError);

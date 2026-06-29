@@ -77,6 +77,9 @@ export function RecentlyViewed({ excludeProductId }: { excludeProductId?: string
                     src={imageUrl}
                     alt={primaryImage?.altText || product.name}
                     fill
+                    loading="lazy"
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAr5I4eAAAAA1BMVEX9+vU+1CIhAAAACklEQVR4nGNgAAAAAgABc3UBGAAAAABJRU5ErkJggg=="
                     sizes="(max-width: 768px) 50vw, 20vw"
                     style={{ objectFit: "cover" }}
                   />

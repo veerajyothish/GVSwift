@@ -4,12 +4,15 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
-    // Removed 1920 — unnecessary for a fashion store, cuts bandwidth significantly
     deviceSizes: [375, 640, 750, 828, 1080, 1200],
-    // Tight sizes for thumbnails — product cards are never bigger than 384px
     imageSizes: [64, 96, 128, 256, 384],
-    minimumCacheTTL: 2592000, // 30 days
+    minimumCacheTTL: 3600,
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
       {
         protocol: "https",
         hostname: "yrqvqbjtcxycveisyvlg.supabase.co",
@@ -21,14 +24,11 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // Tree-shake large packages — safe on all Next.js 15 stable versions
     optimizePackageImports: [
       "lucide-react",
       "@react-email/components",
       "recharts",
     ],
-    // NOTE: ppr ("incremental") removed — requires Next.js canary, not stable 15.x
-    // Re-enable once Next.js stable ships PPR
   },
   compress: true,
   poweredByHeader: false,
@@ -48,6 +48,16 @@ const nextConfig: NextConfig = {
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+      // Cache-Control headers for catalog and product pages
+      {
+        source: "/products/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=60, stale-while-revalidate=300",
           },
         ],
       },

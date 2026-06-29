@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
             }
           }
         } catch (refErr) {
-          logger.warn("Failed to record referral during OAuth callback", { refParam, error: refErr });
+          logger.warn({ refParam, error: refErr }, "Failed to record referral during OAuth callback");
         }
       }
 

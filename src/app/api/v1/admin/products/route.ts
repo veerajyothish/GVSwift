@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
-import { listProducts } from "@/features/catalog/repository";
+import { listProducts, invalidateProductCache } from "@/features/catalog/repository";
 import { adminCreateProduct } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
 
@@ -71,6 +71,9 @@ export async function POST(request: NextRequest) {
     }
 
     const product = await adminCreateProduct(body);
+    if (product) {
+      await invalidateProductCache(product.slug);
+    }
 
     return NextResponse.json(product, { status: 201 });
   } catch (err) {

@@ -11,6 +11,7 @@ import { adminDeleteProduct } from "@/features/catalog/service";
 import { prisma } from "@/lib/prisma";
 import { toSafeError } from "@/lib/errors";
 import { EditProductSchema } from "@/features/catalog/validation";
+import { invalidateProductCache } from "@/features/catalog/repository";
 
 export async function PUT(
   request: NextRequest,
@@ -58,6 +59,11 @@ export async function PUT(
         }
       }
     }
+
+    const oldProduct = await prisma.product.findUnique({
+      where: { id },
+      select: { slug: true },
+    });
 
     // Transaction to update product details, sync variants and images
     const updatedProduct = await prisma.$transaction(async (tx) => {
@@ -153,6 +159,13 @@ export async function PUT(
       });
     });
 
+    if (oldProduct) {
+      await invalidateProductCache(oldProduct.slug);
+    }
+    if (updatedProduct && updatedProduct.slug !== oldProduct?.slug) {
+      await invalidateProductCache(updatedProduct.slug);
+    }
+
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);
@@ -170,6 +183,9 @@ export async function DELETE(
     if (errorResponse) return errorResponse;
 
     const product = await adminDeleteProduct(id);
+    if (product) {
+      await invalidateProductCache(product.slug);
+    }
 
     return NextResponse.json(
       { message: "Product deactivated successfully", product },

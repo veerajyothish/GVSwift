@@ -24,7 +24,21 @@ Sentry.init({
   tracesSampleRate: 0.1,
   environment: process.env.NODE_ENV,
   debug: false,
-  beforeSend(event) {
+  integrations: [Sentry.thirdPartyErrorFilterIntegration({
+    filterKeys: ['gvswift'],
+    behaviour: 'drop-error-if-contains-third-party-frames',
+  })],
+  ignoreErrors: [
+    'ResizeObserver loop limit exceeded',
+    'ResizeObserver loop completed with undelivered notifications',
+    /^chrome-extension:\/\//,
+    /^moz-extension:\/\//,
+    'Java object is gone',
+  ],
+  beforeSend(event, hint) {
+    const err = hint?.originalException as Error | undefined;
+    if (err?.name === 'AbortError') return null; // intentional cancellations only
+
     const user = event.user as { email?: unknown; name?: unknown } | undefined;
     if (user?.email || user?.name) return null;
     scrubPii(event);

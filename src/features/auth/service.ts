@@ -39,7 +39,7 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
 
   if (error) {
     // TEMP: expose real error for debugging
-    logger.warn("Signup failed", { code: error.code, message: error.message });
+    logger.warn({ code: error.code, message: error.message }, "Signup failed");
     if (error.code === "user_already_exists") {
       throw new AppError("CONFLICT", "An account with this email already exists.", 409);
     }
@@ -73,7 +73,7 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
         user_metadata: { role: prismaUser.role },
       });
     } catch (syncErr) {
-      logger.warn("Failed to sync role to Supabase metadata during signup", { userId: data.user.id, error: syncErr });
+      logger.warn({ userId: data.user.id, error: syncErr }, "Failed to sync role to Supabase metadata during signup");
     }
   }
 
@@ -84,7 +84,7 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
   });
 
   if (loginError) {
-    logger.warn("Auto-login after signup failed", { code: loginError.code, message: loginError.message });
+    logger.warn({ code: loginError.code, message: loginError.message }, "Auto-login after signup failed");
   }
 
   // B12: Link referral if a valid code was provided
@@ -109,7 +109,7 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
         }
       }
     } catch (refErr) {
-      logger.warn("Failed to record referral during signup", { referralCode, error: refErr });
+      logger.warn({ referralCode, error: refErr }, "Failed to record referral during signup");
     }
   }
 
@@ -135,7 +135,7 @@ export async function loginUser(input: LoginInput) {
 
   if (error || !data.user) {
     // TEMP: expose real error for debugging
-    logger.warn("Login failed", { code: error?.code, message: error?.message });
+    logger.warn({ code: error?.code, message: error?.message }, "Login failed");
     throw new AppError(
       "UNAUTHORIZED",
       `Login failed: ${error?.message ?? "unknown"} (code: ${error?.code ?? "none"})`,
@@ -165,7 +165,7 @@ export async function loginUser(input: LoginInput) {
         user_metadata: { role: prismaUser.role },
       });
     } catch (syncErr) {
-      logger.warn("Failed to sync role to Supabase metadata during login", { userId: data.user.id, error: syncErr });
+      logger.warn({ userId: data.user.id, error: syncErr }, "Failed to sync role to Supabase metadata during login");
     }
   }
 

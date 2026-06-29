@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
+import { invalidateCollectionCache } from "@/features/catalog/repository";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -45,6 +46,8 @@ export async function PUT(req: Request, { params }: RouteParams) {
     },
   });
 
+  await invalidateCollectionCache();
+
   return NextResponse.json(updated);
 }
 
@@ -74,6 +77,8 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
   }
 
   await prisma.category.delete({ where: { id } });
+
+  await invalidateCollectionCache();
 
   return NextResponse.json({ deleted: true });
 }

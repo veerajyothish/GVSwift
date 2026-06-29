@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loginUser } from "@/features/auth/service";
 import { toSafeError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,14 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await loginUser(body);
+
+    logger.info(
+      {
+        userId: user.id,
+        email: user.email,
+      },
+      "User logged in successfully"
+    );
 
     return NextResponse.json(
       {

@@ -38,7 +38,9 @@ import {
   getRiskFlagByEntity,
 } from "@/features/risk/service";
 import { getCodLimitPaise } from "@/features/settings/service";
-import { sendOrderPlacedEmail } from "@/features/notifications/service";
+import { inngest } from "@/lib/inngest/client";
+import { withRetry } from "@/lib/retry";
+import { logger } from "@/lib/logger";
 import { RiskEntityType, RiskLevel, PaymentMethod } from "@prisma/client";
 import {
   getOrCreateLoyaltyAccount,
@@ -491,7 +493,28 @@ export async function createOrder(
     },
   });
 
-  sendOrderPlacedEmail(finalOrder);
+  // Trigger background job to send order confirmation email
+  await withRetry(() =>
+    inngest.send({
+      name: "order/placed",
+      data: {
+        orderId: finalOrder.id,
+        userId: finalOrder.userId,
+        email: finalOrder.user.email,
+      },
+    })
+  );
+
+  // Structured Logging for order placement success
+  logger.info(
+    {
+      orderId: finalOrder.id,
+      userId: finalOrder.userId,
+      total: finalOrder.totalPaise,
+      status: "PLACED",
+    },
+    "Order placed successfully"
+  );
 
 
 

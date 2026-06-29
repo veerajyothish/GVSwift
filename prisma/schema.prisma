@@ -176,6 +176,8 @@ model Product {
   wishlistItems WishlistItem[]
   reviews       ProductReview[]
 
+  search_vector Unsupported("tsvector")?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

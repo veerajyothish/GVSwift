@@ -2,9 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
-import { getProducts } from "@/features/catalog/service";
+import { getFeaturedProducts } from "@/features/catalog/repository";
 import { getServerSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 
 export const metadata = {
@@ -16,7 +17,7 @@ export const metadata = {
 export default async function HomePage() {
   const [session, productsResult] = await Promise.all([
     getServerSession(),
-    getProducts({ limit: "8" }),
+    getFeaturedProducts(),
   ]);
   const { products } = productsResult;
 
@@ -24,10 +25,13 @@ export default async function HomePage() {
   if (session) {
     try {
       const supabase = await createSupabaseServerClient();
-      const { data: wishlistItems } = await supabase
-        .from("wishlists")
-        .select("product_id")
-        .eq("user_id", session.id);
+      const { data: wishlistItems } = await withRetry(async () => {
+        const response = await supabase
+          .from("wishlists")
+          .select("product_id")
+          .eq("user_id", session.id);
+        return response;
+      });
       wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
     } catch (e) {
       console.error("Failed to fetch wishlisted IDs on server:", e);

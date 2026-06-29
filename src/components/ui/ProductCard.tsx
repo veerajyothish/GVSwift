@@ -114,7 +114,9 @@ export default function ProductCard({
             alt={primaryImage?.altText || product.name}
             fill
             priority={priority}
-            loading={priority ? "eager" : "lazy"}
+            loading="lazy"
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAr5I4eAAAAA1BMVEX9+vU+1CIhAAAACklEQVR4nGNgAAAAAgABc3UBGAAAAABJRU5ErkJggg=="
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             style={{
               objectFit: "cover",

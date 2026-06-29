@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
+import { invalidateCollectionCache } from "@/features/catalog/repository";
 
 function slugify(text: string): string {
   return text
@@ -52,6 +53,8 @@ export async function POST(req: Request) {
   const category = await prisma.category.create({
     data: { name, slug },
   });
+
+  await invalidateCollectionCache();
 
   return NextResponse.json(category, { status: 201 });
 }

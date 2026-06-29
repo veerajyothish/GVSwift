@@ -282,6 +282,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               alt={primaryImage?.altText || product?.name || "Product Image"}
               fill
               priority
+              loading="lazy"
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAr5I4eAAAAA1BMVEX9+vU+1CIhAAAACklEQVR4nGNgAAAAAgABc3UBGAAAAABJRU5ErkJggg=="
               sizes="(max-width: 767px) 100vw, 50vw"
               style={{ objectFit: "cover" }}
             />
