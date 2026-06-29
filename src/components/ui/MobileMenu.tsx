@@ -131,8 +131,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
     close();
     try {
       await fetch("/api/v1/auth/logout", { method: "POST" });
-      router.push("/");
-      router.refresh();
+      window.location.href = "/login";
     } catch (err) {
       console.error("Logout failed:", err);
     }

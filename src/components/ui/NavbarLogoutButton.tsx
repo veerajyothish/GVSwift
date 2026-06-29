@@ -17,8 +17,7 @@ export function NavbarLogoutButton() {
     try {
       await fetch("/api/v1/auth/logout", { method: "POST" });
     } finally {
-      router.push("/");
-      router.refresh();
+      window.location.href = "/login";
     }
   };
 
