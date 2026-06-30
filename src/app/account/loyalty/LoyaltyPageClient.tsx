@@ -127,6 +127,49 @@ export default function LoyaltyPageClient({
           </button>
         </div>
 
+        <a
+          href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+            `Shop premium fashion on GVSwift! Sign up using my referral link to get extra discount points: ${referralLink}`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            backgroundColor: "#25D366",
+            color: "#fff",
+            textDecoration: "none",
+            borderRadius: "var(--radius-sm)",
+            padding: "12px 16px",
+            fontSize: "13px",
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "opacity 0.2s",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            width: "100%",
+            marginTop: "8px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.9";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+          }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="currentColor"
+            style={{ display: "inline-block", verticalAlign: "middle" }}
+          >
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.517 2.266 2.27 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.464L0 24zm6.069-4.838c1.699.988 3.415 1.508 5.883 1.51 5.34 0 9.69-4.344 9.693-9.676.002-2.585-1.002-5.016-2.827-6.84C17.04 2.33 14.619 1.323 12.01 1.322c-5.347 0-9.697 4.345-9.7 9.68-.001 2.502.656 4.417 1.706 6.012l-.993 3.627 3.733-.979zm11.233-5.267c-.312-.156-1.848-.91-2.127-1.012-.278-.102-.482-.152-.684.152-.202.304-.78.983-.956 1.185-.175.203-.35.228-.662.073-.312-.156-1.316-.485-2.507-1.547-.927-.827-1.552-1.849-1.734-2.16-.182-.313-.02-.482.136-.637.14-.139.312-.363.468-.545.156-.182.208-.313.312-.52.104-.208.052-.389-.026-.545-.078-.156-.684-1.649-.938-2.259-.247-.595-.499-.514-.684-.523-.176-.009-.379-.01-.582-.01-.203 0-.532.076-.81.38-.278.304-1.063 1.039-1.063 2.533 0 1.493 1.088 2.934 1.24 3.137.152.203 2.142 3.272 5.19 4.587.725.313 1.291.5 1.734.64.729.232 1.392.2 1.916.122.584-.087 1.848-.757 2.11-.1.261.261.656.304.757.203.101.312.052.417-.026.573-.078.156-.684.91-1.011 1.216z" />
+          </svg>
+          Share on WhatsApp
+        </a>
+
         <div
           style={{
             fontSize: "12px",
@@ -134,6 +177,7 @@ export default function LoyaltyPageClient({
             display: "flex",
             alignItems: "center",
             gap: "4px",
+            marginTop: "4px",
           }}
         >
           <span>🔑</span>
