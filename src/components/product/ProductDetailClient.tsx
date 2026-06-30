@@ -88,6 +88,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [sizeGuideTab, setSizeGuideTab] = useState<"chart" | "advisor">("chart");
+  const [userHeight, setUserHeight] = useState(170); // in cm
+  const [userWeight, setUserWeight] = useState(65); // in kg
   const ctaRef = React.useRef<HTMLDivElement>(null);
 
   /* Sticky bottom bar observer */
@@ -130,6 +134,39 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     if (!sku) return { size: "Default", color: "Default" };
     const parts = sku.split("-");
     return { size: parts[parts.length - 1] || sku, color: parts[parts.length - 2] || "Default" };
+  };
+ 
+  const getRecommendedSize = (height: number, weight: number): string => {
+    if (weight < 52) return "S";
+    if (weight >= 52 && weight < 66) return height < 172 ? "S" : "M";
+    if (weight >= 66 && weight < 78) return height < 176 ? "M" : "L";
+    if (weight >= 78 && weight < 90) return height < 180 ? "L" : "XL";
+    return "XXL";
+  };
+  const recommendedSize = getRecommendedSize(userHeight, userWeight);
+ 
+  const handleSelectRecommendedSize = () => {
+    const matchingVariant = product.variants.find((v) => {
+      const { size } = parseVariantSku(v.sku);
+      return size.toUpperCase() === recommendedSize.toUpperCase() && v.stock > 0;
+    });
+ 
+    if (matchingVariant) {
+      setSelectedVariantId(matchingVariant.id);
+      toast.success("Recommended size selected!");
+    } else {
+      const matchingVariantAnyStock = product.variants.find((v) => {
+        const { size } = parseVariantSku(v.sku);
+        return size.toUpperCase() === recommendedSize.toUpperCase();
+      });
+      if (matchingVariantAnyStock) {
+        setSelectedVariantId(matchingVariantAnyStock.id);
+        toast.info("Recommended size selected (Out of stock)");
+      } else {
+        toast.error(`Size ${recommendedSize} is not available for this product`);
+      }
+    }
+    setIsSizeGuideOpen(false);
   };
 
   const handleAddToCart = async () => {
@@ -442,9 +479,21 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 >
                   Size
                 </span>
-                <Link href="/size-guide" style={{ fontSize: "13px", color: "var(--color-accent)", textDecoration: "none" }}>
+                <button
+                  type="button"
+                  onClick={() => setIsSizeGuideOpen(true)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    fontSize: "13px",
+                    color: "var(--color-accent)",
+                    textDecoration: "underline",
+                  }}
+                >
                   Fit Guide
-                </Link>
+                </button>
               </div>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -906,6 +955,227 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             : `Buy Now · ${formattedPrice}`}
         </Button>
       </div>
+ 
+      {/* ── Size Guide Modal ── */}
+      {isSizeGuideOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            backdropFilter: "blur(6px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "20px",
+          }}
+          onClick={() => setIsSizeGuideOpen(false)}
+        >
+          <div
+            style={{
+              background: "var(--color-bg)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-lg)",
+              maxWidth: "450px",
+              width: "100%",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "16px 20px",
+                borderBottom: "1px solid var(--color-border)",
+              }}
+            >
+              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "20px", fontWeight: 500, margin: 0 }}>
+                Fit Guide
+              </h2>
+              <button
+                onClick={() => setIsSizeGuideOpen(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  color: "var(--color-text-secondary)",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+ 
+            {/* Modal Tabs */}
+            <div style={{ display: "flex", borderBottom: "1px solid var(--color-border)" }}>
+              <button
+                type="button"
+                onClick={() => setSizeGuideTab("chart")}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  background: "none",
+                  border: "none",
+                  borderBottom: sizeGuideTab === "chart" ? "2px solid var(--color-accent)" : "none",
+                  fontWeight: sizeGuideTab === "chart" ? 600 : 400,
+                  color: sizeGuideTab === "chart" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Size Chart
+              </button>
+              <button
+                type="button"
+                onClick={() => setSizeGuideTab("advisor")}
+                style={{
+                  flex: 1,
+                  padding: "12px",
+                  background: "none",
+                  border: "none",
+                  borderBottom: sizeGuideTab === "advisor" ? "2px solid var(--color-accent)" : "none",
+                  fontWeight: sizeGuideTab === "advisor" ? 600 : 400,
+                  color: sizeGuideTab === "advisor" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Find Your Size
+              </button>
+            </div>
+ 
+            {/* Modal Content */}
+            <div style={{ padding: "20px", maxHeight: "400px", overflowY: "auto" }}>
+              {sizeGuideTab === "chart" ? (
+                <div>
+                  <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)", color: "var(--color-text-secondary)" }}>
+                        <th style={{ padding: "8px 4px", fontWeight: 600 }}>Size</th>
+                        <th style={{ padding: "8px 4px", fontWeight: 600 }}>Chest (in)</th>
+                        <th style={{ padding: "8px 4px", fontWeight: 600 }}>Length (in)</th>
+                        <th style={{ padding: "8px 4px", fontWeight: 600 }}>Shoulder (in)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                        <td style={{ padding: "8px 4px", fontWeight: 500 }}>S</td>
+                        <td style={{ padding: "8px 4px" }}>38&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>27&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>17.5&quot;</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                        <td style={{ padding: "8px 4px", fontWeight: 500 }}>M</td>
+                        <td style={{ padding: "8px 4px" }}>40&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>28&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>18.0&quot;</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                        <td style={{ padding: "8px 4px", fontWeight: 500 }}>L</td>
+                        <td style={{ padding: "8px 4px" }}>42&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>29&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>19.0&quot;</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                        <td style={{ padding: "8px 4px", fontWeight: 500 }}>XL</td>
+                        <td style={{ padding: "8px 4px" }}>44&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>30&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>20.0&quot;</td>
+                      </tr>
+                      <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
+                        <td style={{ padding: "8px 4px", fontWeight: 500 }}>XXL</td>
+                        <td style={{ padding: "8px 4px" }}>46&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>31&quot;</td>
+                        <td style={{ padding: "8px 4px" }}>21.0&quot;</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p style={{ fontSize: "11px", color: "var(--color-text-secondary)", marginTop: "16px", lineHeight: 1.5 }}>
+                    * Measurements are design specifications and may vary slightly (±0.5 inches) depending on fabric fabrications.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  {/* Height Slider */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "13px" }}>
+                      <span style={{ fontWeight: 500, color: "var(--color-text-primary)" }}>Height</span>
+                      <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>{userHeight} cm</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="140"
+                      max="210"
+                      value={userHeight}
+                      onChange={(e) => setUserHeight(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "var(--color-accent)" }}
+                    />
+                  </div>
+ 
+                  {/* Weight Slider */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "13px" }}>
+                      <span style={{ fontWeight: 500, color: "var(--color-text-primary)" }}>Weight</span>
+                      <span style={{ fontWeight: 600, color: "var(--color-accent)" }}>{userWeight} kg</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="35"
+                      max="130"
+                      value={userWeight}
+                      onChange={(e) => setUserWeight(Number(e.target.value))}
+                      style={{ width: "100%", accentColor: "var(--color-accent)" }}
+                    />
+                  </div>
+ 
+                  {/* Result Box */}
+                  <div
+                    style={{
+                      background: "rgba(107,30,46,0.03)",
+                      border: "1px solid var(--color-border)",
+                      borderRadius: "var(--radius-md)",
+                      padding: "16px",
+                      textAlign: "center",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
+                      Recommended Size
+                    </div>
+                    <div style={{ fontSize: "36px", fontWeight: 700, color: "var(--color-accent)", fontFamily: "var(--font-heading)" }}>
+                      {recommendedSize}
+                    </div>
+                  </div>
+ 
+                  {/* Select button */}
+                  <button
+                    type="button"
+                    onClick={handleSelectRecommendedSize}
+                    className="btn btn-primary btn-premium"
+                    style={{ width: "100%", padding: "12px", fontSize: "13px", marginTop: "10px" }}
+                  >
+                    Select Size {recommendedSize} & Close
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
