@@ -74,6 +74,9 @@ export default async function AdminLayout({
               <Link href="/admin/settings" className="site-navbar-link">
                 Settings
               </Link>
+              <Link href="/admin/audit-logs" className="site-navbar-link">
+                Audit Logs
+              </Link>
             </nav>
           </div>
 

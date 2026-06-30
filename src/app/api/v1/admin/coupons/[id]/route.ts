@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { CouponType } from "@prisma/client";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -21,7 +22,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
 /** PUT /api/v1/admin/coupons/[id] — update a coupon */
 export async function PUT(req: Request, { params }: RouteParams) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const { id } = await params;
@@ -75,12 +76,23 @@ export async function PUT(req: Request, { params }: RouteParams) {
     },
   });
 
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "COUPON_UPDATE",
+    targetType: "COUPON",
+    targetId: id,
+    details: {
+      code: updated.code,
+      isActive: updated.isActive,
+    },
+  });
+
   return NextResponse.json(updated);
 }
 
 /** DELETE /api/v1/admin/coupons/[id] — delete a coupon */
 export async function DELETE(_req: Request, { params }: RouteParams) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const { id } = await params;
@@ -88,5 +100,16 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
   if (!existing) return NextResponse.json({ error: "Coupon not found." }, { status: 404 });
 
   await prisma.coupon.delete({ where: { id } });
+
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "COUPON_DELETE",
+    targetType: "COUPON",
+    targetId: id,
+    details: {
+      code: existing.code,
+    },
+  });
+
   return NextResponse.json({ deleted: true });
 }

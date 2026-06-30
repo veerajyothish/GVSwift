@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { toSafeError } from "@/lib/errors";
 import { EditProductSchema } from "@/features/catalog/validation";
 import { invalidateProductCache } from "@/features/catalog/repository";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 export async function PUT(
   request: NextRequest,
@@ -19,7 +20,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const { errorResponse } = await requireAdminForApi();
+    const { user, errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
 
     const body = await request.json().catch(() => null);
@@ -166,6 +167,19 @@ export async function PUT(
       await invalidateProductCache(updatedProduct.slug);
     }
 
+    if (updatedProduct) {
+      logAuditEvent({
+        actorId: user?.id ?? "",
+        action: "PRODUCT_UPDATE",
+        targetType: "PRODUCT",
+        targetId: id,
+        details: {
+          name: updatedProduct.name,
+          slug: updatedProduct.slug,
+        },
+      });
+    }
+
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);
@@ -179,12 +193,22 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const { errorResponse } = await requireAdminForApi();
+    const { user, errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
 
     const product = await adminDeleteProduct(id);
     if (product) {
       await invalidateProductCache(product.slug);
+      logAuditEvent({
+        actorId: user?.id ?? "",
+        action: "PRODUCT_DELETE",
+        targetType: "PRODUCT",
+        targetId: id,
+        details: {
+          name: product.name,
+          slug: product.slug,
+        },
+      });
     }
 
     return NextResponse.json(

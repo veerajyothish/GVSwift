@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { invalidateCollectionCache } from "@/features/catalog/repository";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 function slugify(text: string): string {
   return text
@@ -27,7 +28,7 @@ export async function GET() {
 
 /** POST /api/v1/admin/categories — create a new category */
 export async function POST(req: Request) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const body = await req.json().catch(() => ({}));
@@ -55,6 +56,16 @@ export async function POST(req: Request) {
   });
 
   await invalidateCollectionCache();
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "CATEGORY_CREATE",
+    targetType: "CATEGORY",
+    targetId: category.id,
+    details: {
+      name: category.name,
+      slug: category.slug,
+    },
+  });
 
   return NextResponse.json(category, { status: 201 });
 }

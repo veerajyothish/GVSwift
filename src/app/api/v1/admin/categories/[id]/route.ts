@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { invalidateCollectionCache } from "@/features/catalog/repository";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -9,7 +10,7 @@ interface RouteParams {
 
 /** PUT /api/v1/admin/categories/[id] — update name and/or slug */
 export async function PUT(req: Request, { params }: RouteParams) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const { id } = await params;
@@ -47,13 +48,23 @@ export async function PUT(req: Request, { params }: RouteParams) {
   });
 
   await invalidateCollectionCache();
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "CATEGORY_UPDATE",
+    targetType: "CATEGORY",
+    targetId: id,
+    details: {
+      name: updated.name,
+      slug: updated.slug,
+    },
+  });
 
   return NextResponse.json(updated);
 }
 
 /** DELETE /api/v1/admin/categories/[id] — delete if no products assigned */
 export async function DELETE(_req: Request, { params }: RouteParams) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const { id } = await params;
@@ -79,6 +90,16 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
   await prisma.category.delete({ where: { id } });
 
   await invalidateCollectionCache();
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "CATEGORY_DELETE",
+    targetType: "CATEGORY",
+    targetId: id,
+    details: {
+      name: category.name,
+      slug: category.slug,
+    },
+  });
 
   return NextResponse.json({ deleted: true });
 }

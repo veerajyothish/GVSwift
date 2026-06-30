@@ -10,6 +10,7 @@ import { requireAdminForApi } from "@/lib/auth/guards";
 import { listProducts, invalidateProductCache } from "@/features/catalog/repository";
 import { adminCreateProduct } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { errorResponse } = await requireAdminForApi();
+    const { user, errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
 
     const body = await request.json().catch(() => null);
@@ -73,6 +74,16 @@ export async function POST(request: NextRequest) {
     const product = await adminCreateProduct(body);
     if (product) {
       await invalidateProductCache(product.slug);
+      logAuditEvent({
+        actorId: user?.id ?? "",
+        action: "PRODUCT_CREATE",
+        targetType: "PRODUCT",
+        targetId: product.id,
+        details: {
+          name: product.name,
+          slug: product.slug,
+        },
+      });
     }
 
     return NextResponse.json(product, { status: 201 });

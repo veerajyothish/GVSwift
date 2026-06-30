@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { CouponType } from "@prisma/client";
+import { logAuditEvent } from "@/features/admin/audit-log";
 
 /** GET /api/v1/admin/coupons — list all coupons */
 export async function GET() {
@@ -17,7 +18,7 @@ export async function GET() {
 
 /** POST /api/v1/admin/coupons — create a new coupon */
 export async function POST(req: Request) {
-  const { errorResponse } = await requireAdminForApi();
+  const { user, errorResponse } = await requireAdminForApi();
   if (errorResponse) return errorResponse;
 
   const body = await req.json().catch(() => ({}));
@@ -62,6 +63,18 @@ export async function POST(req: Request) {
       validFrom: validFrom ? new Date(validFrom) : null,
       validUntil: validUntil ? new Date(validUntil) : null,
       isActive: isActive !== false,
+    },
+  });
+
+  logAuditEvent({
+    actorId: user?.id ?? "",
+    action: "COUPON_CREATE",
+    targetType: "COUPON",
+    targetId: coupon.id,
+    details: {
+      code: coupon.code,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue,
     },
   });
 
