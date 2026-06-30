@@ -241,11 +241,11 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
                 <label style={labelStyle}>Phone Number</label>
                 <input
                   type="tel"
-                  value={editing ? phone : (phone || "—")}
+                  value={editing ? phone : (phone || "+91 ••••• •••••")}
                   onChange={(e) => setPhone(e.target.value)}
                   disabled={!editing || saving}
                   style={fieldStyle}
-                  placeholder={editing ? "+91 98765 43210" : ""}
+                  placeholder={editing ? "+91 ••••• •••••" : ""}
                 />
               </div>
             </div>
