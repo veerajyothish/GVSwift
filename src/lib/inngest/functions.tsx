@@ -50,7 +50,7 @@ export const orderPlacedEmail = inngest.createFunction(
 
     const orderUrl = `${siteUrl()}/orders/${order.id}`;
 
-    await withRetry(() =>
+    const customerEmailPromise = withRetry(() =>
       resend.emails.send({
         from: senderAddress(),
         to: order.user.email,
@@ -70,6 +70,29 @@ export const orderPlacedEmail = inngest.createFunction(
         ),
       })
     );
+
+    const adminEmailPromise = withRetry(() =>
+      resend.emails.send({
+        from: senderAddress(),
+        to: "gvswift.help@gmail.com",
+        subject: `[New Order] #${order.id.slice(-8).toUpperCase()} placed by ${order.user.email}`,
+        react: (
+          <OrderStatusChangeEmail
+            orderId={order.id}
+            status={OrderStatus.PLACED}
+            orderUrl={`${siteUrl()}/admin/orders/${order.id}`}
+            totalPaise={order.totalPaise}
+            items={order.items.map((item) => ({
+              name: item.product.name,
+              quantity: item.quantity,
+              lineTotalPaise: item.lineTotalPaise,
+            }))}
+          />
+        ),
+      })
+    );
+
+    await Promise.all([customerEmailPromise, adminEmailPromise]);
 
     return { status: "sent", orderId };
   }
