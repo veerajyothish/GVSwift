@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { performClientLogout } from "@/lib/auth/logout";
 
 interface SignOutButtonProps {
   className?: string;
@@ -11,8 +11,7 @@ interface SignOutButtonProps {
 
 /**
  * Reusable sign-out button.
- * Calls supabase.auth.signOut() and redirects to /login.
- * Works for both email/password and Google OAuth sessions.
+ * Calls performClientLogout() to fully clear all sessions.
  */
 export function SignOutButton({ className, style, children }: SignOutButtonProps) {
   const [loading, setLoading] = useState(false);
@@ -21,11 +20,8 @@ export function SignOutButton({ className, style, children }: SignOutButtonProps
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      const supabase = createSupabaseBrowserClient();
-      await supabase.auth.signOut({ scope: 'local' });
+      await performClientLogout();
     } catch {
-      // ignore errors — always redirect
-    } finally {
       window.location.href = '/login';
     }
   };
