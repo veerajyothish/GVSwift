@@ -185,81 +185,94 @@ export default async function AdminPage() {
           gap: "20px",
         }}
       >
-        {kpis.map(({ label, value, sub, icon, alert }) => (
-          <div
-            key={label}
-            className="hover-lift"
-            style={{
-              background: "var(--color-bg)",
-              border: `1px solid ${alert ? "var(--color-error)" : "var(--color-border)"}`,
-              borderRadius: "var(--radius-lg)",
-              padding: "24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
-            }}
-          >
+        {kpis.map(({ label, value, sub, icon, alert }) => {
+          const cardContent = (
             <div
+              className="hover-lift"
               style={{
+                background: "var(--color-bg)",
+                border: `1px solid ${alert ? "var(--color-error)" : "var(--color-border)"}`,
+                borderRadius: "var(--radius-lg)",
+                padding: "24px",
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
+                flexDirection: "column",
+                gap: "12px",
+                height: "100%",
+                cursor: label === "Low Stock" ? "pointer" : "default",
               }}
             >
-              <span
+              <div
                 style={{
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: alert ? "var(--color-error)" : "var(--color-text-secondary)",
-                }}
-              >
-                {label}
-              </span>
-              <span
-                style={{
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "8px",
-                  background: alert
-                    ? "rgba(204,36,36,0.08)"
-                    : "rgba(107,30,46,0.06)",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "16px",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
                 }}
               >
-                {icon}
-              </span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: alert ? "var(--color-error)" : "var(--color-text-secondary)",
+                  }}
+                >
+                  {label}
+                </span>
+                <span
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "8px",
+                    background: alert
+                      ? "rgba(204,36,36,0.08)"
+                      : "rgba(107,30,46,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "16px",
+                  }}
+                >
+                    {icon}
+                </span>
+              </div>
+              <div>
+                <p
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "28px",
+                    fontWeight: 600,
+                    color: alert ? "var(--color-error)" : "var(--color-accent)",
+                    margin: 0,
+                    lineHeight: 1,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {value}
+                </p>
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: alert ? "var(--color-error)" : "var(--color-text-secondary)",
+                    marginTop: "6px",
+                  }}
+                >
+                  {alert && "⚠ "}{sub}
+                </p>
+              </div>
             </div>
-            <div>
-              <p
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "28px",
-                  fontWeight: 600,
-                  color: alert ? "var(--color-error)" : "var(--color-accent)",
-                  margin: 0,
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {value}
-              </p>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: alert ? "var(--color-error)" : "var(--color-text-secondary)",
-                  marginTop: "6px",
-                }}
-              >
-                {alert && "⚠ "}{sub}
-              </p>
-            </div>
-          </div>
-        ))}
+          );
+
+          if (label === "Low Stock") {
+            return (
+              <Link key={label} href="/admin/products?filter=lowstock" style={{ textDecoration: "none" }}>
+                {cardContent}
+              </Link>
+            );
+          }
+
+          return <div key={label}>{cardContent}</div>;
+        })}
       </div>
 
       {/* ── Charts + Quick Actions ─────────────────────────────────────── */}
