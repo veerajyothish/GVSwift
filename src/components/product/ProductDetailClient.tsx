@@ -507,7 +507,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 className="btn-premium"
                 style={{ width: "100%", minHeight: "52px", fontSize: "13px", letterSpacing: "0.08em" }}
               >
-                {isOutOfStock ? "Sold Out" : `Add to Bag →`}
+                {isOutOfStock ? "Sold Out" : `Buy Now →`}
               </Button>
               <Button
                 variant="secondary"
@@ -903,7 +903,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         >
           {isOutOfStock
             ? "Sold Out"
-            : `Add to Bag · ${formattedPrice}`}
+            : `Buy Now · ${formattedPrice}`}
         </Button>
       </div>
     </div>
