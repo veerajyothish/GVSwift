@@ -46,6 +46,14 @@ interface CartItem {
   } | null;
 }
 
+interface AvailableCoupon {
+  id: string;
+  code: string;
+  discountType: "PERCENTAGE" | "FIXED";
+  discountValue: number;
+  minOrderPaise: number;
+}
+
 interface Cart {
   id: string;
   items: CartItem[];
@@ -107,6 +115,7 @@ export default function CheckoutClient({
   } | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
+  const [availableCoupons, setAvailableCoupons] = useState<AvailableCoupon[]>([]);
   
   // Stable idempotency key per checkout session
   const [idempotencyKey] = useState(() => generateIdempotencyKey());
@@ -223,6 +232,45 @@ export default function CheckoutClient({
       })
       .catch(() => {});
   }, []);
+ 
+  useEffect(() => {
+    fetch("/api/v1/coupons")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAvailableCoupons(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+ 
+  const applySpecificCoupon = (code: string) => {
+    setCouponInput(code);
+    setCouponError(null);
+    setTimeout(async () => {
+      setCouponLoading(true);
+      try {
+        const res = await fetch("/api/v1/coupons/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, cartValuePaise: subtotalPaise }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setCouponError(data.error ?? "Invalid coupon code.");
+          setAppliedCoupon(null);
+        } else {
+          setAppliedCoupon({ code: data.code, discountPaise: data.discountPaise });
+          setCouponError(null);
+          setCouponInput("");
+        }
+      } catch {
+        setCouponError("Network error. Please try again.");
+      } finally {
+        setCouponLoading(false);
+      }
+    }, 50);
+  };
 
   const pointsDiscountPaise = usePoints
     ? Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100)
@@ -925,6 +973,66 @@ export default function CheckoutClient({
           )}
           {couponError && (
             <div style={{ fontSize: "12px", color: "var(--color-error)", fontWeight: 500 }}>{couponError}</div>
+          )}
+ 
+          {!appliedCoupon && availableCoupons.length > 0 && (
+            <div style={{ marginTop: "12px" }}>
+              <div style={{ fontSize: "11px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-text-secondary)", marginBottom: "8px" }}>
+                Available Coupons
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {availableCoupons.map((c) => {
+                  const offerText = c.discountType === "PERCENTAGE" ? `${c.discountValue}% OFF` : `₹${c.discountValue / 100} OFF`;
+                  const isEligible = subtotalPaise >= c.minOrderPaise;
+                  return (
+                    <div
+                      key={c.code}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "10px 12px",
+                        border: "1px dashed var(--color-border)",
+                        borderRadius: "var(--radius-md)",
+                        background: "rgba(0,0,0,0.01)",
+                        opacity: isEligible ? 1 : 0.6,
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span style={{ fontFamily: "monospace", fontSize: "12px", fontWeight: 700, padding: "2px 6px", border: "1px solid var(--color-accent)", borderRadius: "4px", color: "var(--color-accent)", background: "rgba(107,30,46,0.02)" }}>
+                            {c.code}
+                          </span>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--color-success)" }}>
+                            {offerText}
+                          </span>
+                        </div>
+                        {c.minOrderPaise > 0 && (
+                          <div style={{ fontSize: "11px", color: "var(--color-text-secondary)", marginTop: "4px" }}>
+                            Min purchase: {formatRupees(c.minOrderPaise)}
+                          </div>
+                        )}
+                      </div>
+                      {isEligible ? (
+                        <button
+                          type="button"
+                          onClick={() => applySpecificCoupon(c.code)}
+                          disabled={couponLoading}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: "4px 10px", fontSize: "11px", borderRadius: "var(--radius-sm)" }}
+                        >
+                          Apply
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: "10px", fontWeight: 500, color: "var(--color-error)", whiteSpace: "nowrap" }}>
+                          Needs {formatRupees(c.minOrderPaise - subtotalPaise)} more
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
 
 
