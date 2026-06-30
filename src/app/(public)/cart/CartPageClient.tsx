@@ -294,11 +294,11 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)", fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotal)}</span>
           </div>
 
-          <Link href="/checkout" style={{ display: "block", marginTop: "8px" }}>
+          <a href="/checkout" style={{ display: "block", marginTop: "8px" }}>
             <Button variant="primary" style={{ width: "100%" }}>
               Proceed to Checkout &rarr;
             </Button>
-          </Link>
+          </a>
 
           <span className="text-xs footer-text-muted" style={{ textAlign: "center", display: "block" }}>
             Free delivery & Cash on Delivery (COD) applied.

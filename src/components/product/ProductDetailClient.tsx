@@ -157,7 +157,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         }
         setTimeout(() => {
           startTransition(() => {
-            router.push("/login");
+            router.push(`/login?redirect=/products/${product.slug}`);
           });
         }, 1200);
         return;
@@ -205,7 +205,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         toast.error("Please sign in to continue to checkout.", "Sign in required");
         setTimeout(() => {
           startTransition(() => {
-            router.push("/login");
+            router.push(`/login?redirect=/products/${product.slug}`);
           });
         }, 1200);
         setIsBuyingNow(false);
@@ -219,9 +219,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         window.dispatchEvent(new CustomEvent("gvswift-cart-add-one"));
       }
 
-      startTransition(() => {
-        router.push("/checkout");
-      });
+      window.location.href = "/checkout";
     } catch (err: unknown) {
       toast.error((err as Error).message || "Could not process request", "Error");
       setIsBuyingNow(false);
