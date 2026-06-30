@@ -67,98 +67,103 @@ export async function PUT(
     });
 
     // Transaction to update product details, sync variants and images
-    const updatedProduct = await prisma.$transaction(async (tx) => {
-      // 1. Update basic product details
-      await tx.product.update({
-        where: { id },
-        data: {
-          name: body.name,
-          slug: body.slug,
-          brand: body.brand,
-          description: body.description,
-          basePricePaise: body.basePricePaise,
-          isActive: body.isActive,
-          categoryId: body.categoryId,
-        },
-      });
-
-      // 2. Sync variants if provided
-      if (body.variants && Array.isArray(body.variants)) {
-        const existingVariants = await tx.productVariant.findMany({
-          where: { productId: id },
-        });
-        const existingIds = existingVariants.map((v) => v.id);
-        const incomingIds = body.variants.map((v: { id?: string }) => v.id).filter(Boolean);
-
-        // Delete variants that are no longer present (fall back to stock: 0 if restricted)
-        const toDeleteIds = existingIds.filter((eid) => !incomingIds.includes(eid));
-        for (const deleteId of toDeleteIds) {
-          try {
-            await tx.productVariant.delete({ where: { id: deleteId } });
-          } catch {
-            await tx.productVariant.update({
-              where: { id: deleteId },
-              data: { stock: 0 },
-            });
-          }
-        }
-
-        // Upsert incoming variants
-        for (const variant of body.variants) {
-          if (variant.id) {
-            await tx.productVariant.update({
-              where: { id: variant.id },
-              data: {
-                sku: variant.sku,
-                stock: variant.stock,
-                priceDeltaPaise: variant.priceDeltaPaise,
-              },
-            });
-          } else {
-            await tx.productVariant.create({
-              data: {
-                productId: id,
-                sku: variant.sku,
-                stock: variant.stock,
-                priceDeltaPaise: variant.priceDeltaPaise,
-              },
-            });
-          }
-        }
-      }
-
-      // 3. Sync images if provided (delete all and recreate)
-      if (body.images && Array.isArray(body.images)) {
-        await tx.productImage.deleteMany({
-          where: { productId: id },
-        });
-
-        if (body.images.length > 0) {
-          await tx.productImage.createMany({
-            data: body.images.map((img: { url: string; altText?: string | null; isPrimary?: boolean; sortOrder?: number }) => ({
-              productId: id,
-              url: img.url,
-              altText: img.altText,
-              isPrimary: img.isPrimary ?? false,
-              sortOrder: img.sortOrder ?? 0,
-            })),
-          });
-        }
-      }
-
-      return tx.product.findUnique({
-        where: { id },
-        include: {
-          variants: true,
-          images: {
-            orderBy: [
-              { isPrimary: "desc" },
-              { sortOrder: "asc" },
-            ],
+    const updatedProduct = await prisma.$transaction(
+      async (tx) => {
+        // 1. Update basic product details
+        await tx.product.update({
+          where: { id },
+          data: {
+            name: body.name,
+            slug: body.slug,
+            brand: body.brand,
+            description: body.description,
+            basePricePaise: body.basePricePaise,
+            isActive: body.isActive,
+            categoryId: body.categoryId,
           },
-        },
-      });
-    });
+        });
+
+        // 2. Sync variants if provided
+        if (body.variants && Array.isArray(body.variants)) {
+          const existingVariants = await tx.productVariant.findMany({
+            where: { productId: id },
+          });
+          const existingIds = existingVariants.map((v) => v.id);
+          const incomingIds = body.variants.map((v: { id?: string }) => v.id).filter(Boolean);
+
+          // Delete variants that are no longer present (fall back to stock: 0 if restricted)
+          const toDeleteIds = existingIds.filter((eid) => !incomingIds.includes(eid));
+          for (const deleteId of toDeleteIds) {
+            try {
+              await tx.productVariant.delete({ where: { id: deleteId } });
+            } catch {
+              await tx.productVariant.update({
+                where: { id: deleteId },
+                data: { stock: 0 },
+              });
+            }
+          }
+
+          // Upsert incoming variants
+          for (const variant of body.variants) {
+            if (variant.id) {
+              await tx.productVariant.update({
+                where: { id: variant.id },
+                data: {
+                  sku: variant.sku,
+                  stock: variant.stock,
+                  priceDeltaPaise: variant.priceDeltaPaise,
+                },
+              });
+            } else {
+              await tx.productVariant.create({
+                data: {
+                  productId: id,
+                  sku: variant.sku,
+                  stock: variant.stock,
+                  priceDeltaPaise: variant.priceDeltaPaise,
+                },
+              });
+            }
+          }
+        }
+
+        // 3. Sync images if provided (delete all and recreate)
+        if (body.images && Array.isArray(body.images)) {
+          await tx.productImage.deleteMany({
+            where: { productId: id },
+          });
+
+          if (body.images.length > 0) {
+            await tx.productImage.createMany({
+              data: body.images.map((img: { url: string; altText?: string | null; isPrimary?: boolean; sortOrder?: number }) => ({
+                productId: id,
+                url: img.url,
+                altText: img.altText,
+                isPrimary: img.isPrimary ?? false,
+                sortOrder: img.sortOrder ?? 0,
+              })),
+            });
+          }
+        }
+
+        return tx.product.findUnique({
+          where: { id },
+          include: {
+            variants: true,
+            images: {
+              orderBy: [
+                { isPrimary: "desc" },
+                { sortOrder: "asc" },
+              ],
+            },
+          },
+        });
+      },
+      {
+        timeout: 20000,
+      }
+    );
 
     if (oldProduct) {
       await invalidateProductCache(oldProduct.slug);
