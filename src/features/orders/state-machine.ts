@@ -326,7 +326,7 @@ export async function transitionOrderStatus(
     });
 
     if (orderForEmail) {
-      await withRetry(() =>
+      withRetry(() =>
         inngest.send({
           name: "order/status.changed",
           data: {
@@ -336,12 +336,14 @@ export async function transitionOrderStatus(
             email: orderForEmail.user.email,
           },
         })
-      );
+      ).catch((err) => {
+        logger.error({ err, orderId: result.order.id }, "Failed to send order/status.changed event to Inngest");
+      });
     }
 
     // Award loyalty points ONLY on transitions to DELIVERED status
     if (actualToStatus === OrderStatus.DELIVERED) {
-      await withRetry(() =>
+      withRetry(() =>
         inngest.send({
           name: "order/delivered",
           data: {
@@ -349,7 +351,9 @@ export async function transitionOrderStatus(
             userId: result.order.userId,
           },
         })
-      );
+      ).catch((err) => {
+        logger.error({ err, orderId: result.order.id }, "Failed to send order/delivered event to Inngest");
+      });
     }
 
     // Structured logging for status changes

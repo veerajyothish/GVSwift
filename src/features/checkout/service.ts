@@ -493,8 +493,8 @@ export async function createOrder(
     },
   });
 
-  // Trigger background job to send order confirmation email
-  await withRetry(() =>
+  // Trigger background job to send order confirmation email (non-blocking)
+  withRetry(() =>
     inngest.send({
       name: "order/placed",
       data: {
@@ -503,7 +503,9 @@ export async function createOrder(
         email: finalOrder.user.email,
       },
     })
-  );
+  ).catch((err) => {
+    logger.error({ err, orderId: finalOrder.id }, "Failed to send order/placed event to Inngest");
+  });
 
   // Structured Logging for order placement success
   logger.info(
