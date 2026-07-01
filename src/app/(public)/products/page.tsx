@@ -197,7 +197,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <div style={{ minHeight: "100vh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <Navbar />
 
-      <main style={{ flex: 1 }}>
+      <main id="main-content" style={{ flex: 1 }}>
         {/* Header */}
         <header
           style={{

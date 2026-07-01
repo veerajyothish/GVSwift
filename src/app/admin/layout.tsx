@@ -137,7 +137,7 @@ export default async function AdminLayout({
         </div>
       </header>
       
-      <main className="admin-main">
+      <main id="main-content" className="admin-main">
         {children}
       </main>
     </div>

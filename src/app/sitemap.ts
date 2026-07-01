@@ -1,26 +1,39 @@
 import type { MetadataRoute } from "next";
+import { prisma } from "@/lib/prisma";
 
 const BASE_URL = "https://gvswift.vercel.app";
 
-const staticRoutes = [
-  "/",
-  "/products",
-  "/about",
-  "/contact",
-  "/terms",
-  "/privacy",
-  "/shipping",
-  "/returns",
-  "/support",
-];
-
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  return staticRoutes.map((route) => ({
-    url: `${BASE_URL}${route === "/" ? "" : route}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: BASE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE_URL}/products`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/shipping`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/returns`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/support`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/size-guide`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+  ];
+
+  let productRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    });
+    productRoutes = products.map((p) => ({
+      url: `${BASE_URL}/products/${p.slug}`,
+      lastModified: p.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    }));
+  } catch {
+    // DB unavailable during build — return static only
+  }
+
+  return [...staticRoutes, ...productRoutes];
 }

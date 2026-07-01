@@ -52,6 +52,16 @@ const PUBLIC_STATIC = [
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // ── HTTPS redirect — must run first, applies to all routes ────────────
+  if (
+    process.env.NODE_ENV === "production" &&
+    request.headers.get("x-forwarded-proto") === "http"
+  ) {
+    const httpsUrl = `https://${request.headers.get("host")}${pathname}${request.nextUrl.search}`;
+    return NextResponse.redirect(httpsUrl, { status: 301 });
+  }
+
+
   // ── Rate Limiting (Upstash Ratelimit) ─────────────────────────────────
   if (pathname.startsWith("/api/")) {
     const ip = (request as unknown as { ip?: string }).ip ?? request.headers.get("x-forwarded-for") ?? "127.0.0.1";
@@ -150,18 +160,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // Admin redirect from homepage
-  if (user?.user_metadata?.role === "ADMIN" && pathname === "/") {
+  // app_metadata is server-set only — safe for role checks
+  const role = user?.app_metadata?.role as string | undefined;
+  if (role === "ADMIN" && pathname === "/") {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
-  // HTTPS redirect in production
-  if (
-    process.env.NODE_ENV === "production" &&
-    request.headers.get("x-forwarded-proto") === "http"
-  ) {
-    const httpsUrl = `https://${request.headers.get("host")}${pathname}${request.nextUrl.search}`;
-    return NextResponse.redirect(httpsUrl, { status: 301 });
-  }
+
 
   addSecurityHeaders(response);
   return response;
@@ -171,6 +176,18 @@ function addSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: blob: https://*.supabase.co",
+      "connect-src 'self' https://*.supabase.co https://*.sentry.io",
+      "frame-ancestors 'none'",
+    ].join("; ")
+  );
 }
 
 export const config = {

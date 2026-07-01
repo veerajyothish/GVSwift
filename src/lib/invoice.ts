@@ -1,6 +1,3 @@
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-
 interface InvoiceOrderItem {
   productName: string;
   variantSku: string | null;
@@ -38,14 +35,19 @@ function formatPaise(paise: number): string {
   })}`;
 }
 
-interface AutoTablePDF extends jsPDF {
-  lastAutoTable: {
-    finalY: number;
-  };
-}
+export async function downloadInvoicePdf(order: InvoiceOrder) {
+  // Dynamic imports — jspdf (~4MB) is only loaded when admin generates an invoice
+  const { jsPDF } = await import("jspdf");
+  const autoTableModule = await import("jspdf-autotable");
+  const autoTable = autoTableModule.default;
 
-export function downloadInvoicePdf(order: InvoiceOrder) {
   const doc = new jsPDF();
+
+  interface AutoTablePDF {
+    lastAutoTable: {
+      finalY: number;
+    };
+  }
   const autotableDoc = doc as unknown as AutoTablePDF;
 
   // 1. Branding Header

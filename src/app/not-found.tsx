@@ -7,6 +7,7 @@ export default function NotFound() {
     <>
       <Navbar />
       <main
+        id="main-content"
         style={{
           display: "flex",
           flexDirection: "column",

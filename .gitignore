@@ -51,3 +51,8 @@ next-env.d.ts
 
 # Sentry
 .sentryclirc
+
+skills-lock.json
+scratch/
+task.md
+AI-IMPLEMENTATION-INSTRUCTIONS.md

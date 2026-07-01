@@ -68,7 +68,7 @@ export default async function AccountLayout({
         {/* Two-col layout */}
         <div className="account-container" style={{ paddingTop: 0 }}>
           <AccountSidebar />
-          <main style={{ minWidth: 0 }}>
+          <main id="main-content" style={{ minWidth: 0 }}>
             <VerificationBanner email={user.email} isVerified={isVerified} />
             {children}
           </main>

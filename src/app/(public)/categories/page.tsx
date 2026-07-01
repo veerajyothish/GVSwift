@@ -49,7 +49,7 @@ export default async function CategoriesPage() {
     <div className="homepage-wrapper min-h-screen flex flex-col bg-default">
       <Navbar />
 
-      <main className="container-lg flex-1" style={{ padding: "60px 20px" }}>
+      <main id="main-content" className="container-lg flex-1" style={{ padding: "60px 20px" }}>
         <header className="mb-12">
           <h1 className="text-3xl font-semibold mb-4 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
             Shop by Category

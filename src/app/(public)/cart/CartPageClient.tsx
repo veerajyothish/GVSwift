@@ -294,14 +294,64 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             <span style={{ fontSize: "20px", fontWeight: 700, color: "var(--color-accent)", fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotal)}</span>
           </div>
 
-          <a href="/checkout" style={{ display: "block", marginTop: "8px" }}>
-            <Button variant="primary" style={{ width: "100%" }}>
-              Proceed to Checkout &rarr;
+          {/* COD limit warnings — thresholds in paise */}
+          {subtotal >= 800000 && subtotal <= 1000000 && (
+            <div
+              style={{
+                background: "var(--color-warning-bg)",
+                border: "1px solid var(--color-warning)",
+                borderRadius: "var(--radius-md)",
+                padding: "12px 16px",
+                fontSize: "13px",
+                color: "var(--color-warning)",
+                lineHeight: 1.5,
+                marginBottom: "4px",
+              }}
+            >
+              <strong>Approaching COD limit:</strong> Cash on Delivery is available up to ₹10,000. Your cart total is {formatRupees(subtotal)}.
+            </div>
+          )}
+          {subtotal > 1000000 && (
+            <div
+              style={{
+                background: "var(--color-error-bg)",
+                border: "1px solid var(--color-error)",
+                borderRadius: "var(--radius-md)",
+                padding: "12px 16px",
+                fontSize: "13px",
+                color: "var(--color-error)",
+                lineHeight: 1.5,
+                marginBottom: "4px",
+              }}
+            >
+              <strong>COD limit exceeded:</strong> Cash on Delivery orders are limited to ₹10,000. Please remove items to proceed. Current total: {formatRupees(subtotal)}.
+            </div>
+          )}
+
+          <a
+            href="/checkout"
+            style={{
+              display: "block",
+              marginTop: "8px",
+              pointerEvents: subtotal > 1000000 ? "none" : "auto",
+            }}
+            aria-disabled={subtotal > 1000000}
+          >
+            <Button
+              variant="primary"
+              style={{
+                width: "100%",
+                opacity: subtotal > 1000000 ? 0.5 : 1,
+                cursor: subtotal > 1000000 ? "not-allowed" : "pointer",
+              }}
+              disabled={subtotal > 1000000}
+            >
+              {subtotal > 1000000 ? "COD Limit Exceeded" : "Proceed to Checkout →"}
             </Button>
           </a>
 
           <span className="text-xs footer-text-muted" style={{ textAlign: "center", display: "block" }}>
-            Free delivery & Cash on Delivery (COD) applied.
+            Free delivery &amp; Cash on Delivery (COD) applied.
           </span>
         </div>
       </div>

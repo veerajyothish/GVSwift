@@ -42,7 +42,7 @@ export default async function HomePage() {
     <div className="homepage-wrapper">
       <Navbar />
 
-      <main>
+      <main id="main-content">
         {/* ── HERO ──────────────────────────────────────────────────────────── */}
         {/* PDF p.1: left text, right large product image, cream bg, no border radius on section */}
         <section
@@ -146,15 +146,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <style>{`
-            @media (max-width: 767px) {
-              .hero-grid-responsive {
-                grid-template-columns: 1fr !important;
-                gap: 36px !important;
-                padding: 56px 20px 64px !important;
-              }
-            }
-          `}</style>
+
         </section>
 
         {/* ── AUTUMN EDIT BENTO ─────────────────────────────────────────────── */}
@@ -197,7 +189,7 @@ export default async function HomePage() {
                     marginBottom: "8px",
                   }}
                 >
-                  Visual Inspiration
+                  Curated Selection
                 </span>
                 <h2
                   style={{
@@ -209,7 +201,7 @@ export default async function HomePage() {
                     lineHeight: 1.15,
                   }}
                 >
-                  Editorial Reference
+                  The Seasonal Edit
                 </h2>
               </div>
               <Link
@@ -270,7 +262,7 @@ export default async function HomePage() {
                     border: "1px solid var(--color-border)",
                   }}
                 >
-                  Reference Image 01 &middot; Wool Coat
+                  New Arrivals &middot; Outerwear
                 </div>
               </div>
  
@@ -311,7 +303,7 @@ export default async function HomePage() {
                     border: "1px solid var(--color-border)",
                   }}
                 >
-                  Reference Image 02 &middot; Leathercraft
+                  Curated &middot; Accessories
                 </div>
               </div>
             </div>
@@ -429,20 +421,12 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <style>{`
-            @media (max-width: 767px) {
-              .editorial-grid-responsive {
-                grid-template-columns: 1fr !important;
-                gap: 32px !important;
-                padding: 56px 20px !important;
-              }
-            }
-          `}</style>
+
         </section>
 
         {/* ── TRENDING NOW ──────────────────────────────────────────────────── */}
         {/* PDF p.6/7: standard 4-col product grid with category label + name + price */}
-        {products.length > 0 && (
+        {products.length > 0 ? (
           <section
             style={{
               background: "var(--color-bg)",
@@ -502,6 +486,42 @@ export default async function HomePage() {
                   />
                 ))}
               </div>
+            </div>
+          </section>
+        ) : (
+          <section
+            style={{
+              background: "var(--color-bg)",
+              borderBottom: "1px solid var(--color-border)",
+              padding: "80px 24px",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ maxWidth: "480px", margin: "0 auto" }}>
+              <h2
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(24px, 3vw, 32px)",
+                  fontWeight: 400,
+                  color: "var(--color-text-primary)",
+                  marginBottom: "16px",
+                }}
+              >
+                Collection Coming Soon
+              </h2>
+              <p
+                style={{
+                  fontSize: "15px",
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.7,
+                  marginBottom: "32px",
+                }}
+              >
+                Our collection is being carefully curated. Browse all available products in the meantime.
+              </p>
+              <Link href="/products" className="btn btn-primary" style={{ padding: "14px 40px", fontSize: "12px", letterSpacing: "0.1em" }}>
+                Browse Products
+              </Link>
             </div>
           </section>
         )}

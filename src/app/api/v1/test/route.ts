@@ -1,31 +1,24 @@
 import { NextResponse } from "next/server";
-import { requireAdminForApi } from "@/lib/auth/guards";
 
 /**
  * GET /api/v1/test
  *
- * Protected test route for verifying authentication and authorization.
- * Returns:
- *   - 401 if unauthenticated
- *   - 403 if authenticated but not an ADMIN
- *   - 200 if authorized (ADMIN)
+ * Test route — blocked in production.
+ * Returns 404 when NODE_ENV === "production" to prevent
+ * any test endpoints from being exposed on the live server.
  */
 export async function GET() {
-  const { user, errorResponse } = await requireAdminForApi();
-
-  if (errorResponse) {
-    return errorResponse;
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(
-    {
-      message: "Authorized",
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-    },
-    { status: 200 }
-  );
+  return NextResponse.json({ ok: true, env: process.env.NODE_ENV });
+}
+
+export async function POST() {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ ok: true });
 }
