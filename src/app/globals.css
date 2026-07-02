@@ -91,7 +91,7 @@ p { text-wrap: pretty; }
 a {
   color: inherit;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 button, input, select, textarea {
@@ -138,7 +138,7 @@ button, input, select, textarea {
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), transform 150ms cubic-bezier(0.16, 1, 0.3, 1), opacity 150ms cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   position: relative;
   text-align: center;
@@ -280,7 +280,7 @@ a.btn:active:not(:disabled):not(.btn-static) {
   border: 1px solid var(--color-border);
   background-color: var(--color-surface);
   color: var(--color-text-primary);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 48px;
 }
 
@@ -329,7 +329,8 @@ select.input-field {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .card-interactive:hover {
@@ -373,7 +374,8 @@ select.input-field {
   justify-content: center;
   z-index: 1000;
   padding: var(--space-4);
-  animation: modal-fade-in 0.2s ease-out;
+  animation: modal-fade-in 150ms ease-out;
+  will-change: transform, opacity;
 }
 
 .modal-container, .modal-panel {
@@ -384,7 +386,8 @@ select.input-field {
   max-width: 520px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  animation: modal-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: modal-slide-up 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .customer-modal-panel { max-width: 480px; }
@@ -421,7 +424,7 @@ select.input-field {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
+  transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 .modal-close-btn:hover {
@@ -483,7 +486,8 @@ select.input-field {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  animation: toast-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: toast-slide-in 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .toast-content { flex-grow: 1; }
@@ -746,7 +750,7 @@ select.input-field {
   text-decoration: none;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
-  transition: color 0.2s ease;
+  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .site-navbar-link:hover { color: var(--color-accent); }
 
@@ -759,7 +763,7 @@ select.input-field {
   letter-spacing: 0.02em;
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   font-family: var(--font-body);
 }
@@ -802,7 +806,8 @@ select.input-field {
 .mobile-drawer {
   position: fixed; top: 0; left: -100%; width: 80%; max-width: 320px;
   height: 100vh; background-color: var(--color-bg);
-  box-shadow: var(--shadow-lg); z-index: 1001; transition: left 0.3s ease;
+  box-shadow: var(--shadow-lg); z-index: 1001; transition: left 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 .mobile-drawer-open { left: 0; }
 .mobile-drawer-inner { display: flex; flex-direction: column; height: 100%; padding: 24px; }
@@ -923,7 +928,7 @@ select.input-field {
 .footer-content { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 .footer-link {
   font-size: 14px; color: var(--color-text-secondary); text-decoration: none;
-  transition: color 0.2s ease; display: inline-block;
+  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1); display: inline-block;
 }
 .footer-link:hover { color: var(--color-accent); }
 .footer-text-muted { font-size: 14px; color: var(--color-text-secondary); }
@@ -967,7 +972,7 @@ select.input-field {
   padding: 8px 20px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 400;
   background-color: transparent; color: var(--color-text-primary);
   border: 1px solid var(--color-border); text-decoration: none;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .category-link:hover { border-color: var(--color-accent); color: var(--color-accent); }
 .product-card-badge-error {
@@ -996,22 +1001,22 @@ select.input-field {
 .cart-grid { display: grid; grid-template-columns: 1fr; gap: 32px; width: 100%; }
 @media (min-width: 768px) { .cart-grid { grid-template-columns: 2fr 1.2fr; } }
 .cart-items-column { display: flex; flex-direction: column; gap: 12px; }
-.cart-item-card { padding: 16px; display: flex; gap: 16px; background-color: var(--color-bg); transition: opacity 0.2s; }
+.cart-item-card { padding: 16px; display: flex; gap: 16px; background-color: var(--color-bg); transition: opacity 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .cart-item-thumb-container { width: 80px; height: 80px; position: relative; border-radius: var(--radius-md); overflow: hidden; flex-shrink: 0; background-color: var(--color-surface); border: 1px solid var(--color-border); }
 .cart-item-thumb-img { width: 100%; height: 100%; object-fit: cover; }
 .cart-item-details-container { display: flex; flex-direction: column; flex-grow: 1; min-width: 0; }
-.cart-item-title-link { color: var(--color-text-primary); font-size: 15px; font-weight: 500; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.2s; }
+.cart-item-title-link { color: var(--color-text-primary); font-size: 15px; font-weight: 500; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .cart-item-title-link:hover { color: var(--color-accent); }
 .cart-item-sku { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
 .cart-item-actions-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
 .cart-quantity-stepper { display: flex; align-items: center; background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-pill); height: 36px; overflow: hidden; }
-.stepper-btn { width: 36px; height: 100%; border: none; background-color: transparent; color: var(--color-text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background-color 0.2s; }
+.stepper-btn { width: 36px; height: 100%; border: none; background-color: transparent; color: var(--color-text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .stepper-btn:hover:not(:disabled) { background-color: var(--color-border); }
 .cart-stepper-value { padding: 0 12px; font-size: 14px; font-weight: 600; color: var(--color-text-primary); user-select: none; }
 .cart-price-container { text-align: right; }
 .cart-price-total { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
 .cart-price-each { font-size: 11px; color: var(--color-text-secondary); }
-.cart-remove-btn { background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: color 0.2s, background-color 0.2s; }
+.cart-remove-btn { background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .cart-remove-btn:hover { color: var(--color-error); background-color: var(--color-error-bg); }
 .cart-summary-sticky { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 16px; }
 .cart-summary-title { color: var(--color-text-primary); border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin: 0; }
@@ -1029,7 +1034,7 @@ select.input-field {
 .checkout-add-address-btn { min-height: 36px; height: 36px; padding: 0 16px; font-size: 13px; }
 .checkout-empty-address { padding: 24px; text-align: center; border: 1px dashed var(--color-border); border-radius: var(--radius-lg); }
 .checkout-address-list { display: flex; flex-direction: column; gap: 12px; }
-.checkout-address-option { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px; cursor: pointer; background-color: transparent; transition: border-color 0.2s, background-color 0.2s; display: flex; gap: 12px; position: relative; }
+.checkout-address-option { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 16px; cursor: pointer; background-color: transparent; transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms cubic-bezier(0.16, 1, 0.3, 1); display: flex; gap: 12px; position: relative; }
 .checkout-address-option-selected { border-color: var(--color-accent); background-color: rgba(107,30,46,0.03); }
 .checkout-default-badge { font-size: 10px; background-color: rgba(107,30,46,0.12); color: var(--color-accent); padding: 2px 6px; border-radius: 2px; font-weight: 600; text-transform: uppercase; }
 .checkout-payment-box { border: 1px solid var(--color-accent); border-radius: var(--radius-lg); padding: 18px; background-color: rgba(107,30,46,0.03); display: flex; flex-direction: column; gap: 8px; }
@@ -1057,20 +1062,27 @@ select.input-field {
 @media (min-width: 768px) { .address-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* ── Skeleton ────────────────────────────────────────────────────────────────── */
-.skeleton {
-  background: linear-gradient(90deg, rgba(107,30,46,0.04) 25%, rgba(107,30,46,0.08) 37%, rgba(107,30,46,0.04) 63%);
-  background-size: 400% 100%;
-  animation: skeleton-loading 0.8s ease infinite;
-  border-radius: var(--radius-sm);
+@keyframes shimmer {
+  0%   { background-position: -400% 0; }
+  100% { background-position:  400% 0; }
 }
-@keyframes skeleton-loading { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.45; }
 }
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(107,30,46,0.04) 25%, rgba(107,30,46,0.08) 37%, rgba(107,30,46,0.04) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 0.8s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  will-change: background-position;
+}
+
 .animate-pulse {
-  animation: pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 0.8s ease-in-out infinite;
+  will-change: opacity;
 }
 
 /* ── Admin ───────────────────────────────────────────────────────────────────── */
@@ -1154,11 +1166,11 @@ select.input-field {
 .fade-in-up { opacity: 0; transform: translateY(20px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
 .fade-in-up.visible { opacity: 1; transform: translateY(0); }
 
-.hover-lift { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease, border-color 0.35s ease; }
+.hover-lift { transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1), border-color 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 36px -12px rgba(107,30,46,0.14); border-color: rgba(107,30,46,0.18); }
 
 .nav-link-hover { position: relative; }
-.nav-link-hover::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -3px; left: 0; background-color: var(--color-accent); transition: width 0.3s cubic-bezier(0.16,1,0.3,1); }
+.nav-link-hover::after { content: ''; position: absolute; width: 0; height: 1px; bottom: -3px; left: 0; background-color: var(--color-accent); transition: width 150ms cubic-bezier(0.16, 1, 0.3, 1); }
 .nav-link-hover:hover::after { width: 100%; }
 
 /* ── Info box ────────────────────────────────────────────────────────────────── */
@@ -1236,11 +1248,6 @@ h1, h2, h3 {
    Design tokens: bg #F5F0EB, shimmer #E8DDD9, radius 8px, 1.5s loop
    ══════════════════════════════════════════════════════════════════════════════ */
 
-@keyframes shimmer-sweep {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0;  }
-}
-
 .sk {
   background: linear-gradient(
     90deg,
@@ -1249,9 +1256,10 @@ h1, h2, h3 {
     #F5F0EB 160px
   );
   background-size: 400px 100%;
-  animation: shimmer-sweep 0.8s ease-in-out infinite;
+  animation: shimmer 0.8s ease-in-out infinite;
   border-radius: 8px;
   display: block;
+  will-change: background-position;
 }
 
 /* Height shorthands */
@@ -1420,4 +1428,80 @@ button:active:not(:disabled) {
     gap: 32px !important;
     padding: 56px 20px !important;
   }
+}
+
+/* ── Perceived Speed & Reactivity Optimisations ── */
+
+/* A2. content-visibility on below-fold sections */
+.product-grid,
+.category-grid,
+.trending-section,
+.collections-section,
+.features-section,
+.testimonials-section,
+.newsletter-section,
+footer,
+.footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
+/* A5. Reduce layout shift — reserve space for images */
+.product-image-container,
+.product-card img,
+.hero-image,
+.banner-image {
+  aspect-ratio: 3 / 4;   /* portrait for fashion products */
+  width: 100%;
+  object-fit: cover;
+  background-color: var(--color-surface-offset, #f0efed);
+}
+
+/* B2. Instant tactile feedback on click/tap */
+button:active,
+a:active,
+[role="button"]:active,
+.btn:active,
+.card:active {
+  transform: scale(0.97);
+  transition: transform 80ms ease !important;
+}
+
+/* B4. Remove pointer lag — touch optimization */
+button,
+a,
+[role="button"],
+.btn,
+.product-card,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* B5. Cursor feedback on interactive elements */
+button,
+[role="button"],
+.btn,
+label,
+select {
+  cursor: pointer;
+}
+
+input[disabled],
+button[disabled],
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* B6. Hover lift on product cards */
+.product-card {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
 }

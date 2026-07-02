@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [375, 640, 750, 828, 1080, 1200],
     imageSizes: [64, 96, 128, 256, 384],
-    minimumCacheTTL: 3600,
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
@@ -29,6 +29,10 @@ const nextConfig: NextConfig = {
       "@react-email/components",
       "recharts",
     ],
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
   },
   compress: true,
   poweredByHeader: false,

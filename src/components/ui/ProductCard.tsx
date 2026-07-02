@@ -90,7 +90,7 @@ export default function ProductCard({
         boxShadow: hovered
           ? "0 16px 36px -12px rgba(107,30,46,0.14)"
           : "none",
-        transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease, border-color 0.3s ease",
+        transition: "transform 150ms cubic-bezier(0.16,1,0.3,1), box-shadow 150ms cubic-bezier(0.16,1,0.3,1), border-color 150ms cubic-bezier(0.16,1,0.3,1)",
         borderColor: hovered ? "rgba(107,30,46,0.18)" : "var(--color-border)",
       }}
     >
