@@ -1060,10 +1060,18 @@ select.input-field {
 .skeleton {
   background: linear-gradient(90deg, rgba(107,30,46,0.04) 25%, rgba(107,30,46,0.08) 37%, rgba(107,30,46,0.04) 63%);
   background-size: 400% 100%;
-  animation: skeleton-loading 1.4s ease infinite;
+  animation: skeleton-loading 0.8s ease infinite;
   border-radius: var(--radius-sm);
 }
 @keyframes skeleton-loading { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse {
+  animation: pulse 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
 /* ── Admin ───────────────────────────────────────────────────────────────────── */
 .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-5); }
@@ -1241,7 +1249,7 @@ h1, h2, h3 {
     #F5F0EB 160px
   );
   background-size: 400px 100%;
-  animation: shimmer-sweep 0.5s ease-in-out infinite;
+  animation: shimmer-sweep 0.8s ease-in-out infinite;
   border-radius: 8px;
   display: block;
 }

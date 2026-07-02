@@ -19,7 +19,7 @@ export default function Loading() {
     >
       <style>{`
         .loading-logo-container {
-          animation: elegant-pulse 1.8s ease-in-out infinite;
+          animation: elegant-pulse 0.8s ease-in-out infinite;
           display: flex;
           align-items: center;
           justifyContent: center;
