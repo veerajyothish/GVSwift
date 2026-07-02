@@ -65,6 +65,9 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: ["/og-image.jpg"],
   },
+  alternates: {
+    canonical: SITE_URL,
+  },
 };
 
 import { ToastProvider } from "@/components/ui/Toast";
