@@ -56,3 +56,15 @@ skills-lock.json
 scratch/
 task.md
 AI-IMPLEMENTATION-INSTRUCTIONS.md
+
+# Agent runtime folders
+.agents/
+.antigravity/
+.playwright-cli/
+
+# VS Code workspace files
+*.code-workspace
+
+# Agent skill/instruction files
+*-SKILL.md
+playwrite-SKILL.md
