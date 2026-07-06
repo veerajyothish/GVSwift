@@ -102,7 +102,7 @@ export default function ShopErrorBoundary({ error, reset }: ErrorBoundaryProps) 
             e.currentTarget.style.color = "var(--color-accent, #6B1E2E)";
           }}
         >
-          View All Boutiques
+          View All Shops
         </Link>
       </div>
     </div>

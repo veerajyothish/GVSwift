@@ -156,7 +156,7 @@ export default function ShopCard({ shop }: ShopCardProps) {
             alignSelf: "flex-start",
           }}
         >
-          Visit Boutique
+          Visit Shop
           <svg
             width="16"
             height="16"

@@ -4,8 +4,8 @@ import ShopCard from "@/components/ui/ShopCard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Partner Boutique Shops — GVSwift",
-  description: "Browse offline boutique fashion stores online. Shop directly from curated local shops with unified checkout.",
+  title: "Partner Shops — GVSwift",
+  description: "Browse offline fashion stores online. Shop directly from curated local shops with unified checkout.",
 };
 
 export default async function ShopsPage() {
@@ -44,7 +44,7 @@ export default async function ShopsPage() {
             letterSpacing: "-0.02em",
           }}
         >
-          Discover Partner Boutiques
+          Discover Partner Shops
         </h1>
         <p
           style={{
@@ -72,7 +72,7 @@ export default async function ShopsPage() {
         >
           <div style={{ fontSize: "48px", marginBottom: "16px" }}>🏪</div>
           <h2 style={{ fontSize: "20px", fontWeight: 600, color: "var(--color-text-primary)", margin: 0 }}>
-            No boutique partners yet
+            No shops found
           </h2>
           <p style={{ color: "var(--color-text-secondary)", margin: "8px 0 0 0" }}>
             We&apos;re onboarding local shops. Check back soon!

@@ -466,7 +466,7 @@ export default async function HomePage() {
                       marginBottom: "8px",
                     }}
                   >
-                    Boutique Partners
+                    Store Partners
                   </span>
                   <h2
                     style={{
@@ -479,7 +479,7 @@ export default async function HomePage() {
                       margin: 0,
                     }}
                   >
-                    Featured Boutique Partners
+                    Featured Shops
                   </h2>
                   <p
                     style={{

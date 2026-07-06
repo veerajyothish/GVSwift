@@ -130,7 +130,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
               border: "1px solid rgba(107,30,46,0.1)",
             }}
           >
-            ← Back to Boutiques
+            ← Back to Shops
           </Link>
 
           {/* Shop Logo Avatar */}
@@ -217,7 +217,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
               href={`/shops/${shop.slug}`}
               className={!categorySlug ? "category-link-active" : "category-link"}
             >
-              All Boutique Curation
+              All Collections
             </Link>
             {categories.map((cat) => (
               <Link
@@ -262,7 +262,7 @@ export default async function ShopPage({ params, searchParams }: ShopPageProps) 
             <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", marginBottom: "32px", lineHeight: 1.6 }}>
               {categorySlug
                 ? `We couldn't find any products under this category for ${shop.name}.`
-                : "This boutique partner has not published any collections yet."}
+                : "This shop has not published any collections yet."}
             </p>
             {categorySlug && (
               <Link href={`/shops/${shop.slug}`} className="btn btn-primary btn-premium" style={{ display: "inline-flex" }}>

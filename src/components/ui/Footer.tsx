@@ -79,7 +79,7 @@ export function Footer() {
             <div className={`footer-content ${openSections.shop ? "open" : ""}`}>
               <Link href="/products" className="footer-link">All Products</Link>
               <Link href="/products?sort=newest" className="footer-link">New Arrivals</Link>
-              <Link href="/shops" className="footer-link">Boutique Shops</Link>
+              <Link href="/shops" className="footer-link">Shops</Link>
               <Link href="/faq" className="footer-link">FAQ</Link>
             </div>
           </div>
