@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE_URL}/products`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/shops`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE_URL}/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE_URL}/privacy`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
@@ -35,5 +36,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // DB unavailable during build — return static only
   }
 
-  return [...staticRoutes, ...productRoutes];
+  let shopRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const shops = await prisma.shop.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    });
+    shopRoutes = shops.map((s) => ({
+      url: `${BASE_URL}/shops/${s.slug}`,
+      lastModified: s.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch {
+    // DB unavailable during build — fallback gracefully
+  }
+
+  return [...staticRoutes, ...productRoutes, ...shopRoutes];
 }
