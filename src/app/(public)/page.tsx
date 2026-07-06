@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/components/ui/Navbar";
 import { getFeaturedProducts } from "@/features/catalog/repository";
+import { getShops } from "@/features/catalog/service";
+import ShopCard from "@/components/ui/ShopCard";
 import { getServerSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { withRetry } from "@/lib/retry";
@@ -15,9 +17,10 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [session, productsResult] = await Promise.all([
+  const [session, productsResult, featuredShops] = await Promise.all([
     getServerSession(),
     getFeaturedProducts(),
+    getShops({ isActive: true, isFeatured: true }),
   ]);
   const { products } = productsResult;
 
@@ -423,6 +426,108 @@ export default async function HomePage() {
 
 
         </section>
+
+        {/* ── FEATURED SHOPS SECTION ───────────────────────────────────────── */}
+        {featuredShops.length > 0 && (
+          <section
+            style={{
+              background: "var(--color-surface)",
+              borderBottom: "1px solid var(--color-border)",
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "1200px",
+                margin: "0 auto",
+                padding: "80px 24px",
+              }}
+            >
+              {/* Section Header */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                  marginBottom: "40px",
+                  flexWrap: "wrap",
+                  gap: "12px",
+                }}
+              >
+                <div>
+                  <span
+                    style={{
+                      display: "block",
+                      fontFamily: "var(--font-body)",
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      color: "var(--color-text-secondary)",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    Boutique Partners
+                  </span>
+                  <h2
+                    style={{
+                      fontFamily: "var(--font-heading), 'EB Garamond', serif",
+                      fontSize: "clamp(30px, 3.5vw, 42px)",
+                      fontWeight: 700,
+                      fontStyle: "italic",
+                      color: "var(--color-accent)",
+                      lineHeight: 1.15,
+                      margin: 0,
+                    }}
+                  >
+                    Featured Boutique Partners
+                  </h2>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "var(--color-text-secondary)",
+                      marginTop: "12px",
+                      marginBottom: 0,
+                      maxWidth: "500px",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    GVSwift brings local offline stores online through immersive digital shopping. Curated storefronts, one trusted platform.
+                  </p>
+                </div>
+                <Link
+                  href="/shops"
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "var(--color-text-secondary)",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
+                >
+                  Explore All Shops &rarr;
+                </Link>
+              </div>
+
+              {/* Shops Grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                  gap: "32px",
+                }}
+              >
+                {featuredShops.map((shop) => (
+                  <ShopCard key={shop.id} shop={shop} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── TRENDING NOW ──────────────────────────────────────────────────── */}
         {/* PDF p.6/7: standard 4-col product grid with category label + name + price */}

@@ -84,6 +84,7 @@ export async function Navbar() {
             {[
               { label: "New Arrivals", href: "/products?sort=newest" },
               { label: "Collections", href: "/products" },
+              { label: "Shops", href: "/shops" },
             ].map(({ label, href }) => (
               <Link
                 key={label}

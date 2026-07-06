@@ -391,6 +391,32 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </span>
             )}
 
+            {product?.shop && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                <span>Sold by</span>
+                <Link
+                  href={`/shops/${product.shop.slug}`}
+                  style={{
+                    color: "var(--color-accent)",
+                    fontWeight: 700,
+                    textDecoration: "underline",
+                  }}
+                >
+                  {product.shop.name}
+                </Link>
+              </div>
+            )}
+
             {/* Product title — PDF p.4: large Garamond serif, not italic */}
             <h1
               style={{
@@ -437,6 +463,32 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               >
                 {product.brand}
               </span>
+            )}
+
+            {product?.shop && (
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                <span>Sold by</span>
+                <Link
+                  href={`/shops/${product.shop.slug}`}
+                  style={{
+                    color: "var(--color-accent)",
+                    fontWeight: 700,
+                    textDecoration: "underline",
+                  }}
+                >
+                  {product.shop.name}
+                </Link>
+              </div>
             )}
             <h1
               style={{
