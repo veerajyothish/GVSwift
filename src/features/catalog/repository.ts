@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma, Category } from "@prisma/client";
+import { Prisma, Category, Shop } from "@prisma/client";
 import { redis } from "@/lib/redis";
 import { withRetry } from "@/lib/retry";
 import {
@@ -52,6 +52,11 @@ async function fetchProductsDirect(
   // Filter by category
   if (params.categoryId) {
     where.categoryId = params.categoryId;
+  }
+
+  // Filter by shop
+  if (params.shopId) {
+    where.shopId = params.shopId;
   }
 
   // PostgreSQL Full Text Search
@@ -107,6 +112,7 @@ async function fetchProductsDirect(
               { sortOrder: "asc" },
             ],
           },
+          shop: true,
         },
         orderBy,
       })
@@ -230,6 +236,7 @@ export async function getProductBySlug(
             ],
           },
           category: true,
+          shop: true,
         },
       })
     )) as ProductWithVariantsAndImages | null;
@@ -256,6 +263,7 @@ export async function getProductBySlug(
           ],
         },
         category: true,
+        shop: true,
       },
     })
   )) as ProductWithVariantsAndImages | null;
@@ -290,6 +298,7 @@ export async function getProductById(
           ],
         },
         category: true,
+        shop: true,
       },
     })
   )) as ProductWithVariantsAndImages | null;
@@ -315,6 +324,36 @@ export async function listCategories(bypassCache = false) {
 }
 
 /**
+ * Lists categories that contain active products belonging to a specific shop.
+ */
+export async function listCategoriesForShop(shopId: string): Promise<Category[]> {
+  const products = await withRetry(() =>
+    prisma.product.findMany({
+      where: {
+        shopId,
+        isActive: true,
+        category: { isNot: null },
+      },
+      select: {
+        category: true,
+      },
+    })
+  );
+
+  const categories: Category[] = [];
+  const seenIds = new Set<string>();
+
+  for (const p of products) {
+    if (p.category && !seenIds.has(p.category.id)) {
+      seenIds.add(p.category.id);
+      categories.push(p.category);
+    }
+  }
+
+  return categories.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
  * Creates a new product with optional variants and images (typically used by Admin CRUD).
  */
 export async function createProduct(data: {
@@ -325,6 +364,7 @@ export async function createProduct(data: {
   basePricePaise: number;
   isActive?: boolean;
   categoryId?: string | null;
+  shopId?: string | null;
   variants?: { sku: string; stock: number; priceDeltaPaise: number }[];
   images?: { url: string; altText?: string | null; isPrimary?: boolean; sortOrder?: number }[];
 }): Promise<ProductWithVariantsAndImages> {
@@ -338,6 +378,7 @@ export async function createProduct(data: {
         basePricePaise: data.basePricePaise,
         isActive: data.isActive ?? true,
         categoryId: data.categoryId,
+        shopId: data.shopId,
         variants: data.variants
           ? {
               createMany: {
@@ -356,6 +397,7 @@ export async function createProduct(data: {
       include: {
         variants: true,
         images: true,
+        shop: true,
       },
     })
   )) as ProductWithVariantsAndImages;
@@ -377,6 +419,7 @@ export async function updateProduct(
     basePricePaise?: number;
     isActive?: boolean;
     categoryId?: string | null;
+    shopId?: string | null;
   }
 ): Promise<ProductWithVariantsAndImages> {
   const existing = await withRetry(() =>
@@ -393,6 +436,7 @@ export async function updateProduct(
       include: {
         variants: true,
         images: true,
+        shop: true,
       },
     })
   )) as ProductWithVariantsAndImages;
@@ -481,3 +525,118 @@ export async function getRelatedProducts(
     };
   });
 }
+
+// --- Shop Repository Actions ---
+
+export async function invalidateShopCache(slug?: string) {
+  await redis.del("shops:active");
+  await redis.del("shops:featured");
+  if (slug) {
+    await redis.del(`shop:${slug}`);
+  }
+}
+
+export async function listShops(params: { isActive?: boolean; isFeatured?: boolean } = {}) {
+  const key = `shops:${JSON.stringify(params)}`;
+  const cached = await redis.get<Shop[]>(key);
+  if (cached) return cached;
+
+  const where: Prisma.ShopWhereInput = {};
+  if (params.isActive !== undefined) {
+    where.isActive = params.isActive;
+  }
+  if (params.isFeatured !== undefined) {
+    where.isFeatured = params.isFeatured;
+  }
+
+  const shops = await withRetry(() =>
+    prisma.shop.findMany({
+      where,
+      orderBy: { name: "asc" },
+    })
+  );
+
+  await redis.setex(key, 300, shops);
+  return shops;
+}
+
+export async function getShopBySlug(slug: string) {
+  const key = `shop:${slug}`;
+  const cached = await redis.get<Shop | null>(key);
+  if (cached) return cached;
+
+  const shop = await withRetry(() =>
+    prisma.shop.findUnique({
+      where: { slug },
+    })
+  );
+
+  await redis.setex(key, 300, shop);
+  return shop;
+}
+
+export async function getShopById(id: string) {
+  return withRetry(() =>
+    prisma.shop.findUnique({
+      where: { id },
+    })
+  );
+}
+
+export async function createShop(data: {
+  name: string;
+  slug: string;
+  brandImage: string;
+  description: string;
+  tagline?: string | null;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}) {
+  const shop = await withRetry(() =>
+    prisma.shop.create({
+      data: {
+        name: data.name,
+        slug: data.slug,
+        brandImage: data.brandImage,
+        description: data.description,
+        tagline: data.tagline,
+        isActive: data.isActive ?? true,
+        isFeatured: data.isFeatured ?? false,
+      },
+    })
+  );
+  await invalidateShopCache(shop.slug);
+  return shop;
+}
+
+export async function updateShop(
+  id: string,
+  data: {
+    name?: string;
+    slug?: string;
+    brandImage?: string;
+    description?: string;
+    tagline?: string | null;
+    isActive?: boolean;
+    isFeatured?: boolean;
+  }
+) {
+  const existing = await withRetry(() =>
+    prisma.shop.findUnique({
+      where: { id },
+      select: { slug: true },
+    })
+  );
+  const shop = await withRetry(() =>
+    prisma.shop.update({
+      where: { id },
+      data,
+    })
+  );
+  await invalidateShopCache(existing?.slug);
+  if (shop.slug !== existing?.slug) {
+    await invalidateShopCache(shop.slug);
+  }
+  return shop;
+}
+

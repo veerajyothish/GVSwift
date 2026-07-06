@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductById, listCategories } from "@/features/catalog/repository";
+import { getProductById, listCategories, listShops } from "@/features/catalog/repository";
 import ProductForm from "../components/ProductForm";
 
 interface PageProps {
@@ -11,15 +11,22 @@ interface PageProps {
 export default async function AdminEditProductPage({ params }: PageProps) {
   const { id } = await params;
 
-  // Fetch product by ID (include inactive) and all categories
-  const [product, categories] = await Promise.all([
+  // Fetch product by ID (include inactive), all categories and active shops
+  const [product, categories, shops] = await Promise.all([
     getProductById(id, true),
     listCategories(),
+    listShops({ isActive: true }),
   ]);
 
   if (!product) {
     notFound();
   }
+
+  // Format dates/optional fields for client compatibility
+  const formattedProduct = {
+    ...product,
+    shopId: product.shopId || "",
+  };
 
   return (
     <div className="container-sm flex flex-col gap-4">
@@ -40,7 +47,7 @@ export default async function AdminEditProductPage({ params }: PageProps) {
       </div>
 
       {/* Shared form pre-filled */}
-      <ProductForm initialData={product} categories={categories} />
+      <ProductForm initialData={formattedProduct} categories={categories} shops={shops} />
     </div>
   );
 }

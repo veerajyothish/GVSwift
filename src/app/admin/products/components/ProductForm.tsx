@@ -27,6 +27,7 @@ interface ProductFormProps {
     basePricePaise: number;
     isActive: boolean;
     categoryId: string | null;
+    shopId?: string | null;
     variants: Array<{
       id: string;
       sku: string;
@@ -41,9 +42,10 @@ interface ProductFormProps {
     }>;
   };
   categories: Array<{ id: string; name: string }>;
+  shops: Array<{ id: string; name: string }>;
 }
 
-export default function ProductForm({ initialData, categories }: ProductFormProps) {
+export default function ProductForm({ initialData, categories, shops }: ProductFormProps) {
   const router = useRouter();
   const isEdit = !!initialData;
 
@@ -57,6 +59,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
   );
   const [isActive, setIsActive] = useState(initialData?.isActive ?? true);
   const [categoryId, setCategoryId] = useState(initialData?.categoryId ?? "");
+  const [shopId, setShopId] = useState(initialData?.shopId ?? "");
 
   // Variants state
   const [variants, setVariants] = useState<VariantInput[]>(
@@ -262,6 +265,7 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
         basePricePaise,
         isActive,
         categoryId: categoryId || null,
+        shopId: shopId || null,
         variants: mappedVariants,
         images: images.map((img) => ({
           url: img.url,
@@ -380,7 +384,14 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
           />
         </div>
 
-        <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }} className="form-grid-3">
+          <style>{`
+            @media (max-width: 640px) {
+              .form-grid-3 {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `}</style>
           {/* Base Price */}
           <div className="input-group">
             <label className="input-label input-required" htmlFor="prod-price">Base Price (INR ₹)</label>
@@ -412,6 +423,25 @@ export default function ProductForm({ initialData, categories }: ProductFormProp
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Shop */}
+          <div className="input-group">
+            <label className="input-label" htmlFor="prod-shop">Shop</label>
+            <select
+              id="prod-shop"
+              className="input-field"
+              value={shopId}
+              onChange={(e) => setShopId(e.target.value)}
+              disabled={isSubmitting}
+            >
+              <option value="">No Shop (Platform Default)</option>
+              {shops.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
                 </option>
               ))}
             </select>

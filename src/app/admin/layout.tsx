@@ -47,6 +47,9 @@ export default async function AdminLayout({
               <Link href="/admin/products" className="site-navbar-link">
                 Products
               </Link>
+              <Link href="/admin/shops" className="site-navbar-link">
+                Shops
+              </Link>
               <Link href="/admin/orders" className="site-navbar-link">
                 Orders
               </Link>

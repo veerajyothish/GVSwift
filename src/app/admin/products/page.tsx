@@ -9,7 +9,7 @@
  */
 import React from "react";
 import Link from "next/link";
-import { listProducts, listCategories } from "@/features/catalog/repository";
+import { listProducts, listCategories, listShops } from "@/features/catalog/repository";
 import ProductListTable from "./components/ProductListTable";
 import ProductExportButton from "./components/ProductExportButton";
 import { getLowStockThreshold } from "@/features/settings/service";
@@ -19,6 +19,7 @@ interface PageProps {
     page?: string;
     search?: string;
     categoryId?: string;
+    shopId?: string;
     filter?: string;
   }>;
 }
@@ -28,21 +29,24 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
   const page = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
   const search = resolvedParams.search || undefined;
   const categoryId = resolvedParams.categoryId || undefined;
+  const shopId = resolvedParams.shopId || undefined;
   const filterLowStock = resolvedParams.filter === "lowstock";
 
   const lowStockThreshold = await getLowStockThreshold();
 
-  const [productsResult, categories] = await Promise.all([
+  const [productsResult, categories, shops] = await Promise.all([
     listProducts({
       page,
       limit: 20,
       search,
       categoryId,
+      shopId,
       includeInactive: true,
       lowStockOnly: filterLowStock,
       lowStockThreshold,
     }),
     listCategories(),
+    listShops(),
   ]);
 
   return (
@@ -132,6 +136,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
       <ProductListTable
         initialProducts={productsResult.products}
         categories={categories}
+        shops={shops}
         totalPages={productsResult.totalPages}
         currentPage={productsResult.page}
         lowStockThreshold={lowStockThreshold}

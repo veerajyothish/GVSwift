@@ -22,12 +22,14 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") ?? "50", 10);
     const search = searchParams.get("search") ?? undefined;
     const categoryId = searchParams.get("categoryId") ?? undefined;
+    const shopId = searchParams.get("shopId") ?? undefined;
 
     const result = await listProducts({
       page,
       limit,
       search,
       categoryId,
+      shopId,
       includeInactive: true, // Admin sees everything
     });
 

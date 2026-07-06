@@ -157,6 +157,24 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
+model Shop {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  slug        String   @unique
+  brandImage  String
+  description String
+  tagline     String?
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  products    Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([isFeatured])
+}
+
 model Product {
   id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
@@ -169,6 +187,9 @@ model Product {
   categoryId String?   @db.Uuid
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
+  shopId     String?   @db.Uuid
+  shop       Shop?     @relation(fields: [shopId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
   variants   ProductVariant[]
   images     ProductImage[]
   orderItems    OrderItem[]
@@ -176,7 +197,7 @@ model Product {
   wishlistItems WishlistItem[]
   reviews       ProductReview[]
 
-  search_vector Unsupported("tsvector")?
+  search_vector Unsupported("tsvector")? @default(dbgenerated())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -187,6 +208,7 @@ model Product {
   @@index([isActive, categoryId])
   @@index([createdAt(sort: Desc)])
   @@index([basePricePaise])
+  @@index([shopId])
 }
 
 model ProductVariant {

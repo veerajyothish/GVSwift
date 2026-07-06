@@ -80,6 +80,7 @@ export async function PUT(
             basePricePaise: body.basePricePaise,
             isActive: body.isActive,
             categoryId: body.categoryId,
+            shopId: body.shopId,
           },
         });
 

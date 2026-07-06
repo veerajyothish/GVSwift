@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/Toast";
 interface ProductListTableProps {
   initialProducts: ProductWithVariantsAndImages[];
   categories: Array<{ id: string; name: string }>;
+  shops: Array<{ id: string; name: string }>;
   totalPages: number;
   currentPage: number;
   lowStockThreshold: number;
@@ -18,6 +19,7 @@ interface ProductListTableProps {
 export default function ProductListTable({
   initialProducts,
   categories,
+  shops,
   totalPages,
   currentPage,
   lowStockThreshold,
@@ -32,6 +34,7 @@ export default function ProductListTable({
   const [products, setProducts] = useState<ProductWithVariantsAndImages[]>(initialProducts);
   const [searchVal, setSearchVal] = useState(searchParams.get("search") ?? "");
   const [categoryIdVal, setCategoryIdVal] = useState(searchParams.get("categoryId") ?? "");
+  const [shopIdVal, setShopIdVal] = useState(searchParams.get("shopId") ?? "");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   // Sync state with incoming props (when page/params change via router)
@@ -40,7 +43,7 @@ export default function ProductListTable({
   }, [initialProducts]);
 
   // Update URL parameters
-  const applyFilters = (search: string, categoryId: string, pageNum = 1) => {
+  const applyFilters = (search: string, categoryId: string, pageNum = 1, shopId = shopIdVal) => {
     const params = new URLSearchParams(searchParams.toString());
     
     if (search.trim()) {
@@ -53,6 +56,12 @@ export default function ProductListTable({
       params.set("categoryId", categoryId);
     } else {
       params.delete("categoryId");
+    }
+
+    if (shopId) {
+      params.set("shopId", shopId);
+    } else {
+      params.delete("shopId");
     }
 
     if (pageNum > 1) {
@@ -68,19 +77,26 @@ export default function ProductListTable({
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      applyFilters(searchVal, categoryIdVal, 1);
+      applyFilters(searchVal, categoryIdVal, 1, shopIdVal);
     }
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const catId = e.target.value;
     setCategoryIdVal(catId);
-    applyFilters(searchVal, catId, 1);
+    applyFilters(searchVal, catId, 1, shopIdVal);
+  };
+
+  const handleShopChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const shId = e.target.value;
+    setShopIdVal(shId);
+    applyFilters(searchVal, categoryIdVal, 1, shId);
   };
 
   const handleClearFilters = () => {
     setSearchVal("");
     setCategoryIdVal("");
+    setShopIdVal("");
     startTransition(() => {
       router.push(pathname);
     });
@@ -197,6 +213,29 @@ export default function ProductListTable({
             ))}
           </select>
 
+          {/* Shop drop down */}
+          <select
+            className="input-field"
+            value={shopIdVal}
+            onChange={handleShopChange}
+            style={{
+              width: "180px",
+              height: "40px",
+              border: "1px solid var(--color-border)",
+              borderRadius: "8px",
+              backgroundColor: "var(--color-surface)",
+              fontSize: "14px",
+              cursor: "pointer",
+            }}
+          >
+            <option value="">All Shops</option>
+            {shops.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+
           {/* Low Stock filter pill */}
           <button
             type="button"
@@ -227,7 +266,7 @@ export default function ProductListTable({
         </div>
 
         <div className="flex gap-2 items-center">
-          {(searchParams.has("search") || searchParams.has("categoryId") || searchVal || categoryIdVal) && (
+          {(searchParams.has("search") || searchParams.has("categoryId") || searchParams.has("shopId") || searchVal || categoryIdVal || shopIdVal) && (
             <button
               type="button"
               className="btn btn-secondary"
@@ -250,7 +289,7 @@ export default function ProductListTable({
           <button
             type="button"
             className="btn btn-primary btn-premium"
-            onClick={() => applyFilters(searchVal, categoryIdVal, 1)}
+            onClick={() => applyFilters(searchVal, categoryIdVal, 1, shopIdVal)}
             disabled={isPending}
             style={{
               height: "40px",
@@ -349,6 +388,24 @@ export default function ProductListTable({
                     <td style={{ padding: "16px 20px" }}>
                       <div className="font-semibold text-primary text-sm">{product.name}</div>
                       <div className="text-xs text-secondary font-mono mt-0.5">{product.slug}</div>
+                      {product.shop && (
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            fontSize: "11px",
+                            color: "var(--color-accent)",
+                            fontWeight: 600,
+                            marginTop: "6px",
+                            backgroundColor: "var(--color-surface-container-low, #eee)",
+                            padding: "2px 8px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          🏪 {product.shop.name}
+                        </div>
+                      )}
                     </td>
 
                     {/* Price */}

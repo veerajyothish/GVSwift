@@ -1,6 +1,6 @@
 import { AppError } from "@/lib/errors";
 import * as repository from "./repository";
-import { CreateProductSchema, ProductQuerySchema, UpdateProductSchema } from "./validation";
+import { CreateProductSchema, ProductQuerySchema, UpdateProductSchema, CreateShopSchema, UpdateShopSchema } from "./validation";
 import { ListProductsParams } from "./types";
 
 /**
@@ -20,6 +20,7 @@ export async function getProducts(query: unknown) {
     page: parsed.data.page,
     limit: parsed.data.limit,
     categoryId: parsed.data.categoryId,
+    shopId: parsed.data.shopId,
     search: parsed.data.search,
     sort: parsed.data.sort,
     maxPrice: parsed.data.maxPrice,
@@ -154,3 +155,96 @@ export async function getRelatedProducts(categoryId: string, excludeProductId: s
   if (!categoryId) return [];
   return repository.getRelatedProducts(categoryId, excludeProductId, limit);
 }
+
+// --- Shop Service Actions ---
+
+export async function getShops(query: { isActive?: boolean; isFeatured?: boolean } = {}) {
+  return repository.listShops(query);
+}
+
+export async function getShopBySlug(slug: string) {
+  if (!slug) {
+    throw new AppError("VALIDATION_ERROR", "Shop slug is required", 400);
+  }
+  const shop = await repository.getShopBySlug(slug);
+  if (!shop) {
+    throw new AppError("NOT_FOUND", "Shop not found", 404);
+  }
+  return shop;
+}
+
+export async function getCategoriesForShop(shopId: string) {
+  if (!shopId) {
+    throw new AppError("VALIDATION_ERROR", "Shop ID is required", 400);
+  }
+  return repository.listCategoriesForShop(shopId);
+}
+
+export async function getShopById(id: string) {
+  if (!id) {
+    throw new AppError("VALIDATION_ERROR", "Shop ID is required", 400);
+  }
+  const shop = await repository.getShopById(id);
+  if (!shop) {
+    throw new AppError("NOT_FOUND", "Shop not found", 404);
+  }
+  return shop;
+}
+
+export async function adminCreateShop(input: unknown) {
+  const parsed = CreateShopSchema.safeParse(input);
+  if (!parsed.success) {
+    throw new AppError(
+      "VALIDATION_ERROR",
+      parsed.error.issues[0]?.message ?? "Invalid shop data",
+      400
+    );
+  }
+
+  // Check unique slug
+  const existing = await repository.getShopBySlug(parsed.data.slug);
+  if (existing) {
+    throw new AppError(
+      "CONFLICT",
+      "A shop with this slug already exists.",
+      409
+    );
+  }
+
+  return repository.createShop(parsed.data);
+}
+
+export async function adminUpdateShop(id: string, input: unknown) {
+  if (!id) {
+    throw new AppError("VALIDATION_ERROR", "Shop ID is required", 400);
+  }
+
+  const parsed = UpdateShopSchema.safeParse(input);
+  if (!parsed.success) {
+    throw new AppError(
+      "VALIDATION_ERROR",
+      parsed.error.issues[0]?.message ?? "Invalid shop data",
+      400
+    );
+  }
+
+  const existing = await repository.getShopById(id);
+  if (!existing) {
+    throw new AppError("NOT_FOUND", "Shop not found", 404);
+  }
+
+  // Check unique slug if slug is being updated
+  if (parsed.data.slug && parsed.data.slug !== existing.slug) {
+    const slugOwner = await repository.getShopBySlug(parsed.data.slug);
+    if (slugOwner) {
+      throw new AppError(
+        "CONFLICT",
+        "A shop with this slug already exists.",
+        409
+      );
+    }
+  }
+
+  return repository.updateShop(id, parsed.data);
+}
+

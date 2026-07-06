@@ -1,10 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { listCategories } from "@/features/catalog/repository";
+import { listCategories, listShops } from "@/features/catalog/repository";
 import ProductForm from "../components/ProductForm";
 
 export default async function AdminNewProductPage() {
-  const categories = await listCategories();
+  const [categories, shops] = await Promise.all([
+    listCategories(),
+    listShops({ isActive: true }),
+  ]);
 
   return (
     <div className="container-sm flex flex-col gap-4">
@@ -25,7 +28,7 @@ export default async function AdminNewProductPage() {
       </div>
 
       {/* Shared form */}
-      <ProductForm categories={categories} />
+      <ProductForm categories={categories} shops={shops} />
     </div>
   );
 }

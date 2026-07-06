@@ -1,4 +1,4 @@
-import { Product, ProductVariant, ProductImage, Category } from "@prisma/client";
+import { Product, ProductVariant, ProductImage, Category, Shop } from "@prisma/client";
 
 export type ProductWithVariantsAndImages = Product & {
   variants: ProductVariant[];
@@ -6,6 +6,7 @@ export type ProductWithVariantsAndImages = Product & {
   avgRating?: number | null;
   reviewCount?: number;
   category?: Category | null;
+  shop?: Shop | null;
 };
 
 export interface ListProductsParams {
@@ -13,6 +14,7 @@ export interface ListProductsParams {
   limit?: number;
   pageSize?: number;
   categoryId?: string;
+  shopId?: string;
   includeInactive?: boolean;
   search?: string;
   lowStockOnly?: boolean;
