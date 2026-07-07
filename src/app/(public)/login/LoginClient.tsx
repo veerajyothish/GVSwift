@@ -22,6 +22,11 @@ export default function LoginClient() {
   );
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(
+    searchParams.get("success") === "password_updated"
+      ? "Password updated successfully. Please sign in with your new password."
+      : null
+  );
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -42,6 +47,7 @@ export default function LoginClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
     setLoading(true);
     try {
       const supabase = createSupabaseBrowserClient();
@@ -106,6 +112,13 @@ export default function LoginClient() {
           <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
             <span>⚠</span>
             <div>{error}</div>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
+            <span>✓</span>
+            <div>{successMessage}</div>
           </div>
         )}
 
