@@ -3,10 +3,12 @@ import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/sup
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { type User } from "@prisma/client";
+import { isValidRedirect } from "@/lib/env";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get("code");
+  const nextParam = searchParams.get("next");
   // B12: ref param may be passed as ?ref= in the redirectTo URL from Google OAuth
   const refParam = searchParams.get("ref") ?? request.cookies.get("gvs_ref")?.value;
 
@@ -91,7 +93,11 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const redirectUrl = prismaUser?.role === "ADMIN" ? `${origin}/admin` : `${origin}/`;
+      let redirectPath = nextParam;
+      if (!isValidRedirect(redirectPath)) {
+        redirectPath = prismaUser?.role === "ADMIN" ? "/admin" : "/";
+      }
+      const redirectUrl = `${origin}${redirectPath}`;
       const response = NextResponse.redirect(redirectUrl);
       // Clear the referral cookie
       if (refParam) {
