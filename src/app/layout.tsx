@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter, EB_Garamond } from "next/font/google";
 import "./globals.css";
 
-const SITE_URL = "https://gvswift.vercel.app";
+import { getSiteUrl } from "@/lib/env";
+
+const SITE_URL = getSiteUrl();
 const SITE_TITLE = "GVSwift";
 const SITE_DESCRIPTION =
   "Shop GVSwift for premium fashion with Cash on Delivery across India.";
