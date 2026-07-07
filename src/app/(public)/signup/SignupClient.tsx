@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignupClient() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -235,11 +232,11 @@ export default function SignupClient() {
             <input id="confirm-password" type="password" className="input-field" placeholder="Re-enter your password"
               value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" disabled={loading} />
           </div>
-          <Button 
+           <Button 
             type="submit" 
             variant="primary" 
-            loading={loading || isPending} 
-            disabled={loading || isPending || googleLoading} 
+            loading={loading} 
+            disabled={loading || googleLoading} 
             style={{ width: "100%", minHeight: "48px", marginTop: "8px" }}
           >
             Create Account
