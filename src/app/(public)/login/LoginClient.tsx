@@ -27,6 +27,33 @@ export default function LoginClient() {
       ? "Password updated successfully. Please sign in with your new password."
       : null
   );
+  const [showResend, setShowResend] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState<string | null>(null);
+
+  const handleResendVerification = async () => {
+    setError(null);
+    setResendSuccess(null);
+    setResendLoading(true);
+    try {
+      const res = await fetch("/api/v1/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to resend verification email.");
+      } else {
+        setResendSuccess(data.message || "Verification email sent!");
+        setShowResend(false);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -48,6 +75,8 @@ export default function LoginClient() {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
+    setShowResend(false);
+    setResendSuccess(null);
     setLoading(true);
     try {
       const supabase = createSupabaseBrowserClient();
@@ -58,7 +87,14 @@ export default function LoginClient() {
         body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Login failed."); setLoading(false); return; }
+      if (!res.ok) {
+        setError(data.error || "Login failed.");
+        if (data.code === "EMAIL_NOT_CONFIRMED") {
+          setShowResend(true);
+        }
+        setLoading(false);
+        return;
+      }
       
       startTransition(() => {
         if (data.user?.role === "ADMIN") {
@@ -111,7 +147,29 @@ export default function LoginClient() {
         {error && (
           <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
             <span>⚠</span>
-            <div>{error}</div>
+            <div>
+              {error}
+              {showResend && (
+                <div style={{ marginTop: "12px" }}>
+                  <Button
+                    onClick={handleResendVerification}
+                    variant="primary"
+                    loading={resendLoading}
+                    disabled={resendLoading}
+                    style={{ minHeight: "36px", fontSize: "12px", padding: "4px 12px" }}
+                  >
+                    Resend Verification Link
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {resendSuccess && (
+          <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
+            <span>✓</span>
+            <div>{resendSuccess}</div>
           </div>
         )}
 

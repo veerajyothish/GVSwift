@@ -15,6 +15,32 @@ export default function SignupClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [isSignedUp, setIsSignedUp] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState<string | null>(null);
+
+  const handleResendVerification = async () => {
+    setError(null);
+    setResendSuccess(null);
+    setResendLoading(true);
+    try {
+      const res = await fetch("/api/v1/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to resend verification email.");
+      } else {
+        setResendSuccess(data.message || "Verification email sent!");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -71,9 +97,8 @@ export default function SignupClient() {
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Signup failed."); setLoading(false); return; }
       
-      startTransition(() => {
-        router.push("/");
-      });
+      setIsSignedUp(true);
+      setLoading(false);
     } catch {
       setError("Network error. Please try again.");
       setLoading(false);
@@ -98,20 +123,75 @@ export default function SignupClient() {
       </Link>
 
       <div className="auth-card">
-        <h1
-          style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "26px",
-            fontWeight: 400,
-            fontStyle: "italic",
-            color: "var(--color-accent)",
-            textAlign: "center",
-            marginBottom: "6px",
-          }}
-        >
-          Create your account
-        </h1>
-        <p className="auth-card-subtitle">Shop with confidence across India</p>
+        {isSignedUp ? (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>✉️</div>
+            <h1
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: 400,
+                fontStyle: "italic",
+                color: "var(--color-accent)",
+                marginBottom: "12px",
+              }}
+            >
+              Verify your email
+            </h1>
+            <p
+              style={{
+                fontSize: "14px",
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.6,
+                marginBottom: "28px",
+              }}
+            >
+              We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your inbox and click the link to activate your account.
+            </p>
+            
+            {error && (
+              <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
+                <span>⚠</span><div>{error}</div>
+              </div>
+            )}
+
+            {resendSuccess && (
+              <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
+                <span>✓</span><div>{resendSuccess}</div>
+              </div>
+            )}
+
+            <Button
+              onClick={handleResendVerification}
+              variant="primary"
+              loading={resendLoading}
+              disabled={resendLoading}
+              style={{ width: "100%", minHeight: "48px", marginBottom: "16px" }}
+            >
+              Resend Verification Email
+            </Button>
+            <div className="auth-footer-divider">
+              <Link href="/login" className="auth-footer-link" style={{ fontSize: "14px" }}>
+                Return to Login
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "26px",
+                fontWeight: 400,
+                fontStyle: "italic",
+                color: "var(--color-accent)",
+                textAlign: "center",
+                marginBottom: "6px",
+              }}
+            >
+              Create your account
+            </h1>
+            <p className="auth-card-subtitle">Shop with confidence across India</p>
 
         {error && (
           <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
@@ -172,6 +252,8 @@ export default function SignupClient() {
             <Link href="/login" className="auth-footer-link">Sign in</Link>
           </p>
         </div>
+          </>
+        )}
       </div>
 
       <p className="auth-disclaimer">

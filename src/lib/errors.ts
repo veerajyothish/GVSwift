@@ -19,6 +19,7 @@ export type ErrorCode =
   | "RATE_LIMITED"
   | "INTERNAL_ERROR"
   | "COD_NOT_ELIGIBLE"
+  | "EMAIL_NOT_CONFIRMED"
   | "INVALID_TRANSITION";
 
 export class AppError extends Error {

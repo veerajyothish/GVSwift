@@ -3,6 +3,7 @@ import { createSupabaseServerClient, createSupabaseAdminClient } from "@/lib/sup
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
+import { getSiteUrl } from "@/lib/env";
 
 export const SignupSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -35,6 +36,9 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
+    options: {
+      emailRedirectTo: `${getSiteUrl()}/auth/callback?next=/`,
+    },
   });
 
   if (error) {
@@ -134,8 +138,17 @@ export async function loginUser(input: LoginInput) {
   });
 
   if (error || !data.user) {
-    // TEMP: expose real error for debugging
+    // Log internally for debugging/troubleshooting, retaining full details
     logger.warn({ code: error?.code, message: error?.message }, "Login failed");
+    
+    if (error?.code === "email_not_confirmed" || error?.message?.toLowerCase().includes("email not confirmed")) {
+      throw new AppError(
+        "EMAIL_NOT_CONFIRMED",
+        "Your email address is not verified. Please check your inbox or resend the verification link.",
+        401
+      );
+    }
+
     throw new AppError(
       "UNAUTHORIZED",
       `Login failed: ${error?.message ?? "unknown"} (code: ${error?.code ?? "none"})`,
