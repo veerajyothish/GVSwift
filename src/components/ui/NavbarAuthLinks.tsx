@@ -19,14 +19,15 @@ export async function NavbarAuthLinks() {
     // Logged out state
     return (
       <div className="site-navbar-links">
-        <Link href="/products" className="site-navbar-link">
+        <Link href="/products" prefetch={true} className="site-navbar-link">
           Shop
         </Link>
-        <Link href="/login" className="site-navbar-link">
+        <Link href="/login" prefetch={true} className="site-navbar-link">
           Sign In
         </Link>
         <Link
           href="/signup"
+          prefetch={true}
           className="site-navbar-link"
           style={{
             backgroundColor: "var(--color-accent)",
@@ -58,18 +59,19 @@ export async function NavbarAuthLinks() {
   // Logged in state
   return (
     <div className="site-navbar-links">
-      <Link href="/products" className="site-navbar-link">
+      <Link href="/products" prefetch={true} className="site-navbar-link">
         Shop
       </Link>
-      <Link href="/cart" className="site-navbar-link">
+      <Link href="/cart" prefetch={true} className="site-navbar-link">
         Cart
       </Link>
-      <Link href="/account/orders" className="site-navbar-link">
+      <Link href="/account/orders" prefetch={true} className="site-navbar-link">
         Orders
       </Link>
       {isAdmin && (
         <Link
           href="/admin"
+          prefetch={true}
           className="site-navbar-link"
           style={{ color: "var(--color-accent)", fontWeight: 600 }}
         >

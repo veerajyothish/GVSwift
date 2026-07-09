@@ -51,6 +51,15 @@ export default function ProductCard({
   const wishlisted = isWishlisted(product.id);
   const [hovered, setHovered] = useState(false);
 
+  const handleMouseEnter = useCallback(() => {
+    setHovered(true);
+    router.prefetch(`/products/${product.slug}`);
+  }, [router, product.slug]);
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false);
+  }, []);
+
   const totalStock =
     product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
   const isOutOfStock = totalStock === 0;
@@ -72,8 +81,8 @@ export default function ProductCard({
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => router.push(`/products/${product.slug}`)}
       style={{
         display: "flex",
@@ -106,6 +115,7 @@ export default function ProductCard({
       >
         <Link
           href={`/products/${product.slug}`}
+          prefetch={true}
           onClick={(e) => e.stopPropagation()}
           style={{ display: "block", width: "100%", height: "100%" }}
         >
@@ -195,6 +205,7 @@ export default function ProductCard({
         <h3 style={{ margin: 0 }}>
           <Link
             href={`/products/${product.slug}`}
+            prefetch={true}
             onClick={(e) => e.stopPropagation()}
             style={{
               fontFamily: "var(--font-body)",

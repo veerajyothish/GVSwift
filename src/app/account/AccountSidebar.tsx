@@ -49,6 +49,7 @@ export default function AccountSidebar() {
             <Link
               key={link.href}
               href={link.href}
+              prefetch={true}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -87,6 +88,7 @@ export default function AccountSidebar() {
             <Link
               key={link.href}
               href={link.href}
+              prefetch={true}
               style={{
                 display: "flex",
                 alignItems: "center",

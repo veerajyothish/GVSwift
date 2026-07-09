@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Shop {
   id: string;
@@ -17,14 +17,14 @@ interface ShopCardProps {
 }
 
 export default function ShopCard({ shop }: ShopCardProps) {
-  const router = useRouter();
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <Link
+      href={`/shops/${shop.slug}`}
+      prefetch={true}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => router.push(`/shops/${shop.slug}`)}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -35,6 +35,8 @@ export default function ShopCard({ shop }: ShopCardProps) {
         overflow: "hidden",
         position: "relative",
         cursor: "pointer",
+        textDecoration: "none",
+        color: "inherit",
         willChange: hovered ? "transform" : "auto",
         transform: hovered ? "translateY(-4px)" : "translateY(0)",
         boxShadow: hovered
@@ -173,6 +175,6 @@ export default function ShopCard({ shop }: ShopCardProps) {
           </svg>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
