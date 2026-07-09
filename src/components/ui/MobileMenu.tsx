@@ -135,6 +135,14 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
   };
 
   /* Bottom nav tabs — PDF p.18 (Airtel-style floating bar refactored) */
+  let activeIndex = 0;
+  if (isSearchOpen) {
+    activeIndex = 1;
+  } else if (pathname.startsWith("/account/orders")) {
+    activeIndex = 2;
+  } else if (pathname.startsWith("/account/profile") || pathname === "/login") {
+    activeIndex = 3;
+  }
 
   return (
     <>
@@ -229,12 +237,17 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             </div>
           </div>
 
-          {/* ── Bottom nav bar — PDF p.18 ──────────────────────────────────── */}
           {/* ── Bottom nav bar — PDF p.18 (Airtel-inspired floating pill) ── */}
           <nav
             aria-label="Bottom navigation"
             className="mobile-bottom-nav"
+            style={{ "--active-index": activeIndex } as React.CSSProperties}
           >
+            {/* Sliding background pill indicator */}
+            <div className="mobile-bottom-nav-indicator">
+              <div className="mobile-bottom-nav-indicator-pill" />
+            </div>
+
             {/* Shop tab */}
             <Link
               href="/products"
