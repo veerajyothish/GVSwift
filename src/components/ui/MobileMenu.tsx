@@ -251,6 +251,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             {/* Shop tab */}
             <Link
               href="/products"
+              prefetch={true}
               className={`mobile-bottom-tab ${
                 pathname === "/products" || pathname.startsWith("/products/") ? "mobile-bottom-tab-active" : ""
               }`}
@@ -279,6 +280,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             {/* Orders tab */}
             <Link
               href="/account/orders"
+              prefetch={true}
               className={`mobile-bottom-tab ${
                 pathname.startsWith("/account/orders") ? "mobile-bottom-tab-active" : ""
               }`}
@@ -294,6 +296,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             {/* Profile tab */}
             <Link
               href={isLoggedIn ? "/account/profile" : "/login"}
+              prefetch={true}
               className={`mobile-bottom-tab ${
                 pathname.startsWith("/account/profile") || pathname === "/login" ? "mobile-bottom-tab-active" : ""
               }`}
