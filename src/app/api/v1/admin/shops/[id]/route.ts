@@ -3,6 +3,7 @@ import { requireAdminForApi } from "@/lib/auth/guards";
 import { adminUpdateShop } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(
   request: NextRequest,
@@ -33,6 +34,11 @@ export async function PUT(
         slug: shop.slug,
       },
     });
+
+    revalidatePath("/admin/shops");
+    revalidatePath(`/shops/${shop.slug}`);
+    revalidatePath("/shops");
+    revalidatePath("/");
 
     return NextResponse.json(shop, { status: 200 });
   } catch (err) {

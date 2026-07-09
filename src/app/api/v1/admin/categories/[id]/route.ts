@@ -3,6 +3,7 @@ import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { invalidateCollectionCache } from "@/features/catalog/repository";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -59,6 +60,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
     },
   });
 
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/products");
+  revalidatePath("/");
+
   return NextResponse.json(updated);
 }
 
@@ -100,6 +106,11 @@ export async function DELETE(_req: Request, { params }: RouteParams) {
       slug: category.slug,
     },
   });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/products");
+  revalidatePath("/");
 
   return NextResponse.json({ deleted: true });
 }

@@ -4,6 +4,7 @@ import { listShops } from "@/features/catalog/repository";
 import { adminCreateShop } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,6 +56,10 @@ export async function POST(request: NextRequest) {
         slug: shop.slug,
       },
     });
+
+    revalidatePath("/admin/shops");
+    revalidatePath("/shops");
+    revalidatePath("/");
 
     return NextResponse.json(shop, { status: 201 });
   } catch (err) {

@@ -13,6 +13,7 @@ import { toSafeError } from "@/lib/errors";
 import { EditProductSchema } from "@/features/catalog/validation";
 import { invalidateProductCache } from "@/features/catalog/repository";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(
   request: NextRequest,
@@ -186,6 +187,19 @@ export async function PUT(
       });
     }
 
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+    if (updatedProduct) {
+      revalidatePath(`/products/${updatedProduct.slug}`);
+      if (updatedProduct.shopId) {
+        revalidatePath(`/shops/${updatedProduct.shopId}`);
+      }
+    }
+    if (oldProduct && oldProduct.slug !== updatedProduct?.slug) {
+      revalidatePath(`/products/${oldProduct.slug}`);
+    }
+    revalidatePath("/");
+
     return NextResponse.json(updatedProduct, { status: 200 });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);
@@ -215,6 +229,13 @@ export async function DELETE(
           slug: product.slug,
         },
       });
+      revalidatePath("/admin/products");
+      revalidatePath("/products");
+      revalidatePath(`/products/${product.slug}`);
+      if (product.shopId) {
+        revalidatePath(`/shops/${product.shopId}`);
+      }
+      revalidatePath("/");
     }
 
     return NextResponse.json(

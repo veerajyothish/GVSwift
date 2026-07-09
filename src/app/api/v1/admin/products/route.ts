@@ -11,6 +11,7 @@ import { listProducts, invalidateProductCache } from "@/features/catalog/reposit
 import { adminCreateProduct } from "@/features/catalog/service";
 import { toSafeError } from "@/lib/errors";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -86,6 +87,13 @@ export async function POST(request: NextRequest) {
           slug: product.slug,
         },
       });
+      revalidatePath("/admin/products");
+      revalidatePath("/products");
+      revalidatePath(`/products/${product.slug}`);
+      if (product.shopId) {
+        revalidatePath(`/shops/${product.shopId}`);
+      }
+      revalidatePath("/");
     }
 
     return NextResponse.json(product, { status: 201 });

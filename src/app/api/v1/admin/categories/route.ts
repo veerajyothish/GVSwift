@@ -3,6 +3,7 @@ import { requireAdminForApi } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { invalidateCollectionCache } from "@/features/catalog/repository";
 import { logAuditEvent } from "@/features/admin/audit-log";
+import { revalidatePath } from "next/cache";
 
 function slugify(text: string): string {
   return text
@@ -66,6 +67,11 @@ export async function POST(req: Request) {
       slug: category.slug,
     },
   });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/categories");
+  revalidatePath("/products");
+  revalidatePath("/");
 
   return NextResponse.json(category, { status: 201 });
 }

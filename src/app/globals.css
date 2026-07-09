@@ -1525,7 +1525,6 @@ button[disabled],
   z-index: 9999;
   padding: 0 4px;
   box-shadow: 0 8px 32px rgba(107, 30, 46, 0.08);
-  position: relative; /* Containing block for indicator */
 }
 
 /* Sliding active pill indicator */
