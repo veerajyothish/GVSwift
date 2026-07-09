@@ -58,6 +58,7 @@ export async function Navbar() {
           {/* ── Logo (left) ──────────────────────────────────────────────── */}
           <Link
             href="/"
+            prefetch={true}
             style={{
               display: "flex",
               alignItems: "center",
@@ -89,6 +90,7 @@ export async function Navbar() {
               <Link
                 key={label}
                 href={href}
+                prefetch={true}
                 className="navbar-center-link nav-link-hover"
                 style={{
                   fontSize: "13px",

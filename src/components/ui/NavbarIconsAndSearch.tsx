@@ -62,6 +62,7 @@ export function NavbarIconsAndSearch({
       {isLoggedIn && (
         <Link
           href="/account/wishlist"
+          prefetch={true}
           aria-label="Wishlist"
           style={{
             display: "inline-flex",
@@ -115,6 +116,7 @@ export function NavbarIconsAndSearch({
       {/* Account icon — PDF p.1: dashed circle on desktop when logged in */}
       <Link
         href={isLoggedIn ? "/account" : "/login"}
+        prefetch={true}
         aria-label={isLoggedIn ? "My account" : "Sign in"}
         style={{
           display: "inline-flex",
@@ -149,6 +151,7 @@ export function NavbarIconsAndSearch({
       {/* Cart / shopping bag icon — PDF p.1/4 */}
       <Link
         href="/cart"
+        prefetch={true}
         aria-label={`Shopping cart${clientCartCount > 0 ? `, ${clientCartCount} items` : ""}`}
         style={{
           display: "inline-flex",
