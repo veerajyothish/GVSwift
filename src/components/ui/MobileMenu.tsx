@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import { performClientLogout } from "@/lib/auth/logout";
+import { ShoppingBag, Search, Package, User } from "lucide-react";
 
 
 interface MobileMenuProps {
@@ -133,12 +134,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
     await performClientLogout();
   };
 
-  /* Bottom nav tabs — PDF p.18 */
-  const bottomTabs: { label: string; href: string; icon: string }[] = [
-    { label: "Shop",    href: "/products",        icon: "🛍" },
-    { label: "Orders",  href: "/account/orders",  icon: "📋" },
-    { label: "Profile", href: isLoggedIn ? "/account/profile" : "/login", icon: "👤" },
-  ];
+  /* Bottom nav tabs — PDF p.18 (Airtel-style floating bar refactored) */
 
   return (
     <>
@@ -234,114 +230,68 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
           </div>
 
           {/* ── Bottom nav bar — PDF p.18 ──────────────────────────────────── */}
+          {/* ── Bottom nav bar — PDF p.18 (Airtel-inspired floating pill) ── */}
           <nav
             aria-label="Bottom navigation"
-            style={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: "64px",
-              background: "rgba(253,250,245,0.96)",
-              backdropFilter: "blur(12px)",
-              borderTop: "1px solid var(--color-border)",
-              display: "none", /* shown via media query below */
-              alignItems: "center",
-              justifyContent: "space-around",
-              zIndex: 9999,
-              paddingBottom: "env(safe-area-inset-bottom)",
-            }}
             className="mobile-bottom-nav"
           >
             {/* Shop tab */}
-            {bottomTabs.map(({ label, href, icon }) => {
-              const isActive = pathname === href || (href !== "/" && pathname.startsWith(href.split("?")[0]));
-              return (
-                <Link
-                  key={label}
-                  href={href}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "4px",
-                    textDecoration: "none",
-                    flex: 1,
-                    padding: "8px 0",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      background: isActive ? "rgba(107,30,46,0.1)" : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "20px",
-                      transition: "background 0.2s",
-                    }}
-                  >
-                    {icon}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "10px",
-                      fontWeight: isActive ? 600 : 400,
-                      letterSpacing: "0.04em",
-                      textTransform: "uppercase",
-                      color: isActive ? "var(--color-accent)" : "var(--color-text-secondary)",
-                    }}
-                  >
-                    {label}
-                  </span>
-                </Link>
-              );
-            })}
+            <Link
+              href="/products"
+              className={`mobile-bottom-tab ${
+                pathname === "/products" || pathname.startsWith("/products/") ? "mobile-bottom-tab-active" : ""
+              }`}
+            >
+              <div className="mobile-bottom-tab-inner">
+                <span className="mobile-bottom-tab-icon">
+                  <ShoppingBag size={20} />
+                </span>
+                <span className="mobile-bottom-tab-label">Shop</span>
+              </div>
+            </Link>
 
-            {/* Search tab — opens overlay instead of navigating */}
+            {/* Search tab */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "4px",
-                flex: 1,
-                padding: "8px 0",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-              }}
+              className={`mobile-bottom-tab ${isSearchOpen ? "mobile-bottom-tab-active" : ""}`}
             >
-              <span
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  background: isSearchOpen ? "rgba(107,30,46,0.1)" : "transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "20px",
-                  transition: "background 0.2s",
-                }}
-              >
-                🔍
-              </span>
-              <span
-                style={{
-                  fontSize: "10px",
-                  fontWeight: isSearchOpen ? 600 : 400,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: isSearchOpen ? "var(--color-accent)" : "var(--color-text-secondary)",
-                }}
-              >
-                Search
-              </span>
+              <div className="mobile-bottom-tab-inner">
+                <span className="mobile-bottom-tab-icon">
+                  <Search size={20} />
+                </span>
+                <span className="mobile-bottom-tab-label">Search</span>
+              </div>
             </button>
+
+            {/* Orders tab */}
+            <Link
+              href="/account/orders"
+              className={`mobile-bottom-tab ${
+                pathname.startsWith("/account/orders") ? "mobile-bottom-tab-active" : ""
+              }`}
+            >
+              <div className="mobile-bottom-tab-inner">
+                <span className="mobile-bottom-tab-icon">
+                  <Package size={20} />
+                </span>
+                <span className="mobile-bottom-tab-label">Orders</span>
+              </div>
+            </Link>
+
+            {/* Profile tab */}
+            <Link
+              href={isLoggedIn ? "/account/profile" : "/login"}
+              className={`mobile-bottom-tab ${
+                pathname.startsWith("/account/profile") || pathname === "/login" ? "mobile-bottom-tab-active" : ""
+              }`}
+            >
+              <div className="mobile-bottom-tab-inner">
+                <span className="mobile-bottom-tab-icon">
+                  <User size={20} />
+                </span>
+                <span className="mobile-bottom-tab-label">Profile</span>
+              </div>
+            </Link>
           </nav>
 
           {/* ── Full-screen search overlay ──────────────────────────────────── */}
