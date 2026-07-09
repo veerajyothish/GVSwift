@@ -509,11 +509,37 @@ export default function CheckoutClient({
       }
 
       toast.success("Order placed successfully!");
-      
-      // Redirect to the order details page wrapped in transition
-      startTransition(() => {
-        router.push(`/account/orders/${data.order.id}`);
-      });
+
+      // ponytail: CSS-only confetti burst
+      const colors = ["#6b1e2e", "#d4a574", "#e8c8a0", "#8b3a4a", "#c49a6c", "#f0d8b4", "#a0522d", "#deb887"];
+      const container = document.createElement("div");
+      container.style.cssText = "position:fixed;inset:0;z-index:99999;pointer-events:none;overflow:hidden;";
+      const style = document.createElement("style");
+      style.textContent = `@keyframes gv-confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}`;
+      container.appendChild(style);
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement("span");
+        p.style.cssText = `
+          position:absolute;top:-10px;
+          left:${Math.random() * 100}%;
+          width:${6 + Math.random() * 6}px;
+          height:${6 + Math.random() * 6}px;
+          background:${colors[Math.floor(Math.random() * colors.length)]};
+          border-radius:${Math.random() > 0.5 ? "50%" : "2px"};
+          animation:gv-confetti ${1.2 + Math.random() * 1}s ease-out ${Math.random() * 0.5}s forwards;
+        `;
+        container.appendChild(p);
+      }
+      document.body.appendChild(container);
+      setTimeout(() => container.remove(), 2500);
+
+      // Redirect after confetti plays
+      const orderId = data.order.id;
+      setTimeout(() => {
+        startTransition(() => {
+          router.push(`/account/orders/${orderId}`);
+        });
+      }, 1800);
     } catch (err: unknown) {
       const error = err as Error;
       setServerError(error.message || "Failed to place order. Please try again.");

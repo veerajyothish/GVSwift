@@ -5,7 +5,7 @@
  * Right-side icons: account (circle dashed outline on PDF p.1), shopping bag.
  * Both wine-red, clean SVG, badge dot on cart.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -20,6 +20,8 @@ export function NavbarIconsAndSearch({
   cartCount,
 }: NavbarIconsAndSearchProps) {
   const [clientCartCount, setClientCartCount] = useState(cartCount);
+  const [cartBounce, setCartBounce] = useState(false);
+  const cartRef = useRef<HTMLAnchorElement>(null);
   const { wishlistedIds } = useWishlist();
   const wishlistCount = wishlistedIds.length;
 
@@ -48,6 +50,40 @@ export function NavbarIconsAndSearch({
       window.removeEventListener("gvswift-cart-updated", handleUpdate);
     };
   }, []);
+
+  // ponytail: fly-to-cart animation
+  const handleCartFly = useCallback((e: Event) => {
+    const imgUrl = (e as CustomEvent).detail;
+    if (!imgUrl || !cartRef.current) return;
+    const cartRect = cartRef.current.getBoundingClientRect();
+    const el = document.createElement("img");
+    el.src = imgUrl;
+    el.style.cssText = `
+      position:fixed; z-index:99999; width:56px; height:56px; border-radius:8px;
+      object-fit:cover; pointer-events:none;
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+    `;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.top = `${cartRect.top + cartRect.height / 2}px`;
+      el.style.left = `${cartRect.left + cartRect.width / 2}px`;
+      el.style.width = "16px";
+      el.style.height = "16px";
+      el.style.opacity = "0.3";
+      el.style.borderRadius = "50%";
+    });
+    setTimeout(() => {
+      el.remove();
+      setCartBounce(true);
+      setTimeout(() => setCartBounce(false), 400);
+    }, 650);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("gvswift-cart-fly", handleCartFly);
+    return () => window.removeEventListener("gvswift-cart-fly", handleCartFly);
+  }, [handleCartFly]);
 
   return (
     <div
@@ -150,6 +186,7 @@ export function NavbarIconsAndSearch({
 
       {/* Cart / shopping bag icon — PDF p.1/4 */}
       <Link
+        ref={cartRef}
         href="/cart"
         prefetch={true}
         aria-label={`Shopping cart${clientCartCount > 0 ? `, ${clientCartCount} items` : ""}`}
@@ -163,7 +200,8 @@ export function NavbarIconsAndSearch({
           color: "var(--color-accent)",
           textDecoration: "none",
           position: "relative",
-          transition: "background 0.15s",
+          transition: "background 0.15s, transform 0.3s cubic-bezier(0.16,1,0.3,1)",
+          transform: cartBounce ? "scale(1.25)" : "scale(1)",
         }}
       >
         <svg

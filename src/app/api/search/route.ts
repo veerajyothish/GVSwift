@@ -23,7 +23,18 @@ export async function GET(req: NextRequest) {
       where: {
         id: { in: matchedIds },
       },
-      select: { id: true, name: true, slug: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        brand: true,
+        basePricePaise: true,
+        images: {
+          where: { isPrimary: true },
+          select: { url: true },
+          take: 1,
+        },
+      },
     })
   );
 
@@ -33,3 +44,4 @@ export async function GET(req: NextRequest) {
     },
   });
 }
+

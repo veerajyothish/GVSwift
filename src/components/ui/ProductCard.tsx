@@ -68,6 +68,17 @@ export default function ProductCard({
   const primaryImage =
     product.images?.find((img) => img.isPrimary) || product.images?.[0];
   const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
+  const [imgError, setImgError] = useState(false);
+
+  // ponytail: inline SVG brand-initials fallback
+  const initials = (product.brand || product.name)
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join("");
+  const svgFallback = `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%236b1e2e"/><stop offset="100%" stop-color="%238b3a4a"/></linearGradient></defs><rect width="300" height="400" fill="%23f3f0ec"/><circle cx="150" cy="180" r="60" fill="url(%23g)"/><text x="150" y="196" text-anchor="middle" font-size="36" font-weight="700" fill="%23fff" font-family="serif">${initials}</text></svg>`
+  )}`;
 
   const handleWishlist = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -120,14 +131,15 @@ export default function ProductCard({
           style={{ display: "block", width: "100%", height: "100%" }}
         >
           <Image
-            src={imageUrl}
+            src={imgError ? svgFallback : imageUrl}
             alt={primaryImage?.altText || product.name}
             fill
             priority={priority}
             loading="lazy"
             placeholder="blur"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAr5I4eAAAAA1BMVEX9+vU+1CIhAAAACklEQVR4nGNgAAAAAgABc3UBGAAAAABJRU5ErkJggg=="
+            blurDataURL={svgFallback}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            onError={() => setImgError(true)}
             style={{
               objectFit: "cover",
               transition: "transform 0.4s ease",

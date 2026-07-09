@@ -203,6 +203,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       if (!res.ok) throw new Error(data.error || "Failed to add item");
       
       toast.success(`Added ${product.name || "item"} to your cart!`, "Added to Cart");
+
+      // ponytail: dispatch fly-to-cart animation event
+      const primaryImg = product.images?.find((img) => img.isPrimary) || product.images?.[0];
+      if (primaryImg?.url) {
+        window.dispatchEvent(new CustomEvent("gvswift-cart-fly", { detail: primaryImg.url }));
+      }
       
       // Fetch latest cart count to synchronize precisely
       fetch("/api/v1/cart")
