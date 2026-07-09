@@ -14,7 +14,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { AppError } from "@/lib/errors";
-import { checkRateLimit } from "@/lib/rate-limit";
 import { TicketStatus, SupportTicket, TicketMessage } from "@prisma/client";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -73,8 +72,18 @@ export async function createTicket(
   }
 
   // 3. Rate limiting check (10 tickets per hour per user)
-  const limitRes = await checkRateLimit(userId, { limit: 10, windowSeconds: 3600 });
-  if (!limitRes.success) {
+  // ponytail: native database count check, resolving in-memory/stateless sync issues
+  const oneHourAgo = new Date(Date.now() - 3600 * 1000);
+  const hourTicketsCount = await prisma.supportTicket.count({
+    where: {
+      userId,
+      createdAt: {
+        gte: oneHourAgo,
+      },
+    },
+  });
+
+  if (hourTicketsCount >= 10) {
     throw new AppError(
       "RATE_LIMITED",
       "Too many support tickets created. Please try again later.",
