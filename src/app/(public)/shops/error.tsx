@@ -54,53 +54,15 @@ export default function ShopsErrorBoundary({ error, reset }: ErrorBoundaryProps)
       <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center" }}>
         <button
           onClick={reset}
-          style={{
-            padding: "12px 28px",
-            backgroundColor: "var(--color-accent, #6B1E2E)",
-            color: "#FDFAF5",
-            border: "1px solid var(--color-accent, #6B1E2E)",
-            borderRadius: "var(--radius-pill, 9999px)",
-            fontSize: "13px",
-            fontWeight: 500,
-            cursor: "pointer",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            transition: "all 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--color-accent-dark, #561922)";
-            e.currentTarget.style.borderColor = "var(--color-accent-dark, #561922)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--color-accent, #6B1E2E)";
-            e.currentTarget.style.borderColor = "var(--color-accent, #6B1E2E)";
-          }}
+          className="btn btn-primary"
+          style={{ padding: "12px 28px", fontSize: "13px", letterSpacing: "0.05em", textTransform: "uppercase" }}
         >
           Try Again
         </button>
         <Link
           href="/"
-          style={{
-            padding: "12px 28px",
-            backgroundColor: "transparent",
-            color: "var(--color-accent, #6B1E2E)",
-            border: "1px solid var(--color-accent, #6B1E2E)",
-            borderRadius: "var(--radius-pill, 9999px)",
-            fontSize: "13px",
-            fontWeight: 500,
-            textDecoration: "none",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            transition: "all 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--color-accent, #6B1E2E)";
-            e.currentTarget.style.color = "#FDFAF5";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "var(--color-accent, #6B1E2E)";
-          }}
+          className="btn btn-secondary"
+          style={{ padding: "12px 28px", fontSize: "13px", letterSpacing: "0.05em", textTransform: "uppercase" }}
         >
           Go Home
         </Link>
