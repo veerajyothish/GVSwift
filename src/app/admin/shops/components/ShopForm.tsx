@@ -29,6 +29,7 @@ export default function ShopForm({ initialData }: ShopFormProps) {
   const [isFeatured, setIsFeatured] = useState(initialData?.isFeatured ?? false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -42,6 +43,51 @@ export default function ShopForm({ initialData }: ShopFormProps) {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)+/g, "");
       setSlug(generatedSlug);
+    }
+  };
+
+  // Image Upload handler
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setErrorMsg(null);
+    setIsUploading(true);
+
+    try {
+      const file = files[0];
+
+      // Client-side size check (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error("File size exceeds the 5MB limit");
+      }
+
+      // Client-side extension check
+      const ext = file.name.split(".").pop()?.toLowerCase();
+      if (!ext || !["jpg", "jpeg", "png", "webp"].includes(ext)) {
+        throw new Error("Only JPEG, PNG, and WEBP image formats are allowed.");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/v1/admin/products/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Image upload failed");
+      }
+
+      setBrandImage(data.url);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "An error occurred during file upload.");
+    } finally {
+      setIsUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -64,13 +110,7 @@ export default function ShopForm({ initialData }: ShopFormProps) {
       return;
     }
     if (!brandImage.trim()) {
-      setErrorMsg("Brand Image URL is required.");
-      return;
-    }
-    try {
-      new URL(brandImage);
-    } catch {
-      setErrorMsg("Please enter a valid Brand Image URL (e.g. starting with https://).");
+      setErrorMsg("Brand Image is required. Please upload an image.");
       return;
     }
     if (description.length < 10) {
@@ -204,24 +244,65 @@ export default function ShopForm({ initialData }: ShopFormProps) {
         </div>
       </div>
 
-      {/* Row 2: Brand Image URL */}
+      {/* Row 2: Brand Image File Upload */}
       <div className="input-group">
         <label className="input-required" style={{ display: "block", marginBottom: "6px", fontWeight: 600, fontSize: "13px" }}>
-          Brand Logo / Banner Image URL
+          Brand Logo / Banner Image
         </label>
-        <input
-          type="url"
-          className="input-field"
-          value={brandImage}
-          onChange={(e) => setBrandImage(e.target.value)}
-          placeholder="e.g. https://images.unsplash.com/... or /shops/brand-logo.jpg"
-          required
-          disabled={isSubmitting}
-          style={{ width: "100%", height: "40px" }}
-        />
-        <p style={{ fontSize: "12px", color: "var(--color-text-secondary)", margin: 0, marginTop: "4px" }}>
-          Provide a premium high-resolution cover photo or logo image URL for the shop page banner and cards.
-        </p>
+        
+        {brandImage ? (
+          <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "12px" }}>
+            <div style={{ position: "relative", width: "120px", height: "80px", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--color-border)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={brandImage} alt="Brand Logo Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setBrandImage("")}
+              disabled={isSubmitting || isUploading}
+            >
+              Remove and Upload Different Image
+            </button>
+          </div>
+        ) : (
+          <div
+            style={{
+              border: "2px dashed var(--color-border)",
+              borderRadius: "var(--radius-md, 8px)",
+              padding: "24px",
+              textAlign: "center",
+              cursor: isSubmitting || isUploading ? "not-allowed" : "pointer",
+              backgroundColor: "rgba(86, 25, 34, 0.02)",
+              position: "relative",
+            }}
+          >
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageUpload}
+              disabled={isSubmitting || isUploading}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: isSubmitting || isUploading ? "not-allowed" : "pointer",
+              }}
+            />
+            <svg style={{ width: "32px", height: "32px", color: "var(--color-accent)", margin: "0 auto 8px" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p className="font-semibold text-sm mb-2" style={{ margin: "4px 0" }}>
+              {isUploading ? "Uploading..." : "Click to select brand logo / banner image"}
+            </p>
+            <p className="text-secondary text-xs" style={{ margin: 0 }}>
+              JPEG, PNG, or WEBP formats only. Max 5MB file size.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Row 3: Tagline */}
