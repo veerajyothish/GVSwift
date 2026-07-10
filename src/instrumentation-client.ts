@@ -24,10 +24,16 @@ Sentry.init({
   tracesSampleRate: 0.1,
   environment: process.env.NODE_ENV,
   debug: false,
-  integrations: [Sentry.thirdPartyErrorFilterIntegration({
-    filterKeys: ['gvswift'],
-    behaviour: 'drop-error-if-contains-third-party-frames',
-  })],
+  integrations: [
+    Sentry.replayIntegration(),
+    Sentry.thirdPartyErrorFilterIntegration({
+      filterKeys: ['gvswift'],
+      behaviour: 'drop-error-if-contains-third-party-frames',
+    }),
+  ],
+  // Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
     'ResizeObserver loop completed with undelivered notifications',
