@@ -87,6 +87,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [isAdded, setIsAdded] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [sizeGuideTab, setSizeGuideTab] = useState<"chart" | "advisor">("chart");
@@ -270,8 +271,6 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   };
 
   const images = product?.images || [];
-  const primaryImage = images.find((img) => img.isPrimary) || images[0];
-  const imageUrl = primaryImage?.url || "/fashion_product_mockup.png";
 
   return (
     <div style={{ background: "var(--color-bg)" }}>
@@ -306,7 +305,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <div className="pdp-grid">
         {/* ── IMAGE COLUMN ──────────────────────────────────────────────── */}
         <div className="pdp-image-col">
-          {/* PDF p.4: large 3:4 image, rounded corners, cream bg */}
+          {/* Image Gallery Carousel */}
           <div
             style={{
               position: "relative",
@@ -316,19 +315,102 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               overflow: "hidden",
               background: "var(--color-surface)",
               border: "1px solid var(--color-border)",
+              touchAction: "pan-y",
+              cursor: images.length > 1 ? "grab" : "default",
+            }}
+            onTouchStart={(e) => {
+              (e.currentTarget as HTMLElement).dataset.touchX = String(e.touches[0].clientX);
+            }}
+            onTouchEnd={(e) => {
+              const startX = Number((e.currentTarget as HTMLElement).dataset.touchX || 0);
+              const endX = e.changedTouches[0].clientX;
+              const diff = startX - endX;
+              if (Math.abs(diff) > 50) {
+                if (diff > 0 && activeImageIdx < images.length - 1) {
+                  setActiveImageIdx((i) => i + 1);
+                } else if (diff < 0 && activeImageIdx > 0) {
+                  setActiveImageIdx((i) => i - 1);
+                }
+              }
             }}
           >
-            <Image
-              src={imageUrl}
-              alt={primaryImage?.altText || product?.name || "Product Image"}
-              fill
-              priority
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAr5I4eAAAAA1BMVEX9+vU+1CIhAAAACklEQVR4nGNgAAAAAgABc3UBGAAAAABJRU5ErkJggg=="
-              sizes="(max-width: 767px) 100vw, 50vw"
-              style={{ objectFit: "cover" }}
-            />
+            {/* All images stacked, only active one visible via translateX */}
+            <div
+              style={{
+                display: "flex",
+                width: `${images.length * 100}%`,
+                height: "100%",
+                transform: `translateX(-${activeImageIdx * (100 / images.length)}%)`,
+                transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              {(images.length > 0 ? images : [{ url: "/fashion_product_mockup.png", altText: product?.name, isPrimary: true, id: "fallback" }]).map((img) => (
+                <div key={img.id || img.url} style={{ width: `${100 / Math.max(images.length, 1)}%`, height: "100%", position: "relative", flexShrink: 0 }}>
+                  <Image
+                    src={img.url}
+                    alt={img.altText || product?.name || "Product Image"}
+                    fill
+                    priority={img.isPrimary}
+                    sizes="(max-width: 767px) 100vw, 50vw"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Left/Right arrows (desktop, hidden on mobile) */}
+            {images.length > 1 && (
+              <>
+                <button
+                  aria-label="Previous image"
+                  onClick={() => setActiveImageIdx((i) => Math.max(0, i - 1))}
+                  className="pdp-desktop-only"
+                  style={{
+                    position: "absolute", top: "50%", left: "12px", transform: "translateY(-50%)",
+                    width: "36px", height: "36px", borderRadius: "50%",
+                    background: "rgba(253,250,245,0.85)", backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(107,30,46,0.1)", cursor: "pointer",
+                    display: activeImageIdx === 0 ? "none" : "flex",
+                    alignItems: "center", justifyContent: "center",
+                    color: "var(--color-accent)", fontSize: "18px", zIndex: 5,
+                  }}
+                >
+                  ‹
+                </button>
+                <button
+                  aria-label="Next image"
+                  onClick={() => setActiveImageIdx((i) => Math.min(images.length - 1, i + 1))}
+                  className="pdp-desktop-only"
+                  style={{
+                    position: "absolute", top: "50%", right: "12px", transform: "translateY(-50%)",
+                    width: "36px", height: "36px", borderRadius: "50%",
+                    background: "rgba(253,250,245,0.85)", backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(107,30,46,0.1)", cursor: "pointer",
+                    display: activeImageIdx === images.length - 1 ? "none" : "flex",
+                    alignItems: "center", justifyContent: "center",
+                    color: "var(--color-accent)", fontSize: "18px", zIndex: 5,
+                  }}
+                >
+                  ›
+                </button>
+              </>
+            )}
+
+            {/* Image counter badge */}
+            {images.length > 1 && (
+              <span
+                style={{
+                  position: "absolute", bottom: "12px", right: "12px",
+                  background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)",
+                  color: "#fff", fontSize: "11px", fontWeight: 600,
+                  padding: "4px 10px", borderRadius: "999px",
+                  fontVariantNumeric: "tabular-nums", zIndex: 5,
+                }}
+              >
+                {activeImageIdx + 1} / {images.length}
+              </span>
+            )}
+
             {/* Wishlist Heart Overlay */}
             <WishlistToggle
               productId={product.id}
@@ -353,11 +435,57 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             )}
           </div>
 
-          {/* Dot pagination indicator (mobile) */}
-          <div className="pdp-mobile-only" style={{ textAlign: "center", paddingTop: "12px" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--color-accent)", display: "inline-block" }} />
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--color-border)", display: "inline-block", marginLeft: "6px" }} />
-          </div>
+          {/* Dot indicators (mobile) */}
+          {images.length > 1 && (
+            <div className="pdp-mobile-only" style={{ textAlign: "center", paddingTop: "12px", display: "flex", justifyContent: "center", gap: "6px" }}>
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  aria-label={`View image ${i + 1}`}
+                  onClick={() => setActiveImageIdx(i)}
+                  style={{
+                    width: i === activeImageIdx ? "18px" : "6px",
+                    height: "6px",
+                    borderRadius: "999px",
+                    background: i === activeImageIdx ? "var(--color-accent)" : "var(--color-border)",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    transition: "all 0.25s ease",
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Thumbnail strip (desktop) */}
+          {images.length > 1 && (
+            <div className="pdp-desktop-only" style={{ display: "flex", gap: "8px", marginTop: "12px", overflowX: "auto" }}>
+              {images.map((img, i) => (
+                <button
+                  key={img.id || img.url}
+                  aria-label={`View image ${i + 1}`}
+                  onClick={() => setActiveImageIdx(i)}
+                  style={{
+                    width: "64px", height: "80px", flexShrink: 0, position: "relative",
+                    borderRadius: "var(--radius-md)", overflow: "hidden", cursor: "pointer",
+                    border: i === activeImageIdx ? "2px solid var(--color-accent)" : "1px solid var(--color-border)",
+                    opacity: i === activeImageIdx ? 1 : 0.6,
+                    transition: "all 0.2s ease",
+                    padding: 0, background: "var(--color-surface)",
+                  }}
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.altText || `Thumbnail ${i + 1}`}
+                    fill
+                    sizes="64px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── INFO COLUMN ───────────────────────────────────────────────── */}
