@@ -13,7 +13,7 @@ export async function isPasswordLeaked(password: string): Promise<boolean> {
     if (!res.ok) return false; // fail open — never block signup on API downtime
     const text = await res.text();
     return text.split("\n").some((line) => line.startsWith(suffix));
-  } catch (error) {
+  } catch {
     // fail open on network errors
     return false;
   }

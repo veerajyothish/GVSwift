@@ -35,7 +35,7 @@ export function SupportReplyEmail({
 
           <Section style={{ backgroundColor: 'white', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '24px 24px', marginBottom: '16px' }}>
             <Text style={{ fontSize: '15px', color: '#1A1A1A', margin: '0 0 16px', lineHeight: 1.6 }}>
-              We've reviewed your request and have an update regarding: <strong style={{ color: '#6B1E2E' }}>{subject}</strong>
+              We&apos;ve reviewed your request and have an update regarding: <strong style={{ color: '#6B1E2E' }}>{subject}</strong>
             </Text>
             
             <Section style={{ padding: '16px 20px', borderLeft: '4px solid #6B1E2E', backgroundColor: '#F5F0EB', borderRadius: '0 8px 8px 0', marginBottom: '24px' }}>
