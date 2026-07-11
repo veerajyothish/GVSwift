@@ -45,18 +45,18 @@ export function OrderPlacedEmail({
             borderRadius: '12px', padding: '28px 32px',
             textAlign: 'center', marginBottom: '20px',
           }}>
-            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal' }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal', letterSpacing: '0.01em' }}>
               Order Placed
             </Heading>
           </Section>
 
-          <Section style={{ backgroundColor: 'white', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '20px 24px', marginBottom: '16px' }}>
-            <Text style={{ fontSize: '15px', color: '#1A1A1A', margin: '0 0 16px', lineHeight: 1.6 }}>
+          <Section style={{ backgroundColor: '#F9F8F5', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '20px 24px', marginBottom: '16px' }}>
+            <Text style={{ fontSize: '15px', color: '#28251D', margin: '0 0 16px', lineHeight: 1.6 }}>
               Thanks for shopping with GVSwift. We received your order and it is currently{" "}
               <strong>{status.replaceAll("_", " ")}</strong>.
             </Text>
             
-            <Text style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 16px' }}>
+            <Text style={{ fontSize: '14px', color: '#28251D', margin: '0 0 16px' }}>
               Order ID: <strong style={{ color: '#6B1E2E' }}>{orderId}</strong>
             </Text>
 
@@ -64,8 +64,8 @@ export function OrderPlacedEmail({
               {items.map((item) => (
                 <Row key={`${item.name}-${item.quantity}`} style={{ marginBottom: '8px' }}>
                   <Column style={{ width: '70%' }}>
-                    <Text style={{ fontSize: '14px', margin: 0, color: '#1A1A1A' }}>{item.name}</Text>
-                    <Text style={{ fontSize: '13px', color: '#6B5B55', margin: '2px 0 0' }}>Qty: {item.quantity}</Text>
+                    <Text style={{ fontSize: '14px', margin: 0, color: '#28251D' }}>{item.name}</Text>
+                    <Text style={{ fontSize: '13px', color: '#7a7974', margin: '2px 0 0' }}>Qty: {item.quantity}</Text>
                   </Column>
                   <Column style={{ textAlign: 'right' }}>
                     <Text style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>{formatRupees(item.lineTotalPaise)}</Text>
@@ -74,7 +74,7 @@ export function OrderPlacedEmail({
               ))}
               <Hr style={{ borderColor: '#E8DDD9', margin: '12px 0' }} />
               <Row>
-                <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#1A1A1A' }}>Total</Text></Column>
+                <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#28251D' }}>Total</Text></Column>
                 <Column style={{ textAlign: 'right' }}>
                   <Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#6B1E2E' }}>{formatRupees(totalPaise)}</Text>
                 </Column>
@@ -88,7 +88,7 @@ export function OrderPlacedEmail({
             </Section>
           </Section>
 
-          <Text style={{ fontSize: '12px', color: '#6B5B55', textAlign: 'center', margin: 0 }}>
+          <Text style={{ fontSize: '12px', color: '#7a7974', textAlign: 'center', margin: 0 }}>
             GVSwift · Questions? Contact our support team.
           </Text>
         </Container>
