@@ -16,16 +16,26 @@ interface TopUser {
   balance: number;
 }
 
+interface ReferralEntry {
+  id: string;
+  createdAt: string;
+  pointsAwarded: number;
+  referralCode: { code: string; user: { name: string | null; email: string } };
+  referredUser: { name: string | null; email: string };
+}
+
 interface AdminLoyaltyClientProps {
   settings: LoyaltySettings;
   topUsers: TopUser[];
   total: number;
+  recentReferrals: ReferralEntry[];
 }
 
 export default function AdminLoyaltyClient({
   settings: initialSettings,
   topUsers,
   total,
+  recentReferrals,
 }: AdminLoyaltyClientProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [form, setForm] = useState({
@@ -130,7 +140,7 @@ export default function AdminLoyaltyClient({
               onChange={(e) => setForm((f) => ({ ...f, referralBonus: e.target.value }))}
             />
             <p style={{ fontSize: "11px", color: "var(--color-text-secondary)" }}>
-              Awarded to referrer when friend places first order
+              Awarded immediately when friend signs up
             </p>
           </div>
         </div>
@@ -193,6 +203,51 @@ export default function AdminLoyaltyClient({
                     </td>
                     <td style={{ padding: "10px 12px", textAlign: "right", color: "var(--color-success)", fontSize: "13px", fontWeight: 500 }}>
                       ≈ ₹{Math.floor((u.balance / 100) * settings.rupeesPer100Points).toLocaleString("en-IN")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Recent Referrals */}
+      <section className="card p-6 flex flex-col gap-4">
+        <h2 className="text-lg font-semibold text-primary">Recent Referrals</h2>
+        {recentReferrals.length === 0 ? (
+          <p className="text-secondary text-sm">No referrals recorded yet.</p>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+              <thead>
+                <tr style={{ borderBottom: "2px solid var(--color-border)" }}>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "var(--color-text-secondary)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>Date</th>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "var(--color-text-secondary)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>Referred User</th>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "var(--color-text-secondary)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>Referral Code</th>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "var(--color-text-secondary)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>Referrer</th>
+                  <th style={{ textAlign: "right", padding: "8px 12px", color: "var(--color-text-secondary)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" }}>Points Awarded</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReferrals.map((r, i) => (
+                  <tr key={r.id} style={{ borderBottom: "1px solid var(--color-border)", background: i % 2 === 0 ? "transparent" : "color-mix(in oklch, var(--color-primary) 2%, transparent)" }}>
+                    <td style={{ padding: "10px 12px", color: "var(--color-text-primary)" }}>
+                      {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "var(--color-text-primary)", fontWeight: 500 }}>
+                      {r.referredUser.name ? `${r.referredUser.name} (${r.referredUser.email})` : r.referredUser.email}
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "var(--color-text-secondary)" }}>
+                      <code style={{ fontFamily: "monospace", padding: "2px 6px", background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "4px" }}>
+                        {r.referralCode.code}
+                      </code>
+                    </td>
+                    <td style={{ padding: "10px 12px", color: "var(--color-text-primary)" }}>
+                      {r.referralCode.user.name ? `${r.referralCode.user.name} (${r.referralCode.user.email})` : r.referralCode.user.email}
+                    </td>
+                    <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: 700, color: "var(--color-success)" }}>
+                      +{r.pointsAwarded.toLocaleString("en-IN")} pts
                     </td>
                   </tr>
                 ))}

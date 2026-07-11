@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function AdminLoyaltyPage() {
   await requireAdmin();
 
-  const [settings, topAccounts, total] = await Promise.all([
+  const [settings, topAccounts, total, recentReferrals] = await Promise.all([
     getLoyaltySettings(),
     prisma.loyaltyAccount.findMany({
       orderBy: { balance: "desc" },
@@ -21,6 +21,18 @@ export default async function AdminLoyaltyPage() {
       },
     }),
     prisma.loyaltyAccount.count(),
+    prisma.referralUse.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 30,
+      include: {
+        referralCode: {
+          include: {
+            user: { select: { name: true, email: true } },
+          },
+        },
+        referredUser: { select: { name: true, email: true } },
+      },
+    }),
   ]);
 
   const topUsers = topAccounts.map((a) => ({
@@ -28,6 +40,23 @@ export default async function AdminLoyaltyPage() {
     name: a.user.name,
     email: a.user.email,
     balance: a.balance,
+  }));
+
+  const mappedReferrals = recentReferrals.map((r) => ({
+    id: r.id,
+    createdAt: r.createdAt.toISOString(),
+    pointsAwarded: r.pointsAwarded,
+    referralCode: {
+      code: r.referralCode.code,
+      user: {
+        name: r.referralCode.user.name,
+        email: r.referralCode.user.email,
+      },
+    },
+    referredUser: {
+      name: r.referredUser.name,
+      email: r.referredUser.email,
+    },
   }));
 
   return (
@@ -48,6 +77,7 @@ export default async function AdminLoyaltyPage() {
         settings={settings}
         topUsers={topUsers}
         total={total}
+        recentReferrals={mappedReferrals}
       />
     </div>
   );

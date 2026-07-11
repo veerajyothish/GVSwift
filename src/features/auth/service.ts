@@ -4,6 +4,7 @@ import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
 import { getSiteUrl } from "@/lib/env";
+import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 
 export const SignupSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -103,13 +104,20 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
           where: { referredUserId: prismaUser.id },
         });
         if (!existing) {
+          const settings = await getLoyaltySettings();
           await prisma.referralUse.create({
             data: {
               referralCodeId: refCodeRow.id,
               referredUserId: prismaUser.id,
-              pointsAwarded: 0,
+              pointsAwarded: settings.referralBonus,
             },
           });
+          // Award points immediately to the referrer
+          await awardPoints(
+            refCodeRow.userId,
+            settings.referralBonus,
+            `Referral bonus — referred friend ${prismaUser.email} signed up`
+          );
         }
       }
     } catch (refErr) {

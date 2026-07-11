@@ -119,8 +119,7 @@ export default function ProductCard({
         style={{
           position: "relative",
           width: "100%",
-          aspectRatio: "3 / 4",
-          maxHeight: "300px",
+          height: "240px",
           overflow: "hidden",
           background: "var(--color-surface)",
         }}

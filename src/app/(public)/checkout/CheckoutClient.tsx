@@ -131,11 +131,14 @@ export default function CheckoutClient({
     setLocating(true);
 
     interface NominatimAddress {
+      house_number?: string;
+      road?: string;
+      neighbourhood?: string;
+      suburb?: string;
+      county?: string;
       city?: string;
       town?: string;
       village?: string;
-      suburb?: string;
-      county?: string;
       state?: string;
       postcode?: string;
     }
@@ -151,8 +154,15 @@ export default function CheckoutClient({
       const state = addr.state || "";
       const pincode = (addr.postcode || "").replace(/\D/g, "").slice(0, 6);
 
+      const houseNumber = addr.house_number ?? "";
+      const road = addr.road ?? addr.neighbourhood ?? "";
+      const suburb = addr.suburb ?? addr.neighbourhood ?? "";
+      const county = addr.county ?? "";
+
       setFormData((prev) => ({
         ...prev,
+        line1: [houseNumber, road].filter(Boolean).join(", ") || prev.line1,
+        line2: [suburb, county].filter(Boolean).join(", ") || prev.line2,
         city,
         state,
         pincode,
@@ -206,14 +216,15 @@ export default function CheckoutClient({
           }
         }
       },
-      async () => {
+      async (error) => {
+        console.warn("Geolocation failed:", error);
         try {
           await fetchByIP();
         } catch {
           setLocating(false);
         }
       },
-      { timeout: 8000, maximumAge: 0, enableHighAccuracy: true }
+      { timeout: 10000, maximumAge: 0, enableHighAccuracy: true }
     );
   };
 

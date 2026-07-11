@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     // Trigger Supabase recovery email flow
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl}/auth/update-password`,
+      redirectTo: `${siteUrl}/auth/callback?next=/auth/update-password`,
     });
 
     if (error) {

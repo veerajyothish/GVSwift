@@ -216,14 +216,15 @@ export default function LoginClient() {
           </div>
 
           <div className="input-group margin-0">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
-              <label htmlFor="password" className="input-label input-required" style={{ marginBottom: 0 }}>Password</label>
-              <Link href="/auth/forgot-password" style={{ fontSize: "12px", color: "var(--color-accent)", textDecoration: "underline" }}>
-                Forgot password?
-              </Link>
-            </div>
+            <label htmlFor="password" className="input-label input-required">Password</label>
             <input id="password" type="password" className="input-field" placeholder="Enter your password"
               value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" disabled={loading} />
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-8px", marginBottom: "4px" }}>
+            <Link href="/auth/forgot-password" style={{ fontSize: "12px", color: "var(--color-accent)", textDecoration: "underline" }}>
+              Forgot password?
+            </Link>
           </div>
 
           <Button 

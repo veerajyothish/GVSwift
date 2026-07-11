@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 import { type User } from "@prisma/client";
 import { isValidRedirect } from "@/lib/env";
+import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -79,13 +80,20 @@ export async function GET(request: NextRequest) {
               where: { referredUserId: prismaUser.id },
             });
             if (!existing) {
+              const settings = await getLoyaltySettings();
               await prisma.referralUse.create({
                 data: {
                   referralCodeId: refCodeRow.id,
                   referredUserId: prismaUser.id,
-                  pointsAwarded: 0,
+                  pointsAwarded: settings.referralBonus,
                 },
               });
+              // Award points immediately to the referrer
+              await awardPoints(
+                refCodeRow.userId,
+                settings.referralBonus,
+                `Referral bonus — referred friend ${prismaUser.email} signed up`
+              );
             }
           }
         } catch (refErr) {
