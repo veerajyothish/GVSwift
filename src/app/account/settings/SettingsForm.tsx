@@ -235,8 +235,8 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
       </Card>
 
       {/* Section 3: Danger Zone */}
-      <Card className="p-6" style={{ borderColor: "#fda4af", backgroundColor: "rgba(254, 226, 226, 0.2)" }}>
-        <h2 className="text-lg font-semibold text-error mb-4" style={{ fontFamily: "var(--font-heading)", color: "#cc2424" }}>
+      <Card className="p-6" style={{ borderColor: "var(--color-error)", backgroundColor: "var(--color-error-bg)" }}>
+        <h2 className="text-lg font-semibold text-error mb-4" style={{ fontFamily: "var(--font-heading)", color: "var(--color-error)" }}>
           Danger Zone
         </h2>
         <p className="text-sm text-secondary mb-16">
@@ -246,7 +246,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
         <button
           onClick={() => setShowDeleteModal(true)}
           style={{
-            backgroundColor: "#dc2626",
+            backgroundColor: "var(--color-error)",
             color: "#fff",
             border: "none",
             borderRadius: "var(--radius-md)",
@@ -256,8 +256,8 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
             cursor: "pointer",
             transition: "background-color 0.2s",
           }}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#b91c1c")}
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#dc2626")}
+          onMouseOver={(e) => (e.currentTarget.style.opacity = "0.85")}
+          onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
         >
           Request Account Deletion
         </button>
@@ -276,7 +276,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
         >
           <div className="modal-container" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
             <div className="modal-header">
-              <h3 id="delete-modal-title" className="modal-title text-error" style={{ color: "#cc2424" }}>
+              <h3 id="delete-modal-title" className="modal-title text-error" style={{ color: "var(--color-error)" }}>
                 Request Account Deletion
               </h3>
               <button
@@ -342,7 +342,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
                 </button>
                 <button
                   style={{
-                    backgroundColor: "#dc2626",
+                    backgroundColor: "var(--color-error)",
                     color: "#fff",
                     border: "none",
                     borderRadius: "var(--radius-md)",

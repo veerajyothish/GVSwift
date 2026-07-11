@@ -20,11 +20,11 @@ export default async function AuditLogsPage() {
   });
 
   const getBadgeColor = (action: string) => {
-    if (action.includes("DELETE")) return { bg: "rgba(239, 68, 68, 0.08)", text: "#ef4444" };
-    if (action.includes("CREATE")) return { bg: "rgba(16, 185, 129, 0.08)", text: "#10b981" };
-    if (action.includes("UPDATE")) return { bg: "rgba(59, 130, 246, 0.08)", text: "#3b82f6" };
-    if (action.includes("STATUS_CHANGE")) return { bg: "rgba(245, 158, 11, 0.08)", text: "#f59e0b" };
-    return { bg: "rgba(107, 114, 128, 0.08)", text: "#6b7280" };
+    if (action.includes("DELETE")) return { bg: "var(--color-error-bg)", text: "var(--color-error)" };
+    if (action.includes("CREATE")) return { bg: "var(--color-success-bg)", text: "var(--color-success)" };
+    if (action.includes("UPDATE")) return { bg: "rgba(59, 130, 246, 0.08)", text: "#3b82f6" }; // ponytail: info blue — no token yet
+    if (action.includes("STATUS_CHANGE")) return { bg: "var(--color-warning-bg)", text: "var(--color-warning)" };
+    return { bg: "var(--color-surface)", text: "var(--color-text-secondary)" };
   };
 
   const parseDetails = (detailsStr: string | null) => {

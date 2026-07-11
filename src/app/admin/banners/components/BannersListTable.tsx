@@ -322,7 +322,7 @@ export default function BannersListTable({ initialBanners }: BannersListTablePro
                           width: "8px",
                           height: "8px",
                           borderRadius: "50%",
-                          backgroundColor: banner.isActive ? "#10b981" : "#9ca3af",
+                          backgroundColor: banner.isActive ? "var(--color-success)" : "var(--color-text-secondary)",
                         }}
                       />
                       {banner.isActive ? "Active" : "Inactive"}

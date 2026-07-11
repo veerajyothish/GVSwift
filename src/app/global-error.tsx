@@ -3,7 +3,6 @@
 // global-error.tsx — catches React rendering errors at the root layout level.
 // Required by @sentry/nextjs for RSC error reporting.
 import * as Sentry from "@sentry/nextjs";
-import NextError from "next/error";
 import { useEffect } from "react";
 
 export default function GlobalError({

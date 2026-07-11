@@ -267,7 +267,7 @@ export default function ShopListTable({ initialShops }: ShopListTableProps) {
                         border: "none",
                         background: "none",
                         cursor: "pointer",
-                        color: shop.isFeatured ? "var(--color-warning, #D97706)" : "#bbb",
+                        color: shop.isFeatured ? "var(--color-warning)" : "var(--color-border)",
                         fontSize: "20px",
                         outline: "none",
                       }}

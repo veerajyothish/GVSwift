@@ -449,9 +449,9 @@ export default function ProductListTable({
                         <span
                           className="badge-premium"
                           style={{
-                            backgroundColor: "rgba(16, 185, 129, 0.1)",
-                            color: "#059669",
-                            border: "1px solid rgba(16, 185, 129, 0.2)",
+                            backgroundColor: "var(--color-success-bg)",
+                            color: "var(--color-success)",
+                            border: "1px solid var(--color-success)",
                             padding: "3px 10px",
                             fontSize: "10px",
                           }}
@@ -462,9 +462,9 @@ export default function ProductListTable({
                         <span
                           className="badge-premium"
                           style={{
-                            backgroundColor: "rgba(239, 68, 68, 0.1)",
-                            color: "#dc2626",
-                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            backgroundColor: "var(--color-error-bg)",
+                            color: "var(--color-error)",
+                            border: "1px solid var(--color-error)",
                             padding: "3px 10px",
                             fontSize: "10px",
                           }}

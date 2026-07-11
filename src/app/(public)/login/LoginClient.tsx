@@ -222,7 +222,7 @@ export default function LoginClient() {
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-8px", marginBottom: "4px" }}>
-            <Link href="/auth/forgot-password" style={{ fontSize: "12px", color: "var(--color-accent)", textDecoration: "underline" }}>
+            <Link href="/auth/forgot-password" style={{ fontSize: "12px", color: "var(--color-accent)", textDecoration: "none" }}>
               Forgot password?
             </Link>
           </div>
