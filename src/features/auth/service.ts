@@ -4,6 +4,7 @@ import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
 import { getSiteUrl } from "@/lib/env";
+import { isPasswordLeaked } from "@/lib/auth/checkLeakedPassword";
 import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 
 export const SignupSchema = z.object({
@@ -33,6 +34,14 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
   }
 
   const supabase = await createSupabaseServerClient();
+
+  if (await isPasswordLeaked(parsed.data.password)) {
+    throw new AppError(
+      "VALIDATION_ERROR",
+      "This password has appeared in a known data breach. Please choose a different password.",
+      400
+    );
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { isPasswordLeaked } from "@/lib/auth/checkLeakedPassword";
 
 interface UpdatePasswordClientProps {
   hasSession: boolean;
@@ -40,6 +41,12 @@ export default function UpdatePasswordClient({ hasSession }: UpdatePasswordClien
     setLoading(true);
 
     try {
+      if (await isPasswordLeaked(password.trim())) {
+        setError("This password has appeared in a known data breach. Please choose a different password.");
+        setLoading(false);
+        return;
+      }
+
       const supabase = createSupabaseBrowserClient();
       const { error: updateError } = await supabase.auth.updateUser({
         password: password.trim(),
