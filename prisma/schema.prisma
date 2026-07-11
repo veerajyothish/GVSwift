@@ -1,19 +1,3 @@
-// schema.prisma — GVSwift FINAL schema
-// This supersedes the conceptual table descriptions in docs/05-Database-Design.md
-// if the two ever disagree. This file is the source of truth for `prisma migrate`.
-//
-// Changes from the originally pasted schema, per confirmed decisions in Phase 4 review:
-//   1. Added Order.trackingReference (manual tracking text field)
-//   2. Added onDelete: Restrict on Order.addressId (prevents deleting addresses used in orders)
-//   3. Risk model kept as the four-tier version (RiskStatus, RiskLevel) — already correct as pasted
-//
-// Note: This file is derived from docs/FINAL-SCHEMA.prisma with the minimum
-// corrections required to pass `npx prisma validate` on Prisma 6.x with
-// relationMode = "prisma":
-//   - Self-referencing relations require onDelete/onUpdate: NoAction
-//   - OrderStatusHistory.changedBy requires a back-relation field on User
-// These are structural Prisma requirements, not schema design changes.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,7 +9,430 @@ datasource db {
   relationMode = "prisma"
 }
 
-/// ===== ENUMS =====
+model User {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  supabaseId         String               @unique
+  email              String               @unique
+  phone              String?              @unique
+  role               Role                 @default(USER)
+  riskStatus         RiskStatus           @default(NORMAL)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  blocked            Boolean              @default(false)
+  name               String?
+  preferences        Json?
+  addresses          Address[]
+  carts              Cart[]
+  orders             Order[]
+  tickets            SupportTicket[]
+  auditLogs          AuditLog[]           @relation("AuditLogActor")
+  ticketMsgs         TicketMessage[]      @relation("TicketMessageAuthor")
+  orderStatusChanges OrderStatusHistory[] @relation("OrderStatusHistoryChangedBy")
+  wishlistItems      WishlistItem[]
+  reviews            ProductReview[]
+  referralCode       ReferralCode?
+  referredBy         ReferralUse?         @relation("ReferredBy")
+  loyaltyAccount     LoyaltyAccount?
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Address {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName  String
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  phone     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  orders    Order[]
+
+  @@index([userId])
+  @@index([pincode])
+}
+
+model Category {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String     @unique
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  parentId  String?    @db.Uuid
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  children  Category[] @relation("CategoryToCategory")
+  products  Product[]
+}
+
+model Shop {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  slug        String    @unique
+  brandImage  String
+  description String
+  tagline     String?
+  isActive    Boolean   @default(true)
+  isFeatured  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([isFeatured])
+}
+
+model Product {
+  id             String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  slug           String                   @unique
+  description    String?
+  basePricePaise Int
+  isActive       Boolean                  @default(true)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  categoryId     String?                  @db.Uuid
+  brand          String?
+  search_vector  Unsupported("tsvector")? @default(dbgenerated("to_tsvector('english'::regconfig, ((COALESCE(name, ''::text) || ' '::text) || COALESCE(description, ''::text)))"))
+  shopId         String?                  @db.Uuid
+  category       Category?                @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  shop           Shop?                    @relation(fields: [shopId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  variants       ProductVariant[]
+  images         ProductImage[]
+  orderItems     OrderItem[]
+  cartItems      CartItem[]
+  wishlistItems  WishlistItem[]
+  reviews        ProductReview[]
+
+  @@index([categoryId])
+  @@index([slug])
+  @@index([isActive])
+  @@index([isActive, categoryId])
+  @@index([createdAt(sort: Desc)])
+  @@index([basePricePaise])
+  @@index([shopId])
+}
+
+model ProductVariant {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku             String      @unique
+  stock           Int
+  priceDeltaPaise Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  productId       String      @db.Uuid
+  product         Product     @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  orderItems      OrderItem[]
+  cartItems       CartItem[]
+
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url       String
+  altText   String?
+  isPrimary Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productId String   @db.Uuid
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([productId])
+}
+
+model Cart {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String?    @db.Uuid
+  user      User?      @relation(fields: [userId], references: [id])
+  items     CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity  Int
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  cartId    String          @db.Uuid
+  productId String          @db.Uuid
+  variantId String?         @db.Uuid
+  cart      Cart            @relation(fields: [cartId], references: [id])
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([cartId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Order {
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status            OrderStatus          @default(PLACED)
+  paymentMethod     PaymentMethod        @default(COD)
+  subtotalPaise     Int
+  shippingPaise     Int                  @default(0)
+  codFeePaise       Int                  @default(0)
+  totalPaise        Int
+  idempotencyKey    String?              @unique
+  trackingReference String?
+  deliveryAttempts  Int                  @default(0)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  couponCode        String?
+  discountPaise     Int                  @default(0)
+  internalNotes     String?
+  userId            String               @db.Uuid
+  addressId         String               @db.Uuid
+  user              User                 @relation(fields: [userId], references: [id])
+  address           Address              @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  items             OrderItem[]
+  statusHistory     OrderStatusHistory[]
+  auditLogs         AuditLog[]
+  tickets           SupportTicket[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+}
+
+model OrderItem {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity       Int
+  unitPricePaise Int
+  lineTotalPaise Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  orderId        String          @db.Uuid
+  productId      String          @db.Uuid
+  variantId      String?         @db.Uuid
+  order          Order           @relation(fields: [orderId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  variant        ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model OrderStatusHistory {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus
+  reason      String?
+  createdAt   DateTime     @default(now())
+  orderId     String       @db.Uuid
+  changedById String?      @db.Uuid
+  order       Order        @relation(fields: [orderId], references: [id])
+  changedBy   User?        @relation("OrderStatusHistoryChangedBy", fields: [changedById], references: [id])
+
+  @@index([orderId])
+  @@index([changedById])
+}
+
+model SupportTicket {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subject     String
+  description String?
+  status      TicketStatus    @default(OPEN)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  userId      String?         @db.Uuid
+  orderId     String?         @db.Uuid
+  user        User?           @relation(fields: [userId], references: [id])
+  order       Order?          @relation(fields: [orderId], references: [id])
+  messages    TicketMessage[]
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message    String
+  isInternal Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  ticketId   String        @db.Uuid
+  authorId   String?       @db.Uuid
+  ticket     SupportTicket @relation(fields: [ticketId], references: [id])
+  author     User?         @relation("TicketMessageAuthor", fields: [authorId], references: [id])
+
+  @@index([ticketId])
+  @@index([authorId])
+}
+
+model AuditLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  actorId   String?  @db.Uuid
+  orderId   String?  @db.Uuid
+  actor     User?    @relation("AuditLogActor", fields: [actorId], references: [id])
+  order     Order?   @relation(fields: [orderId], references: [id])
+
+  @@index([actorId])
+  @@index([orderId])
+}
+
+model RiskFlag {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType  RiskEntityType
+  entityValue String
+  riskLevel   RiskLevel
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([entityType, entityValue], map: "risk_entity_idx")
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// C6: Coupon / Discount Code model
+model Coupon {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code          String     @unique
+  discountType  CouponType
+  discountValue Int
+  minOrderPaise Int        @default(0)
+  maxUsage      Int        @default(0)
+  usageCount    Int        @default(0)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([code])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  productId String   @db.Uuid
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
+  @@index([userId, productId])
+}
+
+model ProductReview {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId String   @db.Uuid
+  userId    String   @db.Uuid
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([userId])
+}
+
+model Banner {
+  id        String     @id @default(cuid())
+  message   String
+  type      BannerType @default(INFO)
+  isActive  Boolean    @default(false)
+  linkText  String?
+  linkUrl   String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model WelcomeOffer {
+  id           String   @id @default(cuid())
+  title        String   @default("Welcome back! 🎉")
+  subtitle     String   @default("You have an exclusive deal waiting today.")
+  offerText    String   @default("FLAT ₹100 OFF on your first order")
+  offerSubtext String   @default("Valid until July 25 · Applied automatically at checkout")
+  ctaText      String   @default("Shop Now")
+  ctaUrl       String   @default("/products")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ReferralCode {
+  id        String        @id @default(cuid())
+  code      String        @unique
+  userId    String        @unique @db.Uuid
+  createdAt DateTime      @default(now())
+  user      User          @relation(fields: [userId], references: [id])
+  usedBy    ReferralUse[]
+
+  @@index([userId])
+}
+
+model ReferralUse {
+  id             String       @id @default(cuid())
+  referralCodeId String
+  referredUserId String       @unique @db.Uuid
+  pointsAwarded  Int          @default(0)
+  createdAt      DateTime     @default(now())
+  referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id])
+  referredUser   User         @relation("ReferredBy", fields: [referredUserId], references: [id])
+
+  @@index([referralCodeId])
+  @@index([referredUserId])
+}
+
+model LoyaltyAccount {
+  id        String         @id @default(cuid())
+  userId    String         @unique @db.Uuid
+  balance   Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userId], references: [id])
+  ledger    PointsLedger[]
+
+  @@index([userId])
+}
+
+model PointsLedger {
+  id               String         @id @default(cuid())
+  loyaltyAccountId String
+  delta            Int
+  reason           String
+  orderId          String?        @db.Uuid
+  createdAt        DateTime       @default(now())
+  loyaltyAccount   LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id])
+
+  @@index([loyaltyAccountId])
+  @@index([orderId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model LoyaltySettings {
+  id                 String   @id @default(cuid())
+  pointsPerRupee     Int      @default(1)
+  rupeesPer100Points Int      @default(10)
+  referralBonus      Int      @default(500)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
 
 enum Role {
   USER
@@ -75,418 +482,12 @@ enum RiskLevel {
 
 enum PaymentMethod {
   COD
-  PREPAID // reserved for post-MVP, not implemented
+  PREPAID
 }
 
 enum CouponType {
-  PERCENTAGE // discount = totalPaise * value / 100
-  FIXED      // discount = value (in paise)
-}
-
-/// ===== MODELS =====
-
-model User {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  supabaseId String     @unique
-  name       String?
-  email      String     @unique
-  phone      String?    @unique
-  role       Role       @default(USER)
-  riskStatus RiskStatus @default(NORMAL)
-  blocked    Boolean    @default(false)
-  preferences Json?
-
-  addresses          Address[]
-  carts              Cart[]
-  orders             Order[]
-  tickets            SupportTicket[]
-  auditLogs          AuditLog[]           @relation("AuditLogActor")
-  ticketMsgs         TicketMessage[]      @relation("TicketMessageAuthor")
-  orderStatusChanges OrderStatusHistory[] @relation("OrderStatusHistoryChangedBy")
-  wishlistItems      WishlistItem[]
-  reviews            ProductReview[]
-  referralCode       ReferralCode?
-  referredBy         ReferralUse?    @relation("ReferredBy")
-  loyaltyAccount     LoyaltyAccount?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([email])
-  @@index([phone])
-}
-
-model Address {
-  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
-
-  fullName  String
-  line1     String
-  line2     String?
-  city      String
-  state     String
-  pincode   String
-  phone     String
-  isDefault Boolean @default(false)
-
-  // onDelete: Restrict — confirmed Phase 4 decision. A customer cannot delete
-  // an address that's referenced by a past order; the FK blocks the delete at
-  // the DB level. The UI (TICKET-203) must catch this and show a friendly
-  // message instead of surfacing the raw constraint error.
-  orders Order[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([pincode])
-}
-
-model Category {
-  id       String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name     String     @unique
-  slug     String     @unique
-  parentId String?    @db.Uuid
-  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  children Category[] @relation("CategoryToCategory")
-
-  products Product[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Shop {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String
-  slug        String   @unique
-  brandImage  String
-  description String
-  tagline     String?
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  products    Product[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([slug])
-  @@index([isActive])
-  @@index([isFeatured])
-}
-
-model Product {
-  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String
-  slug           String  @unique
-  brand          String?
-  description    String?
-  basePricePaise Int
-  isActive       Boolean @default(true)
-
-  categoryId String?   @db.Uuid
-  category   Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  shopId     String?   @db.Uuid
-  shop       Shop?     @relation(fields: [shopId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-
-  variants   ProductVariant[]
-  images     ProductImage[]
-  orderItems    OrderItem[]
-  cartItems     CartItem[]
-  wishlistItems WishlistItem[]
-  reviews       ProductReview[]
-
-  search_vector Unsupported("tsvector")? @default(dbgenerated())
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([categoryId])
-  @@index([slug])
-  @@index([isActive])
-  @@index([isActive, categoryId])
-  @@index([createdAt(sort: Desc)])
-  @@index([basePricePaise])
-  @@index([shopId])
-}
-
-model ProductVariant {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String  @db.Uuid
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  sku             String @unique
-  stock           Int
-  priceDeltaPaise Int
-
-  orderItems OrderItem[]
-  cartItems  CartItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([productId])
-}
-
-model ProductImage {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String  @db.Uuid
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  url       String
-  altText   String? // nullable in DB; admin upload form (TICKET-104) enforces required at the form layer
-  isPrimary Boolean @default(false)
-  sortOrder Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([productId])
-}
-
-model Cart {
-  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String? @db.Uuid
-  user   User?   @relation(fields: [userId], references: [id])
-
-  items CartItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-}
-
-model CartItem {
-  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cartId String @db.Uuid
-  cart   Cart   @relation(fields: [cartId], references: [id])
-
-  productId String  @db.Uuid
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  variantId String?         @db.Uuid
-  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  quantity Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([cartId])
-  @@index([productId])
-  @@index([variantId])
-}
-
-model Order {
-  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
-
-  addressId String  @db.Uuid
-  address   Address @relation(fields: [addressId], references: [id], onDelete: Restrict) // CONFIRMED Phase 4
-
-  status        OrderStatus   @default(PLACED)
-  paymentMethod PaymentMethod @default(COD)
-
-  subtotalPaise Int
-  shippingPaise Int @default(0)
-  codFeePaise   Int @default(0)
-  totalPaise    Int
-
-  idempotencyKey String? @unique
-
-  // CONFIRMED decision: manual tracking reference, free text, admin-entered
-  // after marking SHIPPED. No live courier API at MVP (Shiprocket is post-MVP).
-  trackingReference String?
-
-  deliveryAttempts Int @default(0)
-  internalNotes    String?
-
-  // C6: Coupon applied at checkout
-  couponCode    String?
-  discountPaise Int     @default(0)
-
-  items         OrderItem[]
-  statusHistory OrderStatusHistory[]
-  auditLogs     AuditLog[]
-  tickets       SupportTicket[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([status])
-  @@index([createdAt(sort: Desc)])
-}
-
-model OrderItem {
-  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId String @db.Uuid
-  order   Order  @relation(fields: [orderId], references: [id])
-
-  productId String  @db.Uuid
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  variantId String?         @db.Uuid
-  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-
-  quantity       Int
-  unitPricePaise Int // snapshot at time of order — price integrity preserved even without full snapshotting
-  lineTotalPaise Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([orderId])
-  @@index([productId])
-  @@index([variantId])
-}
-
-model OrderStatusHistory {
-  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId String @db.Uuid
-  order   Order  @relation(fields: [orderId], references: [id])
-
-  fromStatus  OrderStatus?
-  toStatus    OrderStatus
-  reason      String?
-  changedById String?     @db.Uuid // null = system-triggered (e.g. auto-cancel on out-of-stock)
-  changedBy   User?       @relation("OrderStatusHistoryChangedBy", fields: [changedById], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([orderId])
-  @@index([changedById])
-}
-
-model SupportTicket {
-  id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId String? @db.Uuid
-  user   User?   @relation(fields: [userId], references: [id])
-
-  orderId String? @db.Uuid
-  order   Order?  @relation(fields: [orderId], references: [id])
-
-  subject     String
-  description String?
-  status      TicketStatus @default(OPEN)
-
-  messages TicketMessage[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([orderId])
-  @@index([status])
-}
-
-model TicketMessage {
-  id       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ticketId String        @db.Uuid
-  ticket   SupportTicket @relation(fields: [ticketId], references: [id])
-
-  authorId String? @db.Uuid
-  author   User?   @relation("TicketMessageAuthor", fields: [authorId], references: [id])
-
-  message    String
-  isInternal Boolean @default(false) // admin-only notes never shown to the customer
-
-  createdAt DateTime @default(now())
-
-  @@index([ticketId])
-  @@index([authorId])
-}
-
-model AuditLog {
-  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  actorId String? @db.Uuid
-  actor   User?   @relation("AuditLogActor", fields: [actorId], references: [id])
-
-  orderId String? @db.Uuid
-  order   Order?  @relation(fields: [orderId], references: [id])
-
-  action  String // e.g. "ORDER_STATUS_CHANGE", "PRODUCT_UPDATED", "RISK_FLAG_SET"
-  details String? // JSON-encoded string; parse at the application boundary
-
-  createdAt DateTime @default(now())
-
-  @@index([actorId])
-  @@index([orderId])
-}
-
-model RiskFlag {
-  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  entityType  RiskEntityType
-  entityValue String // phone, address identifier, pincode, or userId depending on entityType
-  riskLevel   RiskLevel
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([entityType, entityValue], name: "risk_entity_idx")
-}
-
-model Setting {
-  key       String   @id
-  value     String // JSON-encoded string for structured values; parse at the application boundary
-  updatedAt DateTime @updatedAt
-}
-
-/// C6: Coupon / Discount Code model
-model Coupon {
-  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code String @unique
-
-  discountType  CouponType
-  discountValue Int // percentage (0-100) or paise amount depending on discountType
-
-  minOrderPaise Int @default(0) // minimum cart value required to apply this coupon
-  maxUsage      Int @default(0) // 0 = unlimited
-  usageCount    Int @default(0)
-
-  validFrom  DateTime?
-  validUntil DateTime?
-
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([code])
-}
-
-model WishlistItem {
-  id        String   @id @default(cuid())
-  userId    String   @db.Uuid
-  productId String   @db.Uuid
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@index([userId])
-  @@index([productId])
-  @@index([userId, productId])
-}
-
-model ProductReview {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId String   @db.Uuid
-  userId    String   @db.Uuid
-  rating    Int
-  comment   String?  @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@index([productId])
-  @@index([userId])
+  PERCENTAGE
+  FIXED
 }
 
 enum BannerType {
@@ -494,89 +495,4 @@ enum BannerType {
   SUCCESS
   WARNING
   PROMO
-}
-
-model Banner {
-  id        String     @id @default(cuid())
-  message   String
-  type      BannerType @default(INFO)
-  isActive  Boolean    @default(false)
-  linkText  String?
-  linkUrl   String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model WelcomeOffer {
-  id              String   @id @default(cuid())
-  title           String   @default("Welcome back! 🎉")
-  subtitle        String   @default("You have an exclusive deal waiting today.")
-  offerText       String   @default("FLAT ₹100 OFF on your first order")
-  offerSubtext    String   @default("Valid until July 25 · Applied automatically at checkout")
-  ctaText         String   @default("Shop Now")
-  ctaUrl          String   @default("/products")
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-/// B12: Referral & Loyalty
-
-model ReferralCode {
-  id        String        @id @default(cuid())
-  code      String        @unique
-  userId    String        @unique @db.Uuid
-  user      User          @relation(fields: [userId], references: [id])
-  usedBy    ReferralUse[]
-  createdAt DateTime      @default(now())
-
-  @@index([userId])
-}
-
-model ReferralUse {
-  id             String       @id @default(cuid())
-  referralCodeId String
-  referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id])
-  referredUserId String       @unique @db.Uuid
-  referredUser   User         @relation("ReferredBy", fields: [referredUserId], references: [id])
-  pointsAwarded  Int          @default(0)
-  createdAt      DateTime     @default(now())
-
-  @@index([referralCodeId])
-  @@index([referredUserId])
-}
-
-model LoyaltyAccount {
-  id        String         @id @default(cuid())
-  userId    String         @unique @db.Uuid
-  user      User           @relation(fields: [userId], references: [id])
-  balance   Int            @default(0)
-  ledger    PointsLedger[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-
-  @@index([userId])
-}
-
-model PointsLedger {
-  id               String         @id @default(cuid())
-  loyaltyAccountId String
-  loyaltyAccount   LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id])
-  delta            Int
-  reason           String
-  orderId          String?        @db.Uuid
-  createdAt        DateTime       @default(now())
-
-  @@index([loyaltyAccountId])
-  @@index([orderId])
-  @@index([createdAt(sort: Desc)])
-}
-
-model LoyaltySettings {
-  id                 String   @id @default(cuid())
-  pointsPerRupee     Int      @default(1)
-  rupeesPer100Points Int      @default(10)
-  referralBonus      Int      @default(500)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
 }

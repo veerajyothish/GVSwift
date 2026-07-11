@@ -7,7 +7,7 @@ interface VariantInput {
   id?: string;
   sku: string;
   stock: number;
-  priceDeltaRupees: string; // user edits in Rupees, we convert to Paise
+  variantPriceRupees: string; // user edits in full Rupees, we convert to delta Paise
 }
 
 interface ImageInput {
@@ -67,7 +67,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
       id: v.id,
       sku: v.sku,
       stock: v.stock,
-      priceDeltaRupees: (v.priceDeltaPaise / 100).toString(),
+      variantPriceRupees: ((initialData.basePricePaise + v.priceDeltaPaise) / 100).toString(),
     })) ?? []
   );
 
@@ -102,7 +102,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
 
   // Variants handlers
   const addVariant = () => {
-    setVariants([...variants, { sku: "", stock: 0, priceDeltaRupees: "0" }]);
+    setVariants([...variants, { sku: "", stock: 0, variantPriceRupees: basePriceRupees || "0" }]);
   };
 
   const removeVariant = (index: number) => {
@@ -241,7 +241,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
         id: v.id,
         sku: v.sku.trim(),
         stock: v.stock,
-        priceDeltaPaise: Math.round(parseFloat(v.priceDeltaRupees || "0") * 100),
+        priceDeltaPaise: Math.round((parseFloat(v.variantPriceRupees || "0") - parseFloat(basePriceRupees || "0")) * 100),
       }));
 
       // Validate variant fields
@@ -539,20 +539,17 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
                 </div>
 
                 <div className="input-group margin-0" style={{ flex: 1.5, display: "flex", flexDirection: "column" }}>
-                  <label className="text-xs font-semibold">Price Delta (INR ₹)</label>
+                  <label className="text-xs font-semibold">Variant Price (INR ₹)</label>
                   <input
                     type="number"
                     step="0.01"
                     className="input-field"
                     style={{ minHeight: "38px", padding: "6px 12px" }}
-                    placeholder="e.g. +200 or -100"
-                    value={variant.priceDeltaRupees}
-                    onChange={(e) => updateVariant(index, "priceDeltaRupees", e.target.value)}
+                    placeholder="e.g. 849.00"
+                    value={variant.variantPriceRupees}
+                    onChange={(e) => updateVariant(index, "variantPriceRupees", e.target.value)}
                     disabled={isSubmitting}
                   />
-                  <span style={{ fontSize: "10px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                    Final Price: ₹{((parseFloat(basePriceRupees || "0") + parseFloat(variant.priceDeltaRupees || "0")) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
                 </div>
 
                 <button

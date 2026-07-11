@@ -196,7 +196,7 @@ export async function PUT(
     if (oldProduct) {
       await invalidateProductCache(oldProduct.slug);
     }
-    if (updatedProduct && updatedProduct.slug !== oldProduct?.slug) {
+    if (updatedProduct) {
       await invalidateProductCache(updatedProduct.slug);
     }
 
