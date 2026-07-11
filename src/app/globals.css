@@ -9,6 +9,7 @@
   --color-primary-light:  #7D2435;
   --color-accent-dark:    #4A1520;
   --color-accent-text:    #FDFAF5;
+  --color-accent:         var(--color-primary);
 
   --color-bg:             #FDFAF5;
   --color-surface:        #F5F0EB;

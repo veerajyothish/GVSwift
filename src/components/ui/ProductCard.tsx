@@ -120,6 +120,7 @@ export default function ProductCard({
           position: "relative",
           width: "100%",
           aspectRatio: "3 / 4",
+          maxHeight: "300px",
           overflow: "hidden",
           background: "var(--color-surface)",
         }}

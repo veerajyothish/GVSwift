@@ -157,43 +157,8 @@ export async function downloadInvoicePdf(order: InvoiceOrder) {
     },
   });
 
-  // 4. Financial Calculations & GST breakdown
-  // GST is 18% (9% CGST + 9% SGST)
-  // Assuming prices are GST inclusive, we calculate base price and GST details
-  const subtotal = order.subtotalPaise;
-  const baseValue = subtotal / 1.18;
-  const gstValue = subtotal - baseValue;
-  const cgst = gstValue / 2;
-  const sgst = gstValue / 2;
-
+  // 4. Financial Calculations
   const currentY = autotableDoc.lastAutoTable.finalY + 12;
-
-  // Add GST Box on the left, Totals on the right
-  doc.setFillColor(252, 249, 248);
-  doc.rect(20, currentY, 80, 42, "F");
-  doc.setDrawColor(229, 220, 214);
-  doc.rect(20, currentY, 80, 42, "S");
-
-  // GST details inside the box
-  doc.setFont("Helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(86, 25, 34);
-  doc.text("GST TAX BREAKDOWN (INCLUSIVE)", 25, currentY + 7);
-
-  doc.setFont("Helvetica", "normal");
-  doc.setTextColor(80, 80, 80);
-  doc.text(`Taxable Base Value:`, 25, currentY + 16);
-  doc.text(formatPaise(baseValue), 95, currentY + 16, { align: "right" });
-
-  doc.text(`CGST (9.0%):`, 25, currentY + 24);
-  doc.text(formatPaise(cgst), 95, currentY + 24, { align: "right" });
-
-  doc.text(`SGST (9.0%):`, 25, currentY + 32);
-  doc.text(formatPaise(sgst), 95, currentY + 32, { align: "right" });
-
-  doc.setFont("Helvetica", "bold");
-  doc.text(`Total Tax:`, 25, currentY + 38);
-  doc.text(formatPaise(gstValue), 95, currentY + 38, { align: "right" });
 
   // Summary list on the right side
   doc.setFont("Helvetica", "normal");

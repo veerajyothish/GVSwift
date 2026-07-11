@@ -39,7 +39,6 @@ import {
 } from "@/features/risk/service";
 import { getCodLimitPaise } from "@/features/settings/service";
 import { inngest } from "@/lib/inngest/client";
-import { withRetry } from "@/lib/retry";
 import { logger } from "@/lib/logger";
 import { RiskEntityType, RiskLevel, PaymentMethod } from "@prisma/client";
 import {
@@ -494,16 +493,14 @@ export async function createOrder(
   });
 
   // Trigger background job to send order confirmation email (non-blocking)
-  withRetry(() =>
-    inngest.send({
-      name: "order/placed",
-      data: {
-        orderId: finalOrder.id,
-        userId: finalOrder.userId,
-        email: finalOrder.user.email,
-      },
-    })
-  ).catch((err) => {
+  inngest.send({
+    name: "order/placed",
+    data: {
+      orderId: finalOrder.id,
+      userId: finalOrder.userId,
+      email: finalOrder.user.email,
+    },
+  }).catch((err) => {
     logger.error({ err, orderId: finalOrder.id }, "Failed to send order/placed event to Inngest");
   });
 

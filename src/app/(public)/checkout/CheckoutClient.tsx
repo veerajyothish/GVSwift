@@ -253,7 +253,7 @@ export default function CheckoutClient({
         const res = await fetch("/api/v1/coupons/validate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, cartValuePaise: subtotalPaise }),
+          body: JSON.stringify({ code, cartTotalPaise: subtotalPaise }),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -272,8 +272,9 @@ export default function CheckoutClient({
     }, 50);
   };
 
+  const redeemablePoints = Math.floor(loyaltyBalance / 100) * 100;
   const pointsDiscountPaise = usePoints
-    ? Math.floor((loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points * 100)
+    ? (redeemablePoints / 100) * loyaltySettings.rupeesPer100Points * 100
     : 0;
 
   // Keep addresses in sync with page props (router.refresh() updates this)
@@ -498,7 +499,7 @@ export default function CheckoutClient({
           idempotencyKey,
           paymentMethod: "COD",
           couponCode: appliedCoupon?.code ?? undefined,
-          pointsToRedeem: usePoints ? (loyaltyBalance || 0) : 0,
+          pointsToRedeem: usePoints ? redeemablePoints : 0,
         }),
       });
 
@@ -926,7 +927,7 @@ export default function CheckoutClient({
           </div>
 
           {/* B12: Loyalty Points Checkbox */}
-          {loyaltyBalance > 0 && (
+          {loyaltyBalance >= 100 && (
             <div
               style={{
                 display: "flex",
@@ -959,7 +960,7 @@ export default function CheckoutClient({
                 htmlFor="loyalty-points-checkbox"
                 style={{ cursor: "pointer", flexGrow: 1 }}
               >
-                Use my loyalty points (<span style={{ fontVariantNumeric: "tabular-nums" }}>{loyaltyBalance}</span> pts = ₹<span style={{ fontVariantNumeric: "tabular-nums" }}>{Math.floor(loyaltyBalance / 100) * loyaltySettings.rupeesPer100Points}</span> off)
+                Use my loyalty points (<span style={{ fontVariantNumeric: "tabular-nums" }}>{redeemablePoints}</span> pts = ₹<span style={{ fontVariantNumeric: "tabular-nums" }}>{(redeemablePoints / 100) * loyaltySettings.rupeesPer100Points}</span> off)
               </label>
             </div>
           )}
