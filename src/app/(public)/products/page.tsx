@@ -212,9 +212,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             style={{
               fontFamily: "var(--font-heading)",
               fontSize: "clamp(36px, 5vw, 56px)",
-              fontWeight: 700,
+              fontWeight: 400,
               fontStyle: "italic",
-              color: "var(--color-accent)",
+              color: "var(--color-text-primary)",
               lineHeight: 1.1,
               marginBottom: "16px",
             }}

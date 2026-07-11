@@ -68,6 +68,18 @@
   --skeleton-highlight: #FDFAF5;
 }
 
+@media (max-width: 767px) {
+  .hero-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    padding: 48px 20px 64px !important;
+  }
+  .editorial-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+}
+
 @keyframes skeleton {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }

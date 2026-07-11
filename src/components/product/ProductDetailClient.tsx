@@ -368,7 +368,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{
                     position: "absolute", top: "50%", left: "12px", transform: "translateY(-50%)",
                     width: "36px", height: "36px", borderRadius: "50%",
-                    background: "rgba(253,250,245,0.85)", backdropFilter: "blur(8px)",
+                    background: "color-mix(in srgb, var(--color-bg) 85%, transparent)", backdropFilter: "blur(8px)",
                     border: "1px solid rgba(107,30,46,0.1)", cursor: "pointer",
                     display: activeImageIdx === 0 ? "none" : "flex",
                     alignItems: "center", justifyContent: "center",
@@ -384,7 +384,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   style={{
                     position: "absolute", top: "50%", right: "12px", transform: "translateY(-50%)",
                     width: "36px", height: "36px", borderRadius: "50%",
-                    background: "rgba(253,250,245,0.85)", backdropFilter: "blur(8px)",
+                    background: "color-mix(in srgb, var(--color-bg) 85%, transparent)", backdropFilter: "blur(8px)",
                     border: "1px solid rgba(107,30,46,0.1)", cursor: "pointer",
                     display: activeImageIdx === images.length - 1 ? "none" : "flex",
                     alignItems: "center", justifyContent: "center",
@@ -1120,7 +1120,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           left: 0,
           right: 0,
           padding: "12px 20px",
-          background: "rgba(253,250,245,0.97)",
+          background: "color-mix(in srgb, var(--color-bg) 97%, transparent)",
           backdropFilter: "blur(12px)",
           borderTop: "1px solid var(--color-border)",
           zIndex: 80,
@@ -1186,7 +1186,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 borderBottom: "1px solid var(--color-border)",
               }}
             >
-              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "20px", fontWeight: 500, margin: 0 }}>
+              <h2 style={{ fontFamily: "var(--font-heading)", fontSize: "20px", fontWeight: 400, margin: 0 }}>
                 Fit Guide
               </h2>
               <button

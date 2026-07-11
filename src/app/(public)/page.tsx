@@ -486,10 +486,10 @@ export default async function HomePage() {
                     </span>
                     <h2
                       style={{
-                        fontFamily: "var(--font-heading), 'EB Garamond', serif",
+                        fontFamily: "var(--font-heading)",
                         fontSize: "clamp(30px, 3.5vw, 42px)",
-                        fontWeight: 600,
-                        color: "var(--color-primary)",
+                        fontWeight: 400,
+                        color: "var(--color-text-primary)",
                         lineHeight: 1.15,
                         margin: 0,
                       }}
@@ -578,7 +578,7 @@ export default async function HomePage() {
                     style={{
                       fontFamily: "var(--font-heading)",
                       fontSize: "clamp(28px, 3.5vw, 40px)",
-                      fontWeight: 600,
+                      fontWeight: 400,
                       color: "var(--color-text-primary)",
                       lineHeight: 1.15,
                     }}
