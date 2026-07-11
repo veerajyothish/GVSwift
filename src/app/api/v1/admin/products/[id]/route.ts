@@ -41,6 +41,32 @@ export async function PUT(
       );
     }
 
+    if (parsed.data.variants && parsed.data.variants.length > 0) {
+      const skusInRequest = parsed.data.variants.map((v) => v.sku);
+      const uniqueSkusInRequest = new Set(skusInRequest);
+      if (skusInRequest.length !== uniqueSkusInRequest.size) {
+        return NextResponse.json(
+          { error: "Duplicate SKUs are not allowed within the same product.", code: "VALIDATION_ERROR" },
+          { status: 400 }
+        );
+      }
+
+      // Check if any variant SKU is already taken by a variant of another product
+      const duplicates = await prisma.productVariant.findMany({
+        where: {
+          sku: { in: skusInRequest },
+          productId: { not: id },
+        },
+        select: { sku: true },
+      });
+      if (duplicates.length > 0) {
+        return NextResponse.json(
+          { error: `Variant SKU '${duplicates[0].sku}' is already in use by another product.`, code: "CONFLICT" },
+          { status: 409 }
+        );
+      }
+    }
+
 
     // Critical security check: max 8 images per product
     if (body.images && Array.isArray(body.images) && body.images.length > 8) {

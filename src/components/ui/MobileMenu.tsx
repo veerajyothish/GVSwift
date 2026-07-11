@@ -8,10 +8,9 @@
  */
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { performClientLogout } from "@/lib/auth/logout";
-import { ShoppingBag, Search, Package, User } from "lucide-react";
 
 
 interface MobileMenuProps {
@@ -25,7 +24,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
+
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -134,15 +133,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
     await performClientLogout();
   };
 
-  /* Bottom nav tabs — PDF p.18 (Airtel-style floating bar refactored) */
-  let activeIndex = 0;
-  if (isSearchOpen) {
-    activeIndex = 1;
-  } else if (pathname.startsWith("/account/orders")) {
-    activeIndex = 2;
-  } else if (pathname.startsWith("/account/profile") || pathname === "/login") {
-    activeIndex = 3;
-  }
+
 
   return (
     <>
@@ -205,6 +196,26 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                   </Link>
                 ))}
 
+                {/* Mobile Search inside Drawer */}
+                <button
+                  onClick={() => {
+                    close();
+                    setIsSearchOpen(true);
+                  }}
+                  className="mobile-drawer-link"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    textAlign: "left",
+                    width: "100%",
+                    cursor: "pointer",
+                    color: "var(--color-text-primary)",
+                  }}
+                >
+                  Search
+                </button>
+
                 <div className="mobile-drawer-divider" />
 
                 {isLoggedIn ? (
@@ -237,79 +248,6 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
             </div>
           </div>
 
-          {/* ── Bottom nav bar — PDF p.18 (Airtel-inspired floating pill) ── */}
-          <nav
-            aria-label="Bottom navigation"
-            className="mobile-bottom-nav"
-            style={{ "--active-index": activeIndex } as React.CSSProperties}
-          >
-            {/* Sliding background pill indicator */}
-            <div className="mobile-bottom-nav-indicator">
-              <div className="mobile-bottom-nav-indicator-pill" />
-            </div>
-
-            {/* Shop tab */}
-            <Link
-              href="/products"
-              prefetch={true}
-              className={`mobile-bottom-tab ${
-                pathname === "/products" || pathname.startsWith("/products/") ? "mobile-bottom-tab-active" : ""
-              }`}
-            >
-              <div className="mobile-bottom-tab-inner">
-                <span className="mobile-bottom-tab-icon">
-                  <ShoppingBag size={20} />
-                </span>
-                <span className="mobile-bottom-tab-label">Shop</span>
-              </div>
-            </Link>
-
-            {/* Search tab */}
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className={`mobile-bottom-tab ${isSearchOpen ? "mobile-bottom-tab-active" : ""}`}
-            >
-              <div className="mobile-bottom-tab-inner">
-                <span className="mobile-bottom-tab-icon">
-                  <Search size={20} />
-                </span>
-                <span className="mobile-bottom-tab-label">Search</span>
-              </div>
-            </button>
-
-            {/* Orders tab */}
-            <Link
-              href="/account/orders"
-              prefetch={true}
-              className={`mobile-bottom-tab ${
-                pathname.startsWith("/account/orders") ? "mobile-bottom-tab-active" : ""
-              }`}
-            >
-              <div className="mobile-bottom-tab-inner">
-                <span className="mobile-bottom-tab-icon">
-                  <Package size={20} />
-                </span>
-                <span className="mobile-bottom-tab-label">Orders</span>
-              </div>
-            </Link>
-
-            {/* Profile tab */}
-            <Link
-              href={isLoggedIn ? "/account/profile" : "/login"}
-              prefetch={true}
-              className={`mobile-bottom-tab ${
-                pathname.startsWith("/account/profile") || pathname === "/login" ? "mobile-bottom-tab-active" : ""
-              }`}
-            >
-              <div className="mobile-bottom-tab-inner">
-                <span className="mobile-bottom-tab-icon">
-                  <User size={20} />
-                </span>
-                <span className="mobile-bottom-tab-label">Profile</span>
-              </div>
-            </Link>
-          </nav>
-
           {/* ── Full-screen search overlay ──────────────────────────────────── */}
           {isSearchOpen && (
             <div
@@ -317,7 +255,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                 position: "fixed",
                 inset: 0,
                 zIndex: 10000,
-                background: "rgba(253,250,245,0.98)",
+                background: "var(--color-bg)",
                 backdropFilter: "blur(8px)",
                 display: "flex",
                 flexDirection: "column",
@@ -354,7 +292,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                   style={{
                     width: "100%",
                     padding: "14px 18px",
-                    borderRadius: "12px",
+                    borderRadius: "9999px", // radius-pill per Brand Guidelines
                     border: "1px solid var(--color-border)",
                     fontSize: "16px",
                     background: "var(--color-surface)",
@@ -377,7 +315,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                           style={{
                             display: "block",
                             padding: "14px 16px",
-                            borderRadius: "10px",
+                            borderRadius: "var(--radius-md)",
                             border: "1px solid var(--color-border)",
                             background: "var(--color-bg)",
                             textDecoration: "none",
@@ -404,16 +342,6 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
               </div>
             </div>
           )}
-
-          {/* Bottom nav spacer so page content isn't hidden behind it */}
-          <div className="mobile-bottom-spacer" style={{ display: "none", height: "64px" }} />
-
-          <style>{`
-            @media (max-width: 767px) {
-              .mobile-bottom-nav    { display: flex !important; }
-              .mobile-bottom-spacer { display: block !important; }
-            }
-          `}</style>
         </>
         , document.body
       ) : null}

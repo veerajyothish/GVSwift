@@ -640,3 +640,16 @@ export async function updateShop(
   return shop;
 }
 
+export async function getDuplicateSkus(skus: string[]): Promise<string[]> {
+  const existing = await withRetry(() =>
+    prisma.productVariant.findMany({
+      where: {
+        sku: { in: skus },
+      },
+      select: {
+        sku: true,
+      },
+    })
+  );
+  return existing.map((v) => v.sku);
+}

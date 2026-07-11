@@ -126,7 +126,6 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           aria-invalid={!!error}
           aria-describedby={error ? `${uniqueId}-error` : undefined}
           required={required}
-          style={{ borderRadius: "var(--radius-lg)" }} /* select looks odd as full pill */
           {...props}
         >
           {children ||

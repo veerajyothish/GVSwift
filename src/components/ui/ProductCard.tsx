@@ -101,15 +101,15 @@ export default function ProductCard({
         height: "100%",
         background: "var(--color-bg)",
         border: "1px solid var(--color-border)",
-        borderRadius: "var(--radius-md)",
+        borderRadius: "var(--radius-lg)",
         overflow: "hidden",
         position: "relative",
         cursor: "pointer",
         willChange: hovered ? "transform" : "auto",
-        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
         boxShadow: hovered
-          ? "0 16px 36px -12px rgba(107,30,46,0.14)"
-          : "none",
+          ? "var(--shadow-md)"
+          : "var(--shadow-sm)",
         transition: "transform 150ms cubic-bezier(0.16,1,0.3,1), box-shadow 150ms cubic-bezier(0.16,1,0.3,1), border-color 150ms cubic-bezier(0.16,1,0.3,1)",
         borderColor: hovered ? "rgba(107,30,46,0.18)" : "var(--color-border)",
       }}
@@ -128,14 +128,14 @@ export default function ProductCard({
           href={`/products/${product.slug}`}
           prefetch={true}
           onClick={(e) => e.stopPropagation()}
-          style={{ display: "block", width: "100%", height: "100%" }}
+          style={{ display: "block", width: "100%", height: "100%", position: "relative" }}
         >
           <Image
             src={imgError ? svgFallback : imageUrl}
             alt={primaryImage?.altText || product.name}
             fill
             priority={priority}
-            loading="lazy"
+            loading={priority ? undefined : "lazy"}
             placeholder="blur"
             blurDataURL={svgFallback}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

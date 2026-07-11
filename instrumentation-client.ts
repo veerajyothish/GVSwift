@@ -1,4 +1,3 @@
-// instrumentation-client.ts — replaces sentry.client.config.ts for Turbopack compatibility
 import * as Sentry from "@sentry/nextjs";
 
 const PII_KEYS = new Set(["email", "name", "phone", "address"]);

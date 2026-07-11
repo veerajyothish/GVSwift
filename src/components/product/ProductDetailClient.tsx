@@ -568,6 +568,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
             {/* Price — PDF p.4: wine-red, larger */}
             <p
+              className="pdp-price"
               style={{
                 fontSize: "24px",
                 fontWeight: 500,
@@ -636,7 +637,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             >
               {product?.name}
             </h1>
-            <p style={{ fontSize: "18px", fontWeight: 500, color: "var(--color-text-secondary)", marginBottom: "16px" }}>
+            <p className="pdp-price" style={{ fontSize: "18px", fontWeight: 500, color: "var(--color-text-secondary)", marginBottom: "16px" }}>
               {formattedPrice}
             </p>
             {product?.description && (

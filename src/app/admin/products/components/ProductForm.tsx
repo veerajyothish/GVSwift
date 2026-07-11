@@ -245,10 +245,22 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
       }));
 
       // Validate variant fields
+      const skuSet = new Set<string>();
       for (const v of mappedVariants) {
         if (!v.sku) {
           throw new Error("All variants must have a SKU.");
         }
+        if (v.sku.length < 3) {
+          throw new Error(`Variant SKU '${v.sku}' must be at least 3 characters.`);
+        }
+        if (v.sku.length > 50) {
+          throw new Error(`Variant SKU '${v.sku}' cannot exceed 50 characters.`);
+        }
+        if (skuSet.has(v.sku)) {
+          throw new Error(`Duplicate SKU '${v.sku}' found. Each variant must have a unique SKU.`);
+        }
+        skuSet.add(v.sku);
+
         if (isNaN(v.stock) || v.stock < 0) {
           throw new Error("Variant stock must be a non-negative integer.");
         }

@@ -91,6 +91,29 @@ export async function adminCreateProduct(input: unknown) {
     );
   }
 
+  // Check for duplicate SKUs within the request itself
+  if (parsed.data.variants && parsed.data.variants.length > 0) {
+    const skusInRequest = parsed.data.variants.map((v) => v.sku);
+    const uniqueSkusInRequest = new Set(skusInRequest);
+    if (skusInRequest.length !== uniqueSkusInRequest.size) {
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "Duplicate SKUs are not allowed within the same product.",
+        400
+      );
+    }
+
+    // Check if any variant SKU is already taken by another product
+    const duplicateSkus = await repository.getDuplicateSkus(skusInRequest);
+    if (duplicateSkus.length > 0) {
+      throw new AppError(
+        "CONFLICT",
+        `Variant SKU '${duplicateSkus[0]}' is already in use by another product.`,
+        409
+      );
+    }
+  }
+
   return repository.createProduct(parsed.data);
 }
 

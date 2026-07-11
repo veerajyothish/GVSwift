@@ -4,54 +4,63 @@
  */
 
 :root {
-  /* ── Color Palette ───────────────────────────────────────────────────────── */
-  --color-primary: #6B1E2E;
-  --color-primary-light: #7d2435;
-  --color-accent: #6B1E2E;
-  --color-accent-dark: #4a1520;
-  --color-accent-text: #FDFAF5;
+  /* Colors */
+  --color-primary:        #6B1E2E;
+  --color-primary-light:  #7D2435;
+  --color-accent-dark:    #4A1520;
+  --color-accent-text:    #FDFAF5;
 
-  /* Surfaces */
-  --color-bg: #FDFAF5;
-  --color-surface: #F5F0EB;
-  --color-border: #E8DDD9;
+  --color-bg:             #FDFAF5;
+  --color-surface:        #F5F0EB;
+  --color-border:         #E8DDD9;
 
-  /* Text */
-  --color-text-primary: #1A1A1A;
+  --color-text-primary:   #1A1A1A;
   --color-text-secondary: #6B5B55;
-  --color-text-on-dark: #FDFAF5;
+  --color-text-on-dark:   #FDFAF5;
 
-  /* Semantic */
-  --color-success: #1b8553;
-  --color-success-bg: rgba(27, 133, 83, 0.1);
-  --color-warning: #b3741b;
-  --color-warning-bg: rgba(179, 116, 27, 0.1);
-  --color-error: #cc2424;
-  --color-error-bg: rgba(204, 36, 36, 0.1);
-  --color-info: #1b63b3;
-  --color-info-bg: rgba(27, 99, 179, 0.1);
+  --color-success:        #1B8553;
+  --color-success-bg:     rgba(27, 133, 83, 0.1);
+  --color-warning:        #B3741B;
+  --color-warning-bg:     rgba(179, 116, 27, 0.1);
+  --color-error:          #CC2424;
+  --color-error-bg:       rgba(204, 36, 36, 0.1);
+  --color-info:           #1B63B3;
+  --color-info-bg:        rgba(27, 99, 179, 0.1);
 
-  /* ── Spacing Scale (4px base) ────────────────────────────────────────────── */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
+  /* Typography */
+  --font-display:         'EB Garamond', Georgia, serif;
+  --font-heading:         'EB Garamond', Georgia, serif;
+  --font-body:            'Inter', system-ui, -apple-system, sans-serif;
 
-  /* ── Border Radius ───────────────────────────────────────────────────────── */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+
+  /* Border Radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
   --radius-pill: 9999px;
 
-  /* ── Shadows ─────────────────────────────────────────────────────────────── */
+  /* Shadows (warm-tinted with Wine Red RGB) */
   --shadow-sm: 0 1px 2px rgba(107, 30, 46, 0.05);
   --shadow-md: 0 4px 12px rgba(107, 30, 46, 0.07), 0 2px 4px rgba(107, 30, 46, 0.04);
   --shadow-lg: 0 16px 40px rgba(107, 30, 46, 0.08), 0 4px 12px rgba(107, 30, 46, 0.05);
+
+  /* Transitions */
+  --transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --content-default: 1100px;
+  --content-narrow:  800px;
 }
+
 
 /* ── Base Reset ──────────────────────────────────────────────────────────────── */
 *,
@@ -1503,105 +1512,5 @@ button[disabled],
 
 .product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-}
-
-/* ── Mobile Floating Bottom Navigation (Airtel-inspired with GPU sliding indicator) ── */
-.mobile-bottom-nav {
-  position: fixed;
-  bottom: 20px;
-  left: 16px;
-  right: 16px;
-  max-width: 480px;
-  margin: 0 auto;
-  height: 68px;
-  background: rgba(253, 250, 245, 0.94);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(107, 30, 46, 0.08);
-  border-radius: 9999px;
-  display: none; /* Shown via media query in MobileMenu */
-  align-items: center;
-  justify-content: space-around;
-  z-index: 9999;
-  padding: 0 4px;
-  box-shadow: 0 8px 32px rgba(107, 30, 46, 0.08);
-}
-
-/* Sliding active pill indicator */
-.mobile-bottom-nav-indicator {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 25%; /* Exactly 1 column width */
-  z-index: 1;
-  pointer-events: none;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateX(calc(100% * var(--active-index, 0)));
-  padding: 6px;
-}
-
-.mobile-bottom-nav-indicator-pill {
-  width: 100%;
-  height: 100%;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid rgba(107, 30, 46, 0.12);
-  box-shadow: 0 4px 12px rgba(107, 30, 46, 0.05);
-  border-radius: 9999px;
-}
-
-.mobile-bottom-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  flex: 1;
-  height: 100%;
-  color: var(--color-text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 0;
-  z-index: 2; /* Render above the sliding indicator */
-}
-
-.mobile-bottom-tab-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.mobile-bottom-tab-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-secondary);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.mobile-bottom-tab-label {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 2px;
-}
-
-/* Active tab style updates label and icon color only */
-.mobile-bottom-tab-active .mobile-bottom-tab-icon {
-  color: var(--color-accent);
-  transform: translateY(-2px);
-}
-
-.mobile-bottom-tab-active .mobile-bottom-tab-label {
-  color: var(--color-accent);
-  font-weight: 700;
+  box-shadow: var(--shadow-md);
 }
