@@ -75,6 +75,7 @@ export const metadata: Metadata = {
 import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { GlobalClickInteraction } from "@/components/ui/GlobalClickInteraction";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -106,6 +107,7 @@ export default function RootLayout({
           <WishlistProvider>
             {children}
             <CookieConsentBanner />
+            <GlobalClickInteraction />
           </WishlistProvider>
         </ToastProvider>
       </body>

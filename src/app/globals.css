@@ -1476,8 +1476,8 @@ a:active,
 [role="button"]:active,
 .btn:active,
 .card:active {
-  transform: scale(0.97);
-  transition: transform 80ms ease !important;
+  transform: scale(0.95);
+  transition: transform 50ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* B4. Remove pointer lag — touch optimization */
