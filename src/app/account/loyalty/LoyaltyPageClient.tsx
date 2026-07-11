@@ -58,14 +58,15 @@ export default function LoyaltyPageClient({
       <div
         className="rounded-xl p-6 text-center"
         style={{
-          background: "linear-gradient(135deg, var(--color-primary) 0%, color-mix(in oklch, var(--color-primary) 70%, #000) 100%)",
-          color: "#fff",
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          color: "var(--color-text-primary)",
         }}
       >
         <p style={{ fontSize: "13px", opacity: 0.8, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
           Your Points Balance
         </p>
-        <p style={{ fontSize: "56px", fontWeight: 800, lineHeight: 1, fontFamily: "var(--font-heading)", margin: "8px 0", fontVariantNumeric: "tabular-nums" }}>
+        <p style={{ fontSize: "56px", fontWeight: 400, color: "var(--color-accent)", lineHeight: 1, fontFamily: "var(--font-heading)", margin: "8px 0", fontVariantNumeric: "tabular-nums" }}>
           {balance.toLocaleString("en-IN")}
         </p>
         <p style={{ fontSize: "14px", opacity: 0.85, marginTop: "6px" }}>

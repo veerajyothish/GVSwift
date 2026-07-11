@@ -122,7 +122,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
     <div className="flex flex-col gap-6 max-w-xl">
       {/* Section 1: Change Password */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-primary mb-4" style={{ fontFamily: "var(--font-heading)" }}>
+        <h2 className="text-lg text-primary mb-4" style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}>
           Security & Password
         </h2>
         <p className="text-sm text-secondary mb-16">
@@ -155,7 +155,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
 
       {/* Section 2: Notification Preferences */}
       <Card className="p-6">
-        <h2 className="text-lg font-semibold text-primary mb-4" style={{ fontFamily: "var(--font-heading)" }}>
+        <h2 className="text-lg text-primary mb-4" style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}>
           Notification Preferences
         </h2>
         <p className="text-sm text-secondary mb-20">
@@ -190,7 +190,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
                 height: "20px",
                 borderRadius: "var(--radius-sm)",
                 border: "1px solid var(--color-border)",
-                accentColor: "var(--color-primary)",
+                accentColor: "var(--color-accent)",
                 marginTop: "2px",
               }}
             />
@@ -213,7 +213,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
                 height: "20px",
                 borderRadius: "var(--radius-sm)",
                 border: "1px solid var(--color-border)",
-                accentColor: "var(--color-primary)",
+                accentColor: "var(--color-accent)",
                 marginTop: "2px",
               }}
             />
@@ -236,7 +236,7 @@ export default function SettingsForm({ email, initialPreferences }: SettingsForm
 
       {/* Section 3: Danger Zone */}
       <Card className="p-6" style={{ borderColor: "var(--color-error)", backgroundColor: "var(--color-error-bg)" }}>
-        <h2 className="text-lg font-semibold text-error mb-4" style={{ fontFamily: "var(--font-heading)", color: "var(--color-error)" }}>
+        <h2 className="text-lg mb-4" style={{ fontFamily: "var(--font-heading)", color: "var(--color-error)", fontWeight: 400 }}>
           Danger Zone
         </h2>
         <p className="text-sm text-secondary mb-16">

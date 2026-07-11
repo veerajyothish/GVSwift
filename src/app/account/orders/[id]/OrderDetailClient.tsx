@@ -71,17 +71,17 @@ interface OrderDetailClientProps {
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
-const STATUS_CONFIG: Record<string, { label: string; colorVar: string }> = {
-  PLACED: { label: "Order Placed", colorVar: "var(--color-info)" },
-  CONFIRMED: { label: "Confirmed", colorVar: "var(--color-info)" },
-  SHIPPED: { label: "Shipped", colorVar: "var(--color-accent)" },
-  OUT_FOR_DELIVERY: { label: "Out for Delivery", colorVar: "var(--color-accent)" },
-  DELIVERED: { label: "Delivered", colorVar: "var(--color-success)" },
-  CANCELLED: { label: "Cancelled", colorVar: "var(--color-error)" },
-  FAILED_DELIVERY: { label: "Failed Delivery", colorVar: "var(--color-warning)" },
-  RTO: { label: "Returned to Origin", colorVar: "var(--color-error)" },
-  RETURN_REQUESTED: { label: "Return Requested", colorVar: "var(--color-warning)" },
-  RETURNED: { label: "Returned", colorVar: "var(--color-text-secondary)" },
+const STATUS_CONFIG: Record<string, { label: string; colorVar: string; bgVar: string }> = {
+  PLACED: { label: "Order Placed", colorVar: "#fff", bgVar: "var(--color-warning)" },
+  CONFIRMED: { label: "Confirmed", colorVar: "#fff", bgVar: "var(--color-warning)" },
+  SHIPPED: { label: "Shipped", colorVar: "#fff", bgVar: "var(--color-accent)" },
+  OUT_FOR_DELIVERY: { label: "Out for Delivery", colorVar: "#fff", bgVar: "var(--color-accent)" },
+  DELIVERED: { label: "Delivered", colorVar: "#fff", bgVar: "var(--color-success)" },
+  CANCELLED: { label: "Cancelled", colorVar: "#fff", bgVar: "var(--color-error)" },
+  FAILED_DELIVERY: { label: "Failed Delivery", colorVar: "#fff", bgVar: "var(--color-error)" },
+  RTO: { label: "Returned to Origin", colorVar: "#fff", bgVar: "var(--color-error)" },
+  RETURN_REQUESTED: { label: "Return Requested", colorVar: "#fff", bgVar: "var(--color-warning)" },
+  RETURNED: { label: "Returned", colorVar: "#fff", bgVar: "var(--color-text-secondary)" },
 };
 
 function formatPaise(paise: number): string {
@@ -293,9 +293,8 @@ export default function OrderDetailClient({
           <span
             className="order-status-badge order-status-badge-lg"
             style={{
-              backgroundColor: `color-mix(in srgb, ${statusCfg.colorVar} 15%, transparent)`,
+              backgroundColor: statusCfg.bgVar,
               color: statusCfg.colorVar,
-              borderColor: `color-mix(in srgb, ${statusCfg.colorVar} 25%, transparent)`,
             }}
           >
             {statusCfg.label}

@@ -17,7 +17,7 @@ export default async function SettingsPage() {
   return (
     <div className="flex flex-col gap-5">
       <header className="mb-24">
-        <h1 className="text-3xl font-semibold mb-4 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
+        <h1 className="text-3xl mb-4 text-primary" style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}>
           Settings
         </h1>
         <p className="text-secondary">

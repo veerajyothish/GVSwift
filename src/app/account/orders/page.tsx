@@ -16,16 +16,16 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; colorVar: string; bgVar: string }
 > = {
-  PLACED:            { label: "Placed",             colorVar: "var(--color-info)",           bgVar: "var(--color-info-bg)" },
-  CONFIRMED:         { label: "Confirmed",           colorVar: "var(--color-info)",           bgVar: "var(--color-info-bg)" },
-  SHIPPED:           { label: "Shipped",             colorVar: "var(--color-accent)",         bgVar: "rgba(107,30,46,0.08)" },
-  OUT_FOR_DELIVERY:  { label: "Out for Delivery",    colorVar: "var(--color-accent)",         bgVar: "rgba(107,30,46,0.08)" },
-  DELIVERED:         { label: "Delivered",           colorVar: "var(--color-success)",        bgVar: "var(--color-success-bg)" },
-  CANCELLED:         { label: "Cancelled",           colorVar: "var(--color-error)",          bgVar: "var(--color-error-bg)" },
-  FAILED_DELIVERY:   { label: "Failed Delivery",     colorVar: "var(--color-warning)",        bgVar: "var(--color-warning-bg)" },
-  RTO:               { label: "Returned to Origin",  colorVar: "var(--color-error)",          bgVar: "var(--color-error-bg)" },
-  RETURN_REQUESTED:  { label: "Return Requested",    colorVar: "var(--color-warning)",        bgVar: "var(--color-warning-bg)" },
-  RETURNED:          { label: "Returned",            colorVar: "var(--color-text-secondary)", bgVar: "var(--color-surface)" },
+  PLACED:            { label: "Placed",             colorVar: "#fff", bgVar: "var(--color-warning)" },
+  CONFIRMED:         { label: "Confirmed",           colorVar: "#fff", bgVar: "var(--color-warning)" },
+  SHIPPED:           { label: "Shipped",             colorVar: "#fff", bgVar: "var(--color-accent)" },
+  OUT_FOR_DELIVERY:  { label: "Out for Delivery",    colorVar: "#fff", bgVar: "var(--color-accent)" },
+  DELIVERED:         { label: "Delivered",           colorVar: "#fff", bgVar: "var(--color-success)" },
+  CANCELLED:         { label: "Cancelled",           colorVar: "#fff", bgVar: "var(--color-error)" },
+  FAILED_DELIVERY:   { label: "Failed Delivery",     colorVar: "#fff", bgVar: "var(--color-error)" },
+  RTO:               { label: "Returned to Origin",  colorVar: "#fff", bgVar: "var(--color-error)" },
+  RETURN_REQUESTED:  { label: "Return Requested",    colorVar: "#fff", bgVar: "var(--color-warning)" },
+  RETURNED:          { label: "Returned",            colorVar: "#fff", bgVar: "var(--color-text-secondary)" },
 };
 
 function formatPaise(paise: number) {

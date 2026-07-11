@@ -135,16 +135,17 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
                   : "bg-surface-container-low"
               }`}
               style={{
-                border: address.isDefault ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
-                backgroundColor: address.isDefault ? "var(--color-surface)" : "var(--color-surface-container-low)",
+                border: "1px solid var(--color-border)",
+                backgroundColor: "var(--color-surface)",
               }}
             >
               {/* Default Badge */}
               {address.isDefault && (
                 <div
-                  className="absolute top-0 right-0 text-white px-4 py-1 rounded-bl-lg uppercase tracking-wider"
+                  className="absolute top-0 right-0 px-4 py-1 rounded-bl-lg uppercase tracking-wider"
                   style={{
-                    backgroundColor: "var(--color-primary)",
+                    backgroundColor: "var(--color-success)",
+                    color: "#fff",
                     fontSize: "10px",
                     fontWeight: 600,
                   }}

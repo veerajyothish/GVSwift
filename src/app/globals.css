@@ -86,7 +86,7 @@
 }
 
 .sk {
-  background: linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%);
+  background: linear-gradient(90deg, var(--color-surface-offset) 25%, var(--color-surface-dynamic) 50%, var(--color-surface-offset) 75%);
   background-size: 400% 100%;
   animation: skeleton 2s ease-in-out infinite;
   border-radius: var(--radius-sm);

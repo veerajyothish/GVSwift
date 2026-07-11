@@ -38,7 +38,7 @@ export default async function AccountLayout({
           style={{
             maxWidth: "1100px",
             margin: "0 auto",
-            padding: "48px 24px 0",
+            padding: "var(--space-7) var(--space-5) 0",
           }}
         >
           <BackButton />
