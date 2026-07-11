@@ -168,6 +168,7 @@ export default function CheckoutClient({
         pincode,
       }));
       setLocating(false);
+      toast.success("Location populated!");
     };
 
     const fetchByCoords = async (lat: number, lon: number) => {
@@ -177,6 +178,7 @@ export default function CheckoutClient({
       );
       if (!res.ok) throw new Error("Nominatim failed");
       const data = await res.json();
+      if (!data || !data.address) throw new Error("No address details returned");
       applyAddress(data.address);
     };
 
@@ -193,12 +195,15 @@ export default function CheckoutClient({
         pincode,
       }));
       setLocating(false);
+      toast.success("Location populated (from IP)!");
     };
 
     if (!navigator.geolocation) {
       try {
         await fetchByIP();
-      } catch {
+      } catch (err) {
+        console.error("IP geolocation failed:", err);
+        toast.error("Could not fetch location. Please enter manually.");
         setLocating(false);
       }
       return;
@@ -208,19 +213,24 @@ export default function CheckoutClient({
       async (position) => {
         try {
           await fetchByCoords(position.coords.latitude, position.coords.longitude);
-        } catch {
+        } catch (err) {
+          console.warn("fetchByCoords failed, trying IP fallback:", err);
           try {
             await fetchByIP();
-          } catch {
+          } catch (ipErr) {
+            console.error("Geolocation and IP fallback failed:", ipErr);
+            toast.error("Could not fetch location. Please enter manually.");
             setLocating(false);
           }
         }
       },
       async (error) => {
-        console.warn("Geolocation failed:", error);
+        console.warn("Browser Geolocation permission denied or failed, trying IP fallback:", error);
         try {
           await fetchByIP();
-        } catch {
+        } catch (ipErr) {
+          console.error("Geolocation and IP fallback failed:", ipErr);
+          toast.error("Could not fetch location. Please enter manually.");
           setLocating(false);
         }
       },

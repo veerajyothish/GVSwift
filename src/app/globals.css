@@ -699,6 +699,9 @@ select.input-field {
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
 }
+.product-grid > * {
+  min-width: 0;
+}
 @media (min-width: 768px) {
   .product-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
 }
