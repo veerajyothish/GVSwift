@@ -86,6 +86,12 @@ function sendEmail(params: {
     });
 }
 
+/**
+ * SOURCE OF TRUTH: 
+ * order-placed.tsx is the canonical customer order confirmation template.
+ * It is dispatched via Inngest on checkout success. 
+ * (Legacy OrderConfirmation.tsx has been deprecated and removed).
+ */
 export function sendOrderPlacedEmail(order: OrderForEmail) {
   const orderUrl = `${siteUrl()}/orders/${order.id}`;
 
