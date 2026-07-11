@@ -26,15 +26,15 @@ export default function OrderConfirmation(p: Props) {
   return (
     <Html>
       <Head />
-      <Body style={{ backgroundColor: '#f7f6f2', fontFamily: 'sans-serif', margin: 0 }}>
+      <Body style={{ backgroundColor: '#FDFAF5', fontFamily: 'sans-serif', margin: 0 }}>
         <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 16px' }}>
 
           <Section style={{
-            background: 'linear-gradient(135deg, #561922, #3c0610)',
+            backgroundColor: '#6B1E2E',
             borderRadius: '12px', padding: '28px 32px',
             textAlign: 'center', marginBottom: '20px',
           }}>
-            <Heading style={{ color: 'white', margin: 0, fontSize: '22px' }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal' }}>
               ✅ Order Confirmed!
             </Heading>
             <Text style={{ color: 'rgba(255,255,255,0.85)', margin: '8px 0 0', fontSize: '14px' }}>
@@ -88,7 +88,7 @@ export default function OrderConfirmation(p: Props) {
             <Row>
               <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#28251d' }}>Total</Text></Column>
               <Column style={{ textAlign: 'right' }}>
-                <Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#561922' }}>₹{p.total.toFixed(2)}</Text>
+                <Text style={{ fontSize: '16px', fontWeight: 700, margin: '4px 0 0', color: '#6B1E2E' }}>₹{p.total.toFixed(2)}</Text>
               </Column>
             </Row>
           </Section>
@@ -103,7 +103,7 @@ export default function OrderConfirmation(p: Props) {
 
           <Text style={{ fontSize: '12px', color: '#bab9b4', textAlign: 'center', margin: 0 }}>
             GVSwift · Questions? Visit{' '}
-            <a href="https://gvswift.vercel.app" style={{ color: '#561922' }}>gvswift.vercel.app</a>
+            <a href="https://gvswift.vercel.app" style={{ color: '#6B1E2E' }}>gvswift.vercel.app</a>
           </Text>
         </Container>
       </Body>

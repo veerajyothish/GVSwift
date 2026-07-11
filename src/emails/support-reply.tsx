@@ -1,3 +1,9 @@
+import React from "react";
+import {
+  Html, Head, Body, Container, Section,
+  Heading, Text, Button
+} from '@react-email/components';
+
 export interface SupportReplyEmailProps {
   ticketId: string;
   subject: string;
@@ -12,26 +18,48 @@ export function SupportReplyEmail({
   ticketUrl,
 }: SupportReplyEmailProps) {
   return (
-    <html>
-      <body style={{ margin: 0, backgroundColor: "#0B0B0C", color: "#FAF8F3", fontFamily: "Arial, sans-serif" }}>
-        <main style={{ maxWidth: "560px", margin: "0 auto", padding: "32px 20px" }}>
-          <section style={{ backgroundColor: "#1F1F22", border: "1px solid #2D2D30", borderRadius: "8px", padding: "24px" }}>
-            <h1 style={{ margin: "0 0 12px", color: "#D4A943" }}>New support reply</h1>
-            <p style={{ margin: "0 0 12px" }}>
+    <Html>
+      <Head />
+      <Body style={{ backgroundColor: '#FDFAF5', fontFamily: 'sans-serif', margin: 0 }}>
+        <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 16px' }}>
+          
+          <Section style={{
+            backgroundColor: '#6B1E2E',
+            borderRadius: '12px', padding: '28px 32px',
+            textAlign: 'center', marginBottom: '20px',
+          }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal' }}>
+              New Support Reply
+            </Heading>
+          </Section>
+
+          <Section style={{ backgroundColor: 'white', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '24px 24px', marginBottom: '16px' }}>
+            <Text style={{ fontSize: '15px', color: '#1A1A1A', margin: '0 0 16px', lineHeight: 1.6 }}>
               GVSwift support replied to your ticket: <strong>{subject}</strong>
-            </p>
-            <p style={{ margin: "0 0 12px", color: "#A0A09B" }}>
-              Ticket ID: <span style={{ color: "#D4A943" }}>{ticketId}</span>
-            </p>
-            <blockquote style={{ margin: "0 0 20px", padding: "12px 16px", borderLeft: "3px solid #D4A943", backgroundColor: "#0B0B0C", color: "#FAF8F3" }}>
-              {replyPreview}
-            </blockquote>
-            <a href={ticketUrl} style={{ color: "#1F1500", backgroundColor: "#D4A943", padding: "10px 16px", borderRadius: "6px", textDecoration: "none", fontWeight: 700 }}>
-              View ticket
-            </a>
-          </section>
-        </main>
-      </body>
-    </html>
+            </Text>
+            
+            <Text style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 24px' }}>
+              Ticket ID: <strong style={{ color: '#6B1E2E' }}>{ticketId}</strong>
+            </Text>
+            
+            <Section style={{ padding: '16px 20px', borderLeft: '4px solid #6B1E2E', backgroundColor: '#F5F0EB', borderRadius: '0 8px 8px 0', marginBottom: '24px' }}>
+              <Text style={{ margin: 0, fontSize: '14px', color: '#1A1A1A', lineHeight: 1.6 }}>
+                &quot;{replyPreview}&quot;
+              </Text>
+            </Section>
+            
+            <Section style={{ textAlign: 'center', marginTop: '16px' }}>
+              <Button href={ticketUrl} style={{ backgroundColor: '#6B1E2E', color: '#FDFAF5', padding: '12px 28px', borderRadius: '9999px', textDecoration: 'none', fontWeight: 600, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                View Ticket
+              </Button>
+            </Section>
+          </Section>
+
+          <Text style={{ fontSize: '12px', color: '#6B5B55', textAlign: 'center', margin: 0 }}>
+            GVSwift · Always here to help
+          </Text>
+        </Container>
+      </Body>
+    </Html>
   );
 }

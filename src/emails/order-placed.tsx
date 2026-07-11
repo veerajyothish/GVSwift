@@ -1,4 +1,9 @@
+import React from "react";
 import type { OrderStatus } from "@prisma/client";
+import {
+  Html, Head, Body, Container, Section,
+  Heading, Text, Button, Hr, Row, Column
+} from '@react-email/components';
 
 interface OrderEmailItem {
   name: string;
@@ -13,30 +18,6 @@ export interface OrderPlacedEmailProps {
   items: OrderEmailItem[];
   orderUrl: string;
 }
-
-const bodyStyle = {
-  margin: 0,
-  backgroundColor: "#0B0B0C",
-  color: "#FAF8F3",
-  fontFamily: "Arial, sans-serif",
-};
-
-const containerStyle = {
-  maxWidth: "560px",
-  margin: "0 auto",
-  padding: "32px 20px",
-};
-
-const cardStyle = {
-  backgroundColor: "#1F1F22",
-  border: "1px solid #2D2D30",
-  borderRadius: "8px",
-  padding: "24px",
-};
-
-const accentStyle = {
-  color: "#D4A943",
-};
 
 function formatRupees(paise: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -54,34 +35,64 @@ export function OrderPlacedEmail({
   orderUrl,
 }: OrderPlacedEmailProps) {
   return (
-    <html>
-      <body style={bodyStyle}>
-        <main style={containerStyle}>
-          <section style={cardStyle}>
-            <h1 style={{ margin: "0 0 12px", color: "#D4A943" }}>Order placed</h1>
-            <p style={{ margin: "0 0 16px" }}>
+    <Html>
+      <Head />
+      <Body style={{ backgroundColor: '#FDFAF5', fontFamily: 'sans-serif', margin: 0 }}>
+        <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 16px' }}>
+
+          <Section style={{
+            backgroundColor: '#6B1E2E',
+            borderRadius: '12px', padding: '28px 32px',
+            textAlign: 'center', marginBottom: '20px',
+          }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal' }}>
+              Order Placed
+            </Heading>
+          </Section>
+
+          <Section style={{ backgroundColor: 'white', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '20px 24px', marginBottom: '16px' }}>
+            <Text style={{ fontSize: '15px', color: '#1A1A1A', margin: '0 0 16px', lineHeight: 1.6 }}>
               Thanks for shopping with GVSwift. We received your order and it is currently{" "}
               <strong>{status.replaceAll("_", " ")}</strong>.
-            </p>
-            <p style={{ margin: "0 0 16px", color: "#A0A09B" }}>
-              Order ID: <span style={accentStyle}>{orderId}</span>
-            </p>
-            <ul style={{ paddingLeft: "20px", margin: "0 0 16px" }}>
+            </Text>
+            
+            <Text style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 16px' }}>
+              Order ID: <strong style={{ color: '#6B1E2E' }}>{orderId}</strong>
+            </Text>
+
+            <Section style={{ backgroundColor: '#F5F0EB', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
               {items.map((item) => (
-                <li key={`${item.name}-${item.quantity}`} style={{ marginBottom: "8px" }}>
-                  {item.name} x {item.quantity} - {formatRupees(item.lineTotalPaise)}
-                </li>
+                <Row key={`${item.name}-${item.quantity}`} style={{ marginBottom: '8px' }}>
+                  <Column style={{ width: '70%' }}>
+                    <Text style={{ fontSize: '14px', margin: 0, color: '#1A1A1A' }}>{item.name}</Text>
+                    <Text style={{ fontSize: '13px', color: '#6B5B55', margin: '2px 0 0' }}>Qty: {item.quantity}</Text>
+                  </Column>
+                  <Column style={{ textAlign: 'right' }}>
+                    <Text style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>{formatRupees(item.lineTotalPaise)}</Text>
+                  </Column>
+                </Row>
               ))}
-            </ul>
-            <p style={{ margin: "0 0 20px", fontWeight: 700 }}>
-              Total: {formatRupees(totalPaise)}
-            </p>
-            <a href={orderUrl} style={{ color: "#1F1500", backgroundColor: "#D4A943", padding: "10px 16px", borderRadius: "6px", textDecoration: "none", fontWeight: 700 }}>
-              View order
-            </a>
-          </section>
-        </main>
-      </body>
-    </html>
+              <Hr style={{ borderColor: '#E8DDD9', margin: '12px 0' }} />
+              <Row>
+                <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#1A1A1A' }}>Total</Text></Column>
+                <Column style={{ textAlign: 'right' }}>
+                  <Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#6B1E2E' }}>{formatRupees(totalPaise)}</Text>
+                </Column>
+              </Row>
+            </Section>
+
+            <Section style={{ textAlign: 'center', marginTop: '24px' }}>
+              <Button href={orderUrl} style={{ backgroundColor: '#6B1E2E', color: '#FDFAF5', padding: '12px 28px', borderRadius: '9999px', textDecoration: 'none', fontWeight: 600, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                View Order Details
+              </Button>
+            </Section>
+          </Section>
+
+          <Text style={{ fontSize: '12px', color: '#6B5B55', textAlign: 'center', margin: 0 }}>
+            GVSwift · Questions? Contact our support team.
+          </Text>
+        </Container>
+      </Body>
+    </Html>
   );
 }

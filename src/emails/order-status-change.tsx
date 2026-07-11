@@ -1,5 +1,10 @@
-/* eslint-disable @next/next/no-head-element */
+
+import React from "react";
 import type { OrderStatus } from "@prisma/client";
+import {
+  Html, Head, Body, Container, Section,
+  Heading, Text, Button, Hr, Row, Column
+} from '@react-email/components';
 
 export interface OrderStatusChangeEmailProps {
   orderId: string;
@@ -79,78 +84,80 @@ export function OrderStatusChangeEmail({
   };
 
   return (
-    <html>
-      <head>
-        <title>{meta.title}</title>
-      </head>
-      <body style={{ margin: 0, padding: 0, backgroundColor: "#FDFAF5", color: "#1A1A1A", fontFamily: "'Inter', Arial, sans-serif" }}>
-        <main style={{ maxWidth: "560px", margin: "0 auto", padding: "40px 20px" }}>
-          {/* Header section with brand logo */}
-          <div style={{ textAlign: "center", marginBottom: "32px" }}>
-            <span style={{ fontFamily: "Georgia, serif", fontSize: "32px", fontWeight: "bold", fontStyle: "italic", color: "#6B1E2E", letterSpacing: "0.06em" }}>
-              GVSwift
-            </span>
-          </div>
+    <Html>
+      <Head />
+      <Body style={{ backgroundColor: '#FDFAF5', fontFamily: 'sans-serif', margin: 0 }}>
+        <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '32px 16px' }}>
 
-          {/* Main Card */}
-          <section style={{ backgroundColor: "#FFFFFF", border: "1px solid #E8DDD9", borderRadius: "12px", padding: "32px", boxShadow: "0 4px 12px rgba(107, 30, 46, 0.04)" }}>
-            <h1 style={{ margin: "0 0 16px", fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 400, fontStyle: "italic", color: "#6B1E2E", borderBottom: "1px solid #E8DDD9", paddingBottom: "16px" }}>
+          <Section style={{
+            backgroundColor: '#6B1E2E',
+            borderRadius: '12px', padding: '28px 32px',
+            textAlign: 'center', marginBottom: '20px',
+          }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal' }}>
               {meta.title}
-            </h1>
-            
-            <p style={{ margin: "0 0 24px", fontSize: "15px", lineHeight: 1.6, color: "#4A4A4A" }}>
+            </Heading>
+          </Section>
+
+          <Section style={{ backgroundColor: 'white', border: '1px solid #E8DDD9', borderRadius: '12px', padding: '20px 24px', marginBottom: '16px' }}>
+            <Text style={{ fontSize: '15px', color: '#1A1A1A', margin: '0 0 24px', lineHeight: 1.6 }}>
               {meta.message}
-            </p>
+            </Text>
 
-            {/* Order Details */}
-            <div style={{ backgroundColor: "#F5F0EB", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
-              <p style={{ margin: "0 0 12px", fontSize: "13px", fontWeight: 600, color: "#6B5B55", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <Section style={{ backgroundColor: '#F5F0EB', borderRadius: '8px', padding: '16px', marginBottom: '24px' }}>
+              <Text style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: 600, color: '#6B5B55', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Order Summary
-              </p>
-              <p style={{ margin: "0 0 12px", fontSize: "14px", color: "#1A1A1A" }}>
-                Order ID: <strong style={{ color: "#6B1E2E" }}>{orderId.slice(-8).toUpperCase()}</strong>
-              </p>
+              </Text>
+              <Text style={{ fontSize: '14px', color: '#1A1A1A', margin: '0 0 16px' }}>
+                Order ID: <strong style={{ color: '#6B1E2E' }}>{orderId.slice(-8).toUpperCase()}</strong>
+              </Text>
               
-              <ul style={{ paddingLeft: "20px", margin: "0 0 16px", fontSize: "14px", color: "#4A4A4A" }}>
-                {items.map((item) => (
-                  <li key={`${item.name}-${item.quantity}`} style={{ marginBottom: "8px" }}>
-                    {item.name} <span style={{ color: "#6B5B55" }}>x {item.quantity}</span> — {formatRupees(item.lineTotalPaise)}
-                  </li>
-                ))}
-              </ul>
+              {items.map((item) => (
+                <Row key={`${item.name}-${item.quantity}`} style={{ marginBottom: '8px' }}>
+                  <Column style={{ width: '70%' }}>
+                    <Text style={{ fontSize: '14px', margin: 0, color: '#1A1A1A' }}>{item.name}</Text>
+                    <Text style={{ fontSize: '13px', color: '#6B5B55', margin: '2px 0 0' }}>Qty: {item.quantity}</Text>
+                  </Column>
+                  <Column style={{ textAlign: 'right' }}>
+                    <Text style={{ fontSize: '14px', fontWeight: 600, margin: 0 }}>{formatRupees(item.lineTotalPaise)}</Text>
+                  </Column>
+                </Row>
+              ))}
               
-              <p style={{ margin: "12px 0 0", fontSize: "16px", fontWeight: 700, color: "#6B1E2E", borderTop: "1px solid #E8DDD9", paddingTop: "12px" }}>
-                Total Paid: {formatRupees(totalPaise)}
-              </p>
-            </div>
+              <Hr style={{ borderColor: '#E8DDD9', margin: '12px 0' }} />
+              
+              <Row>
+                <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#1A1A1A' }}>Total Paid</Text></Column>
+                <Column style={{ textAlign: 'right' }}>
+                  <Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#6B1E2E' }}>{formatRupees(totalPaise)}</Text>
+                </Column>
+              </Row>
+            </Section>
 
-            {/* Tracking Reference (if shipped) */}
             {trackingReference && (
-              <div style={{ margin: "0 0 24px", padding: "16px", border: "1px dashed #6B1E2E", borderRadius: "8px", backgroundColor: "rgba(107, 30, 46, 0.02)" }}>
-                <p style={{ margin: "0 0 4px", fontSize: "13px", color: "#6B5B55", textTransform: "uppercase", fontWeight: 600 }}>
+              <Section style={{ padding: '16px', border: '1px dashed #6B1E2E', borderRadius: '8px', backgroundColor: 'rgba(107, 30, 46, 0.02)', marginBottom: '24px' }}>
+                <Text style={{ margin: '0 0 4px', fontSize: '13px', color: '#6B5B55', textTransform: 'uppercase', fontWeight: 600 }}>
                   Tracking Details
-                </p>
-                <p style={{ margin: 0, fontSize: "14px", color: "#1A1A1A" }}>
+                </Text>
+                <Text style={{ margin: 0, fontSize: '14px', color: '#1A1A1A' }}>
                   Tracking Code: <strong>{trackingReference}</strong>
-                </p>
-              </div>
+                </Text>
+              </Section>
             )}
 
-            {/* View Order Link */}
-            <div style={{ textAlign: "center", marginTop: "32px" }}>
-              <a href={orderUrl} style={{ display: "inline-block", backgroundColor: "#6B1E2E", color: "#FDFAF5", padding: "12px 28px", borderRadius: "9999px", textDecoration: "none", fontWeight: 600, fontSize: "13px", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            <Section style={{ textAlign: 'center', marginTop: '8px' }}>
+              <Button href={orderUrl} style={{ backgroundColor: '#6B1E2E', color: '#FDFAF5', padding: '12px 28px', borderRadius: '9999px', textDecoration: 'none', fontWeight: 600, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 View Order Details
-              </a>
-            </div>
-          </section>
+              </Button>
+            </Section>
+          </Section>
 
-          {/* Footer section */}
-          <div style={{ textAlign: "center", marginTop: "32px", fontSize: "12px", color: "#6B5B55" }}>
-            <p style={{ margin: "0 0 8px" }}>Thank you for choosing GVSwift.</p>
-            <p style={{ margin: 0 }}>If you have any questions, please contact our support team.</p>
-          </div>
-        </main>
-      </body>
-    </html>
+          <Text style={{ fontSize: '12px', color: '#6B5B55', textAlign: 'center', margin: 0 }}>
+            Thank you for choosing GVSwift.<br />
+            If you have any questions, please contact our support team.
+          </Text>
+        </Container>
+      </Body>
+    </Html>
   );
 }
