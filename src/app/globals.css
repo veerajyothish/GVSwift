@@ -923,7 +923,7 @@ select.input-field {
 /* ── Footer ──────────────────────────────────────────────────────────────────── */
 .site-footer {
   background-color: var(--color-bg-dark);
-  border-top: none;
+  border-top: 1px solid rgba(253,250,245,0.08);
   color: var(--color-text-dark);
   padding: 56px 24px 28px;
   width: 100%;
@@ -1266,9 +1266,9 @@ h1, h2, h3 {
 .sk {
   background: linear-gradient(
     90deg,
-    #F5F0EB 0px,
-    #E8DDD9 80px,
-    #F5F0EB 160px
+    var(--color-surface) 0px,
+    var(--color-surface-offset, #E8DDD9) 80px,
+    var(--color-surface) 160px
   );
   background-size: 400px 100%;
   animation: shimmer 0.6s linear infinite;
