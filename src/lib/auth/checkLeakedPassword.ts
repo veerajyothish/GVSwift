@@ -1,5 +1,3 @@
-"use server";
-
 import crypto from "crypto";
 
 export async function isPasswordLeaked(password: string): Promise<boolean> {
