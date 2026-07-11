@@ -63,3 +63,10 @@ export function SupportReplyEmail({
     </Html>
   );
 }
+
+SupportReplyEmail.PreviewProps = {
+  ticketId: "TKT-98765432",
+  subject: "Question about shipping timeline",
+  replyPreview: "Thank you for reaching out! Your order will ship within the next 24 hours via premium express delivery.",
+  ticketUrl: "https://gvswift.vercel.app/support/TKT-98765432"
+} as SupportReplyEmailProps;

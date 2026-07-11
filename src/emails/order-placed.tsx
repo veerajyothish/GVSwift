@@ -96,3 +96,14 @@ export function OrderPlacedEmail({
     </Html>
   );
 }
+
+OrderPlacedEmail.PreviewProps = {
+  orderId: "ORD-12345678",
+  status: "PLACED",
+  totalPaise: 1250000,
+  items: [
+    { name: "Signature Blend Coffee", quantity: 2, lineTotalPaise: 500000 },
+    { name: "Ceramic Pour-Over Dripper", quantity: 1, lineTotalPaise: 750000 }
+  ],
+  orderUrl: "https://gvswift.vercel.app/orders/ORD-12345678"
+} as OrderPlacedEmailProps;
