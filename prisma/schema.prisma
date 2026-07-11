@@ -35,7 +35,6 @@ model User {
   loyaltyAccount     LoyaltyAccount?
 
   @@index([email])
-  @@index([phone])
 }
 
 model Address {
@@ -55,7 +54,6 @@ model Address {
   orders    Order[]
 
   @@index([userId])
-  @@index([pincode])
 }
 
 model Category {
@@ -114,7 +112,6 @@ model Product {
   @@index([slug])
   @@index([isActive])
   @@index([isActive, categoryId])
-  @@index([createdAt(sort: Desc)])
   @@index([basePricePaise])
   @@index([shopId])
 }
@@ -330,7 +327,6 @@ model WishlistItem {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
-  @@index([userId])
   @@index([productId])
   @@index([userId, productId])
 }
@@ -395,7 +391,6 @@ model ReferralUse {
   referralCode   ReferralCode @relation(fields: [referralCodeId], references: [id])
   referredUser   User         @relation("ReferredBy", fields: [referredUserId], references: [id])
 
-  @@index([referralCodeId])
   @@index([referredUserId])
 }
 
@@ -421,8 +416,6 @@ model PointsLedger {
   loyaltyAccount   LoyaltyAccount @relation(fields: [loyaltyAccountId], references: [id])
 
   @@index([loyaltyAccountId])
-  @@index([orderId])
-  @@index([createdAt(sort: Desc)])
 }
 
 model LoyaltySettings {
