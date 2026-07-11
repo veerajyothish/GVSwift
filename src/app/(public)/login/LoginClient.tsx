@@ -146,7 +146,13 @@ export default function LoginClient() {
 
         {error && (
           <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
-            <span>⚠</span>
+            <span style={{ flexShrink: 0, marginTop: "1px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </span>
             <div>
               {error}
               {showResend && (
@@ -168,14 +174,22 @@ export default function LoginClient() {
 
         {resendSuccess && (
           <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
-            <span>✓</span>
+            <span style={{ flexShrink: 0, marginTop: "1px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
             <div>{resendSuccess}</div>
           </div>
         )}
 
         {successMessage && (
           <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
-            <span>✓</span>
+            <span style={{ flexShrink: 0, marginTop: "1px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
             <div>{successMessage}</div>
           </div>
         )}

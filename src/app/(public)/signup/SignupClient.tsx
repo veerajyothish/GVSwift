@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -105,24 +106,24 @@ export default function SignupClient() {
   return (
     <div className="auth-container">
       <Link href="/" style={{ textDecoration: "none", marginBottom: "40px", display: "block", textAlign: "center" }}>
-        <span
-          style={{
-            fontFamily: "var(--font-heading)",
-            fontSize: "32px",
-            fontWeight: 700,
-            fontStyle: "italic",
-            color: "var(--color-accent)",
-            letterSpacing: "0.06em",
-          }}
-        >
-          GVSwift
-        </span>
+        <Image
+          src="/logo.png"
+          alt="GVSwift Logo"
+          width={228}
+          height={52}
+          style={{ height: "52px", width: "auto", objectFit: "contain" }}
+        />
       </Link>
 
       <div className="auth-card">
         {isSignedUp ? (
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>✉️</div>
+            <div style={{ width: "52px", height: "52px", margin: "0 auto 20px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", background: "var(--color-success-bg, rgba(107,158,74,0.12))" }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-success, #437a22)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </div>
             <h1
               style={{
                 fontFamily: "var(--font-heading)",
@@ -148,13 +149,23 @@ export default function SignupClient() {
             
             {error && (
               <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
-                <span>⚠</span><div>{error}</div>
+                <span style={{ flexShrink: 0, marginTop: "1px" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </span><div>{error}</div>
               </div>
             )}
 
             {resendSuccess && (
               <div className="alert-banner alert-success" style={{ marginBottom: "20px" }}>
-                <span>✓</span><div>{resendSuccess}</div>
+                <span style={{ flexShrink: 0, marginTop: "1px" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </span><div>{resendSuccess}</div>
               </div>
             )}
 
@@ -192,7 +203,13 @@ export default function SignupClient() {
 
         {error && (
           <div className="alert-banner alert-error" style={{ marginBottom: "20px" }}>
-            <span>⚠</span><div>{error}</div>
+            <span style={{ flexShrink: 0, marginTop: "1px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </span><div>{error}</div>
           </div>
         )}
 
