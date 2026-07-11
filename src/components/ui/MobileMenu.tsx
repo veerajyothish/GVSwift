@@ -143,6 +143,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
         className="mobile-hamburger-btn"
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close menu" : "Open menu"}
+        aria-controls="mobile-drawer"
         style={{ color: "var(--color-accent)" }}
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

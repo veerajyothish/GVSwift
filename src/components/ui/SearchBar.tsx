@@ -100,7 +100,7 @@ export default function SearchBar() {
           }}
         />
         {query && (
-          <button type="button" onClick={() => { setQuery(''); setResults([]); setOpen(false); }}
+          <button type="button" aria-label="Clear search" onClick={() => { setQuery(''); setResults([]); setOpen(false); }}
             style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#7a7974' }}>
             <X size={14} />
           </button>

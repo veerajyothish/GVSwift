@@ -72,11 +72,11 @@ export function Footer() {
 
           {/* Col 2: Shop */}
           <div className="footer-col">
-            <button onClick={() => toggle("shop")} className="footer-header-btn">
+            <button onClick={() => toggle("shop")} className="footer-header-btn" aria-expanded={openSections.shop} aria-controls="footer-shop">
               <span>Shop</span>
-              <span className="footer-chevron">{openSections.shop ? "▲" : "▼"}</span>
+              <span className="footer-chevron" aria-hidden="true">{openSections.shop ? "▲" : "▼"}</span>
             </button>
-            <div className={`footer-content ${openSections.shop ? "open" : ""}`}>
+            <div id="footer-shop" className={`footer-content ${openSections.shop ? "open" : ""}`}>
               <Link href="/products" className="footer-link">All Products</Link>
               <Link href="/products?sort=newest" className="footer-link">New Arrivals</Link>
               <Link href="/shops" className="footer-link">Shops</Link>
@@ -86,11 +86,11 @@ export function Footer() {
 
           {/* Col 3: Company / Support */}
           <div className="footer-col">
-            <button onClick={() => toggle("company")} className="footer-header-btn">
+            <button onClick={() => toggle("company")} className="footer-header-btn" aria-expanded={openSections.company} aria-controls="footer-company">
               <span>Company</span>
-              <span className="footer-chevron">{openSections.company ? "▲" : "▼"}</span>
+              <span className="footer-chevron" aria-hidden="true">{openSections.company ? "▲" : "▼"}</span>
             </button>
-            <div className={`footer-content ${openSections.company ? "open" : ""}`}>
+            <div id="footer-company" className={`footer-content ${openSections.company ? "open" : ""}`}>
               <Link href="/support" className="footer-link">Customer Care</Link>
               <Link href="/returns" className="footer-link">Shipping & Returns</Link>
               <Link href="/privacy" className="footer-link">Privacy Policy</Link>
@@ -101,11 +101,11 @@ export function Footer() {
 
           {/* Col 4: Connect */}
           <div className="footer-col">
-            <button onClick={() => toggle("connect")} className="footer-header-btn">
+            <button onClick={() => toggle("connect")} className="footer-header-btn" aria-expanded={openSections.connect} aria-controls="footer-connect">
               <span>Connect</span>
-              <span className="footer-chevron">{openSections.connect ? "▲" : "▼"}</span>
+              <span className="footer-chevron" aria-hidden="true">{openSections.connect ? "▲" : "▼"}</span>
             </button>
-            <div className={`footer-content ${openSections.connect ? "open" : ""}`}>
+            <div id="footer-connect" className={`footer-content ${openSections.connect ? "open" : ""}`}>
               {/* Social links — PDF p.9: INSTAGRAM · PINTEREST · FACEBOOK */}
               {[
                 { label: "Instagram", href: "https://instagram.com/gv_swift" },

@@ -88,12 +88,7 @@ export default function RootLayout({
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" /></noscript>
       </head>
       <body className="antialiased">
-        <a
-          href="#main-content"
-          className="skip-to-content"
-        >
-          Skip to main content
-        </a>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <ToastProvider>
           <WishlistProvider>
             {children}

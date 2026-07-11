@@ -38,6 +38,38 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen, onClose]);
 
+  // Focus trap
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+    const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey) { 
+        if (document.activeElement === first) { 
+          last.focus(); 
+          e.preventDefault(); 
+        } 
+      } else { 
+        if (document.activeElement === last) { 
+          first.focus(); 
+          e.preventDefault(); 
+        } 
+      }
+    };
+    
+    document.addEventListener("keydown", trap);
+    // Focus first element on open
+    first.focus();
+    
+    return () => document.removeEventListener("keydown", trap);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
