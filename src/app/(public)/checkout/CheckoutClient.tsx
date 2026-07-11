@@ -174,7 +174,7 @@ export default function CheckoutClient({
     const fetchByCoords = async (lat: number, lon: number) => {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`,
-        { headers: { "Accept-Language": "en", "User-Agent": "GVSwift-App/1.0" } }
+        { headers: { "Accept-Language": "en" } }
       );
       if (!res.ok) throw new Error("Nominatim failed");
       const data = await res.json();

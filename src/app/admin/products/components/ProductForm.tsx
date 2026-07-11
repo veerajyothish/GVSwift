@@ -538,7 +538,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
                   />
                 </div>
 
-                <div className="input-group margin-0" style={{ flex: 1.5 }}>
+                <div className="input-group margin-0" style={{ flex: 1.5, display: "flex", flexDirection: "column" }}>
                   <label className="text-xs font-semibold">Price Delta (INR ₹)</label>
                   <input
                     type="number"
@@ -550,6 +550,9 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
                     onChange={(e) => updateVariant(index, "priceDeltaRupees", e.target.value)}
                     disabled={isSubmitting}
                   />
+                  <span style={{ fontSize: "10px", color: "var(--color-text-secondary)", marginTop: "2px" }}>
+                    Final Price: ₹{((parseFloat(basePriceRupees || "0") + parseFloat(variant.priceDeltaRupees || "0")) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
 
                 <button
