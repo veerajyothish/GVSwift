@@ -107,6 +107,7 @@ export default function ShopCard({ shop }: ShopCardProps) {
         <div>
           <h3
             style={{
+              fontFamily: "var(--font-heading)",
               fontSize: "18px",
               fontWeight: 700,
               color: "var(--color-text-primary)",

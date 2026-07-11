@@ -119,8 +119,7 @@ export default function ProductCard({
         style={{
           position: "relative",
           width: "100%",
-          aspectRatio: "3/4",
-          height: "auto",
+          height: "240px",
           overflow: "hidden",
           background: "var(--color-surface)",
         }}
@@ -221,7 +220,7 @@ export default function ProductCard({
             prefetch={true}
             onClick={(e) => e.stopPropagation()}
             style={{
-              fontFamily: "var(--font-body)",
+              fontFamily: "var(--font-heading)",
               fontSize: "14px",
               fontWeight: 500,
               color: "var(--color-text-primary)",

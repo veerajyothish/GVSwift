@@ -24,7 +24,7 @@ export function GlobalClickInteraction() {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
           try {
             navigator.vibrate(15);
-          } catch (err) {
+          } catch {
             // Silently ignore if blocked or unsupported
           }
         }
