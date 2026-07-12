@@ -642,11 +642,11 @@ export default function CheckoutClient({
                 </div>
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", fontSize: "13px" }}>
-                <span className="footer-text-muted">Subtotal</span>
+                <span className="text-secondary">Subtotal</span>
                 <span>{formatRupees(subtotalPaise)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "13px" }}>
-                <span className="footer-text-muted">Shipping</span>
+                <span className="text-secondary">Shipping</span>
                 <span style={{ color: "var(--color-success)" }}>Free &middot; Delivery in 3–5 days</span>
               </div>
             </div>
@@ -1005,15 +1005,15 @@ export default function CheckoutClient({
           {/* Pricing Details */}
           <div className="cart-summary-rows">
             <div className="cart-summary-row">
-              <span className="footer-text-muted">Subtotal</span>
+              <span className="text-secondary">Subtotal</span>
               <span style={{ color: "var(--color-text-primary)", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotalPaise)}</span>
             </div>
             <div className="cart-summary-row">
-              <span className="footer-text-muted">Shipping</span>
+              <span className="text-secondary">Shipping</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
             <div className="cart-summary-row">
-              <span className="footer-text-muted">COD Fee</span>
+              <span className="text-secondary">COD Fee</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
             {appliedCoupon && (

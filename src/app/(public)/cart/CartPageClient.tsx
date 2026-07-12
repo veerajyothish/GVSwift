@@ -313,15 +313,15 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
 
           <div className="cart-summary-rows">
             <div className="cart-summary-row">
-              <span className="footer-text-muted">Subtotal</span>
+              <span className="text-secondary">Subtotal</span>
               <span style={{ color: "var(--color-text-primary)", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{formatRupees(subtotal)}</span>
             </div>
             <div className="cart-summary-row">
-              <span className="footer-text-muted">Shipping</span>
+              <span className="text-secondary">Shipping</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>Free &middot; Delivery in 3–5 days</span>
             </div>
             <div className="cart-summary-row">
-              <span className="footer-text-muted">COD Fee</span>
+              <span className="text-secondary">COD Fee</span>
               <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
             </div>
           </div>
