@@ -6,6 +6,9 @@ import { z } from "zod";
 import { getSiteUrl } from "@/lib/env";
 import { isPasswordLeaked } from "@/lib/auth/checkLeakedPassword";
 import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
+import { sendEmail } from "@/lib/email";
+import { renderAsync } from "@react-email/render";
+import { WelcomeEmail } from "@/emails/welcome";
 
 export const SignupSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -22,6 +25,14 @@ export const LoginSchema = z.object({
 
 export type SignupInput = z.infer<typeof SignupSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
+
+/** Derives a friendly first name from an email prefix. */
+function firstNameFromEmail(email: string): string {
+  const prefix = email.split('@')[0] ?? 'there';
+  // Strip digits/dots/underscores, capitalise first letter
+  const cleaned = prefix.replace(/[0-9._-]+/g, ' ').trim().split(' ')[0] ?? 'there';
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
 
 export async function signupUser(input: SignupInput, referralCode?: string) {
   const parsed = SignupSchema.safeParse(input);
@@ -52,12 +63,10 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
   });
 
   if (error) {
-    // TEMP: expose real error for debugging
     logger.warn({ code: error.code, message: error.message }, "Signup failed");
     if (error.code === "user_already_exists") {
       throw new AppError("CONFLICT", "An account with this email already exists.", 409);
     }
-    // Return real Supabase error message so we can diagnose
     throw new AppError("INTERNAL_ERROR", `Supabase: ${error.message} (code: ${error.code ?? "none"})`, 500);
   }
 
@@ -108,7 +117,6 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
         where: { code: referralCode.toUpperCase() },
       });
       if (refCodeRow && refCodeRow.userId !== prismaUser.id) {
-        // Only create if not already referred (unique constraint on referredUserId)
         const existing = await prisma.referralUse.findUnique({
           where: { referredUserId: prismaUser.id },
         });
@@ -121,7 +129,6 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
               pointsAwarded: settings.referralBonus,
             },
           });
-          // Award points immediately to the referrer
           await awardPoints(
             refCodeRow.userId,
             settings.referralBonus,
@@ -132,6 +139,28 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
     } catch (refErr) {
       logger.warn({ referralCode, error: refErr }, "Failed to record referral during signup");
     }
+  }
+
+  // Send welcome email — fire-and-forget (never block signup on email failure)
+  if (prismaUser) {
+    const firstName = firstNameFromEmail(parsed.data.email);
+    renderAsync(
+      WelcomeEmail({
+        firstName,
+        shopUrl: `${getSiteUrl()}/shop`,
+      })
+    )
+      .then((html) =>
+        sendEmail({
+          to: parsed.data.email,
+          subject: `Welcome to GVSwift, ${firstName}! 🎉`,
+          html,
+          sender: 'noreply',
+        })
+      )
+      .catch((emailErr) =>
+        logger.warn({ userId: prismaUser!.id, error: emailErr }, 'Welcome email failed — non-fatal')
+      );
   }
 
   return prismaUser;
@@ -155,9 +184,8 @@ export async function loginUser(input: LoginInput) {
   });
 
   if (error || !data.user) {
-    // Log internally for debugging/troubleshooting, retaining full details
     logger.warn({ code: error?.code, message: error?.message }, "Login failed");
-    
+
     if (error?.code === "email_not_confirmed" || error?.message?.toLowerCase().includes("email not confirmed")) {
       throw new AppError(
         "EMAIL_NOT_CONFIRMED",
