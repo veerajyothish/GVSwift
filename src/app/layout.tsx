@@ -99,7 +99,7 @@ export default function RootLayout({
           </WishlistProvider>
         </ToastProvider>
         <GlobalClickInteraction />
-        {gaId ? <GoogleAnalytics gaId={gaId} debugMode={true} /> : null}
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );
