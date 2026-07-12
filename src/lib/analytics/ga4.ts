@@ -9,14 +9,17 @@ export function trackEvent(eventName: string, params: EventParams = {}) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const win = window as any;
 
+  // Force debug mode so events appear in GA4 DebugView instantly
+  const finalParams = { ...params, debug_mode: true };
+
   if (typeof win.gtag === 'function') {
-    win.gtag('event', eventName, params)
+    win.gtag('event', eventName, finalParams)
     return
   }
 
   win.dataLayer = win.dataLayer || []
   win.dataLayer.push({
     event: eventName,
-    ...params,
+    ...finalParams,
   })
 }
