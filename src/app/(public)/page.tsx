@@ -10,6 +10,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
+import { ViewItemList } from "@/components/analytics/ViewItemList";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export const metadata = {
   title: "GVSwift — Shop with Confidence",
@@ -45,6 +47,7 @@ export default async function HomePage() {
   return (
     <div className="homepage-wrapper">
       <Navbar />
+      <ViewItemList products={products} listId="homepage_trending" listName="Trending Now" />
 
       <main id="main-content">
         {/* ── HERO ──────────────────────────────────────────────────────────── */}
@@ -59,7 +62,7 @@ export default async function HomePage() {
             style={{
               maxWidth: "1200px",
               margin: "0 auto",
-              padding: "80px 24px 96px",
+              padding: "48px 24px 64px",
               display: "grid",
               gridTemplateColumns: "1fr 1.2fr",
               gap: "72px",
@@ -102,7 +105,7 @@ export default async function HomePage() {
                     textWrap: "balance",
                   }}
                 >
-                  The New Standard
+                  Premium Fashion, Delivered Seamlessly.
                 </h1>
               </FadeIn>
 
@@ -117,20 +120,29 @@ export default async function HomePage() {
                     textWrap: "pretty",
                   }}
                 >
-                  A masterclass in modern heritage. Uncompromising craftsmanship
-                  meets minimalist architecture for the discerning few.
+                  Discover uncompromising craftsmanship with Cash on Delivery and free shipping across India.
                 </p>
               </FadeIn>
 
               {/* pill-shaped primary CTA */}
               <FadeIn delay={0.55} duration={0.6} y={16}>
-                <Link
+                <TrackedLink
+                  eventName="hero_cta_click"
                   href="/products"
                   className="btn btn-primary btn-premium"
                   style={{ padding: "14px 40px", fontSize: "12px", letterSpacing: "0.1em" }}
                 >
-                  Explore Collection
-                </Link>
+                  Shop the Collection &rarr;
+                </TrackedLink>
+                <div style={{ marginTop: "24px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", fontSize: "11px", color: "var(--color-text-secondary)" }}>
+                  <span>🔒 Secure Checkout</span>
+                  <span>•</span>
+                  <span>🔄 7-Day Returns</span>
+                  <span>•</span>
+                  <span>💵 COD Available</span>
+                  <span>•</span>
+                  <span>📦 Free Delivery</span>
+                </div>
               </FadeIn>
             </div>
 
@@ -162,7 +174,15 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── AUTUMN EDIT BENTO ─────────────────────────────────────────────── */}
+        {/* ── SOCIAL PROOF ── */}
+        <section style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 24px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "14px", color: "var(--color-accent)" }}>⭐️⭐️⭐️⭐️⭐️</span>
+            <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--color-text-secondary)" }}>Trusted by shoppers across India.</span>
+          </div>
+        </section>
+
+        {/* ── AUTUMN EDIT BENTO ── */}
         <section
           style={{
             background: "var(--color-surface)",
@@ -201,7 +221,7 @@ export default async function HomePage() {
                       marginBottom: "8px",
                     }}
                   >
-                    Curated Selection
+                    Bestsellers
                   </span>
                   <h2
                     style={{
@@ -216,8 +236,9 @@ export default async function HomePage() {
                     The Seasonal Edit
                   </h2>
                 </div>
-                <Link
-                  href="/products"
+                <TrackedLink
+                  eventName="bestseller_cta_click"
+                  href="/products?sort=newest"
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: "12px",
@@ -231,8 +252,8 @@ export default async function HomePage() {
                     gap: "6px",
                   }}
                 >
-                  Discover Store &rarr;
-                </Link>
+                  Shop Bestsellers &rarr;
+                </TrackedLink>
               </div>
             </FadeIn>
 
@@ -507,7 +528,7 @@ export default async function HomePage() {
                         textWrap: "pretty",
                       }}
                     >
-                      GVSwift brings local offline stores online through immersive digital shopping. Curated storefronts, one trusted platform.
+                      Shop directly from the best local curators. Premium quality, verified boutiques.
                     </p>
                   </div>
                   <Link
@@ -531,19 +552,21 @@ export default async function HomePage() {
               </FadeIn>
 
               {/* Shops Grid */}
-              <StaggerContainer
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-                  gap: "32px",
-                }}
-              >
-                {featuredShops.map((shop) => (
-                  <StaggerChild key={shop.id}>
-                    <ShopCard shop={shop} />
-                  </StaggerChild>
-                ))}
-              </StaggerContainer>
+              <ViewItemList listName="Featured Shops" listId="homepage_featured_shops" products={featuredShops}>
+                <StaggerContainer
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                    gap: "32px",
+                  }}
+                >
+                  {featuredShops.map((shop, idx) => (
+                    <StaggerChild key={shop.id}>
+                      <ShopCard shop={shop} index={idx + 1} />
+                    </StaggerChild>
+                  ))}
+                </StaggerContainer>
+              </ViewItemList>
             </div>
           </section>
         )}
@@ -585,7 +608,8 @@ export default async function HomePage() {
                   >
                     Trending Now
                   </h2>
-                  <Link
+                  <TrackedLink
+                    eventName="trending_cta_click"
                     href="/products"
                     style={{
                       fontFamily: "var(--font-body)",
@@ -598,16 +622,19 @@ export default async function HomePage() {
                     }}
                   >
                     Browse All &rarr;
-                  </Link>
+                  </TrackedLink>
                 </div>
               </FadeIn>
 
               <StaggerContainer className="product-grid">
-                {products.map((product) => (
+                {products.map((product, idx) => (
                   <StaggerChild key={product.id}>
                     <ProductCard
                       product={product}
                       initialWishlisted={wishlistedIds.includes(product.id)}
+                      priority={idx < 2}
+                      listName="Trending Now"
+                      index={idx + 1}
                     />
                   </StaggerChild>
                 ))}

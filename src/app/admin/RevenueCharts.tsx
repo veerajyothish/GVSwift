@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -33,6 +33,15 @@ function formatCurrency(val: number): string {
 }
 
 export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsProps) {
+  const [accentColor, setAccentColor] = useState("#6B1E2E");
+
+  useEffect(() => {
+    const val = getComputedStyle(document.documentElement)
+      .getPropertyValue("--color-accent")
+      .trim();
+    if (val) setAccentColor(val);
+  }, []);
+
   return (
     <div
       style={{
@@ -45,7 +54,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
       {/* Daily Revenue Line Chart */}
       <div
         style={{
-          backgroundColor: "#fcf9f8",
+          backgroundColor: "var(--color-surface)",
           borderRadius: "var(--radius-lg, 12px)",
           border: "1px solid var(--color-border)",
           padding: "24px",
@@ -58,9 +67,9 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
           style={{
             fontFamily: "var(--font-heading, 'EB Garamond', serif)",
             fontSize: "20px",
-            color: "var(--color-primary)",
+            color: "var(--color-text-primary)",
             margin: 0,
-            fontWeight: "600",
+            fontWeight: 400,
           }}
         >
           Daily Revenue (Last 30 Days)
@@ -71,7 +80,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               data={dailyData}
               margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
             >
-              <CartesianGrid stroke="#d8c1c2" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="date"
                 stroke="var(--color-text-secondary)"
@@ -88,7 +97,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               <Tooltip
                 formatter={(value: unknown) => [formatCurrency(Number(value || 0)), "Revenue"]}
                 contentStyle={{
-                  backgroundColor: "#fcf9f8",
+                  backgroundColor: "var(--color-surface)",
                   borderColor: "var(--color-border)",
                   borderRadius: "var(--radius-md)",
                   fontFamily: "var(--font-body)",
@@ -98,9 +107,9 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               <Line
                 type="monotone"
                 dataKey="revenue"
-                stroke="#561922"
+                stroke={accentColor}
                 strokeWidth={2}
-                dot={{ fill: "#561922", strokeWidth: 1 }}
+                dot={{ fill: accentColor, strokeWidth: 1 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>
@@ -111,7 +120,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
       {/* Monthly Revenue Bar Chart */}
       <div
         style={{
-          backgroundColor: "#fcf9f8",
+          backgroundColor: "var(--color-surface)",
           borderRadius: "var(--radius-lg, 12px)",
           border: "1px solid var(--color-border)",
           padding: "24px",
@@ -124,9 +133,9 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
           style={{
             fontFamily: "var(--font-heading, 'EB Garamond', serif)",
             fontSize: "20px",
-            color: "var(--color-primary)",
+            color: "var(--color-text-primary)",
             margin: 0,
-            fontWeight: "600",
+            fontWeight: 400,
           }}
         >
           Monthly Revenue (Last 12 Months)
@@ -137,7 +146,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               data={monthlyData}
               margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
             >
-              <CartesianGrid stroke="#d8c1c2" strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="month"
                 stroke="var(--color-text-secondary)"
@@ -154,7 +163,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               <Tooltip
                 formatter={(value: unknown) => [formatCurrency(Number(value || 0)), "Revenue"]}
                 contentStyle={{
-                  backgroundColor: "#fcf9f8",
+                  backgroundColor: "var(--color-surface)",
                   borderColor: "var(--color-border)",
                   borderRadius: "var(--radius-md)",
                   fontFamily: "var(--font-body)",
@@ -163,7 +172,7 @@ export default function RevenueCharts({ dailyData, monthlyData }: RevenueChartsP
               />
               <Bar
                 dataKey="revenue"
-                fill="#561922"
+                fill={accentColor}
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>

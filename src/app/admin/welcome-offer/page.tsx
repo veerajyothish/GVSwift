@@ -121,11 +121,10 @@ export default function AdminWelcomeOfferPage() {
       {error && (
         <div
           style={{
-            padding: "12px 16px",
-            background: "#FDF3F5",
-            border: "1px solid #F0D5DA",
+            background: "var(--color-error-bg)",
+            border: "1px solid var(--color-error)",
             borderRadius: "10px",
-            color: "#CC2424",
+            color: "var(--color-error)",
             fontSize: "14px",
           }}
         >
@@ -136,11 +135,10 @@ export default function AdminWelcomeOfferPage() {
       {success && (
         <div
           style={{
-            padding: "12px 16px",
-            background: "#F4FAF6",
-            border: "1px solid #D5EFE0",
+            background: "var(--color-success-bg)",
+            border: "1px solid var(--color-success)",
             borderRadius: "10px",
-            color: "#249C54",
+            color: "var(--color-success)",
             fontSize: "14px",
           }}
         >
@@ -420,8 +418,7 @@ export default function AdminWelcomeOfferPage() {
           <div
             style={{
               width: "100%",
-              maxWidth: "400px",
-              background: "#FDFAF5",
+              background: "var(--color-surface)",
               borderRadius: "16px",
               overflow: "hidden",
               boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
@@ -430,7 +427,7 @@ export default function AdminWelcomeOfferPage() {
           >
             <div
               style={{
-                background: "linear-gradient(135deg, #6B1E2E 0%, #4A1020 100%)",
+                background: "linear-gradient(135deg, var(--color-accent) 0%, color-mix(in oklch, var(--color-accent) 70%, black) 100%)",
                 padding: "20px 20px 16px",
                 textAlign: "center",
                 color: "white",
@@ -462,9 +459,8 @@ export default function AdminWelcomeOfferPage() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "10px",
-                  background: "#FDF3F5",
-                  border: "1px solid #F0D5DA",
+                  background: "var(--color-error-bg)",
+                  border: "1px solid var(--color-error)",
                   borderRadius: "10px",
                   padding: "10px 12px",
                   marginBottom: "16px",
@@ -472,10 +468,10 @@ export default function AdminWelcomeOfferPage() {
               >
                 <span style={{ fontSize: "16px" }}>🏷️</span>
                 <div>
-                  <p style={{ fontSize: "12px", fontWeight: 700, color: "#6B1E2E", margin: 0 }}>
+                  <p style={{ fontSize: "12px", fontWeight: 700, color: "var(--color-accent)", margin: 0 }}>
                     {formData.offerText || "FLAT ₹100 OFF on your first order"}
                   </p>
-                  <p style={{ fontSize: "11px", color: "#9B6A72", margin: "2px 0 0" }}>
+                  <p style={{ fontSize: "11px", color: "var(--color-text-secondary)", margin: "2px 0 0" }}>
                     {formData.offerSubtext || "Valid until July 25 · Applied automatically at checkout"}
                   </p>
                 </div>
@@ -484,7 +480,7 @@ export default function AdminWelcomeOfferPage() {
                 <span
                   style={{
                     flex: 1,
-                    background: "#6B1E2E",
+                    background: "var(--color-accent)",
                     color: "white",
                     fontWeight: 600,
                     fontSize: "12px",
@@ -498,8 +494,8 @@ export default function AdminWelcomeOfferPage() {
                 <span
                   style={{
                     flex: 1,
-                    background: "#F5F0EB",
-                    color: "#6B1E2E",
+                    background: "var(--color-surface-offset)",
+                    color: "var(--color-accent)",
                     fontWeight: 600,
                     fontSize: "12px",
                     padding: "10px",

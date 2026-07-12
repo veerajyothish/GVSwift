@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
+import { trackEvent } from "@/lib/analytics/ga4";
+import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 // Detailed interface matching our Prisma schema query output
 interface CartItem {
@@ -42,14 +45,8 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
   const { toast } = useToast();
   const [cart, setCart] = useState<Cart | null>(initialCart);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
-
-  const formatRupees = (paise: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 2,
-    }).format(paise / 100);
-  };
+  
+  const viewedFired = React.useRef(false);
 
   const getCartItems = () => cart?.items || [];
 
@@ -64,6 +61,26 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
     return getCartItems().reduce((total, item) => {
       return total + getItemPrice(item) * item.quantity;
     }, 0);
+  };
+
+  React.useEffect(() => {
+    if (!viewedFired.current && cart && cart.items.length > 0) {
+      viewedFired.current = true;
+      trackEvent("view_cart", {
+        currency: "INR",
+        value: getSubtotal() / 100,
+        items: cart.items.map(item => mapProductToGa4Item(item)),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart]);
+
+  const formatRupees = (paise: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2,
+    }).format(paise / 100);
   };
 
   const handleQuantityChange = async (itemId: string, newQty: number, stock: number) => {
@@ -85,6 +102,17 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || "Failed to update quantity");
+      }
+
+      const item = getCartItems().find((i) => i.id === itemId);
+      if (item) {
+        const delta = newQty - item.quantity;
+        const eventName = delta > 0 ? "add_to_cart" : "remove_from_cart";
+        trackEvent(eventName, {
+          currency: "INR",
+          value: getItemPrice(item) / 100,
+          items: [mapProductToGa4Item(item, { quantity: Math.abs(delta) })],
+        });
       }
 
       // Update state locally
@@ -121,6 +149,15 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
       }
 
       toast.success("Item removed from cart");
+
+      const item = getCartItems().find((i) => i.id === itemId);
+      if (item) {
+        trackEvent("remove_from_cart", {
+          currency: "INR",
+          value: getItemPrice(item) / 100,
+          items: [mapProductToGa4Item(item, { quantity: item.quantity })],
+        });
+      }
 
       // Update state locally
       setCart((prev) => {
@@ -206,6 +243,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
                   <div className="cart-quantity-stepper">
                     <button
                       type="button"
+                      aria-label={`Decrease quantity for ${item.product.name}`}
                       disabled={item.quantity <= 1 || updatingItemId === item.id}
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1, stock)}
                       className="stepper-btn"
@@ -217,6 +255,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
                     </span>
                     <button
                       type="button"
+                      aria-label={`Increase quantity for ${item.product.name}`}
                       disabled={item.quantity >= stock || updatingItemId === item.id}
                       onClick={() => handleQuantityChange(item.id, item.quantity + 1, stock)}
                       className="stepper-btn"
@@ -243,7 +282,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
               <div className="flex" style={{ alignItems: "start" }}>
                 <button
                   type="button"
-                  aria-label="Remove item"
+                  aria-label={`Remove ${item.product.name} from cart`}
                   disabled={updatingItemId === item.id}
                   onClick={() => handleRemoveItem(item.id)}
                   className="cart-remove-btn"
@@ -279,7 +318,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             </div>
             <div className="cart-summary-row">
               <span className="footer-text-muted">Shipping</span>
-              <span style={{ color: "var(--color-success)", fontWeight: 500 }}>FREE</span>
+              <span style={{ color: "var(--color-success)", fontWeight: 500 }}>Free &middot; Delivery in 3–5 days</span>
             </div>
             <div className="cart-summary-row">
               <span className="footer-text-muted">COD Fee</span>
@@ -328,7 +367,13 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             </div>
           )}
 
-          <a
+          <TrackedLink
+            eventName="begin_checkout"
+            eventParams={{
+              currency: "INR",
+              value: subtotal / 100,
+              items: cart?.items?.map(i => mapProductToGa4Item(i)) || []
+            }}
             href="/checkout"
             style={{
               display: "block",
@@ -346,13 +391,17 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
               }}
               disabled={subtotal > 1000000}
             >
-              {subtotal > 1000000 ? "COD Limit Exceeded" : "Proceed to Checkout →"}
+              {subtotal > 1000000 ? "COD Limit Exceeded" : "Proceed to Checkout 🔒"}
             </Button>
-          </a>
+          </TrackedLink>
 
-          <span className="text-xs footer-text-muted" style={{ textAlign: "center", display: "block" }}>
-            Free delivery &amp; Cash on Delivery (COD) applied.
-          </span>
+          <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--color-text-secondary)", justifyContent: "center" }}>
+            <span>🔒 Secure Checkout</span>
+            <span>•</span>
+            <span>🔄 Easy Returns</span>
+            <span>•</span>
+            <span>💵 COD Available</span>
+          </div>
         </div>
       </div>
     </div>

@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { trackEvent } from "@/lib/analytics/ga4";
+import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 
 interface Shop {
   id: string;
@@ -14,10 +16,23 @@ interface Shop {
 
 interface ShopCardProps {
   shop: Shop;
+  index?: number;
 }
 
-export default function ShopCard({ shop }: ShopCardProps) {
+export default function ShopCard({ shop, index }: ShopCardProps) {
   const [hovered, setHovered] = useState(false);
+
+  const handleClick = () => {
+    trackEvent("select_item", {
+      item_list_name: "Featured Shops",
+      items: [
+        mapProductToGa4Item(shop, {
+          index,
+          item_list_name: "Featured Shops",
+        }),
+      ],
+    });
+  };
 
   return (
     <Link
@@ -25,6 +40,7 @@ export default function ShopCard({ shop }: ShopCardProps) {
       prefetch={true}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
       style={{
         display: "flex",
         flexDirection: "column",

@@ -172,9 +172,9 @@ export default function ShopForm({ initialData }: ShopFormProps) {
       {successMsg && (
         <div
           style={{
-            background: "var(--color-success-bg, #ECFDF5)",
-            border: "1px solid var(--color-success, #10B981)",
-            color: "var(--color-success, #065F46)",
+            background: "var(--color-success-bg)",
+            border: "1px solid var(--color-success)",
+            color: "var(--color-success)",
             borderRadius: "8px",
             padding: "12px 16px",
             fontSize: "14px",
@@ -189,9 +189,9 @@ export default function ShopForm({ initialData }: ShopFormProps) {
       {errorMsg && (
         <div
           style={{
-            background: "var(--color-error-bg, #FEF2F2)",
-            border: "1px solid var(--color-error, #EF4444)",
-            color: "var(--color-error, #991B1B)",
+            background: "var(--color-error-bg)",
+            border: "1px solid var(--color-error)",
+            color: "var(--color-error)",
             borderRadius: "8px",
             padding: "12px 16px",
             fontSize: "14px",

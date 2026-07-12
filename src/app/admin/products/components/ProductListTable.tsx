@@ -161,7 +161,7 @@ export default function ProductListTable({
       <div
         className="card p-4 flex flex-wrap gap-4 items-center justify-between"
         style={{
-          backgroundColor: "var(--color-surface-container-low, #f6f3f2)",
+          backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-lg, 12px)",
         }}
@@ -312,7 +312,7 @@ export default function ProductListTable({
         style={{ border: "1px solid var(--color-border)" }}
       >
         <table className="admin-table w-full text-left border-collapse" style={{ margin: 0 }}>
-          <thead style={{ backgroundColor: "var(--color-surface-container-low, #f6f3f2)" }}>
+          <thead style={{ backgroundColor: "var(--color-surface)" }}>
             <tr style={{ borderBottom: "1px solid var(--color-border)" }}>
               <th style={{ width: "80px", padding: "16px 20px" }}>Image</th>
               <th style={{ padding: "16px 20px", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--color-text-secondary)" }}>
@@ -398,7 +398,7 @@ export default function ProductListTable({
                             color: "var(--color-accent)",
                             fontWeight: 600,
                             marginTop: "6px",
-                            backgroundColor: "var(--color-surface-container-low, #eee)",
+                            backgroundColor: "var(--color-surface-offset)",
                             padding: "2px 8px",
                             borderRadius: "4px",
                           }}

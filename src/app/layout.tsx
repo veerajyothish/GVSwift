@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, EB_Garamond } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import "./globals.css";
 
 import { getSiteUrl } from "@/lib/env";
@@ -76,6 +77,8 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="en" className={`${inter.variable} ${ebGaramond.variable}`}>
       <head>
@@ -93,9 +96,10 @@ export default function RootLayout({
           <WishlistProvider>
             {children}
             <CookieConsentBanner />
-            <GlobalClickInteraction />
           </WishlistProvider>
         </ToastProvider>
+        <GlobalClickInteraction />
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );

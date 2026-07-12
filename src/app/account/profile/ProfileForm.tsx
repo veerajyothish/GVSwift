@@ -141,6 +141,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
           </h2>
           <button
             onClick={() => setEditing(!editing)}
+            aria-label={editing ? "Cancel editing profile" : "Edit personal information"}
             disabled={saving}
             style={{
               display: "inline-flex",

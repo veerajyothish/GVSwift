@@ -18,6 +18,8 @@ import { useToast } from "@/components/ui/Toast";
 import { useRouter } from "next/navigation";
 import { RecentlyViewed } from "./RecentlyViewed";
 import WishlistToggle from "./WishlistToggle";
+import { trackEvent } from "@/lib/analytics/ga4";
+import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 import {
   getProductReviews,
   checkUserStatusForReview,
@@ -106,6 +108,30 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     return () => { if (el) observer.unobserve(el); };
   }, []);
 
+  const viewedFired = React.useRef(false);
+  useEffect(() => {
+    if (!viewedFired.current && product) {
+      viewedFired.current = true;
+      trackEvent("view_item", {
+        currency: "INR",
+        value: product.basePricePaise / 100,
+        items: [mapProductToGa4Item(product)],
+      });
+    }
+  }, [product]);
+
+  const handleVariantSelect = (variantId: string) => {
+    setSelectedVariantId(variantId);
+    const variant = product.variants?.find((v) => v.id === variantId);
+    if (variant) {
+      const variantName = variant.sku || variant.id;
+      trackEvent("select_item_variant", {
+        item_variant: variantName,
+        items: [mapProductToGa4Item(product, { item_variant: variantName })],
+      });
+    }
+  };
+
   /* Recently viewed cookie */
   useEffect(() => {
     if (!product?.id) return;
@@ -153,7 +179,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     });
  
     if (matchingVariant) {
-      setSelectedVariantId(matchingVariant.id);
+      handleVariantSelect(matchingVariant.id);
       toast.success("Recommended size selected!");
     } else {
       const matchingVariantAnyStock = product.variants.find((v) => {
@@ -161,7 +187,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         return size.toUpperCase() === recommendedSize.toUpperCase();
       });
       if (matchingVariantAnyStock) {
-        setSelectedVariantId(matchingVariantAnyStock.id);
+        handleVariantSelect(matchingVariantAnyStock.id);
         toast.info("Recommended size selected (Out of stock)");
       } else {
         toast.error(`Size ${recommendedSize} is not available for this product`);
@@ -203,6 +229,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add item");
       
+      const variantName = selectedVariant.sku || selectedVariant.id;
+      trackEvent("add_to_cart", {
+        currency: "INR",
+        value: ((product.basePricePaise + selectedVariant.priceDeltaPaise) / 100),
+        items: [
+          mapProductToGa4Item(product, {
+            item_variant: variantName,
+            quantity: 1,
+          }),
+        ],
+      });
+
       toast.success(`Added ${product.name || "item"} to your cart!`, "Added to Cart");
 
       // ponytail: dispatch fly-to-cart animation event
@@ -239,6 +277,19 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const handleBuyNow = async () => {
     if (isOutOfStock || !product?.id || !selectedVariant?.id) return;
     setIsBuyingNow(true);
+
+    const variantName = selectedVariant.sku || selectedVariant.id;
+    trackEvent("buy_now_click", {
+      currency: "INR",
+      value: ((product.basePricePaise + selectedVariant.priceDeltaPaise) / 100),
+      items: [
+        mapProductToGa4Item(product, {
+          item_variant: variantName,
+          quantity: 1,
+        }),
+      ],
+    });
+
     try {
       const res = await fetch("/api/v1/cart", {
         method: "POST",
@@ -691,8 +742,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   return (
                     <button
                       key={variant.id}
-                      onClick={() => setSelectedVariantId(variant.id)}
+                      onClick={() => handleVariantSelect(variant.id)}
                       disabled={outOfStock}
+                      aria-label={`Select size ${size}`}
+                      aria-pressed={isSelected}
                       style={{
                         minWidth: "52px",
                         height: "44px",
@@ -733,36 +786,50 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </span>
             </div>
 
-            {/* ── CTAs — PDF p.4: full-width pill "ADD TO BAG →" ── */}
+            {/* ── CTAs — PDF p.4: full-width pill "ADD TO BAG ✦" ── */}
             <div ref={ctaRef} style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "0 20px" }}>
               <Button
                 variant={isOutOfStock ? "secondary" : "primary"}
-                disabled={isOutOfStock || !selectedVariant || isPending}
-                loading={isBuyingNow || isPending}
-                onClick={handleBuyNow}
-                className="btn-premium"
-                style={{ width: "100%", minHeight: "52px", fontSize: "13px", letterSpacing: "0.08em" }}
-              >
-                {isOutOfStock ? "Sold Out" : `Buy Now →`}
-              </Button>
-              <Button
-                variant="secondary"
                 disabled={isOutOfStock || !selectedVariant || isPending}
                 loading={isAddingToCart}
                 onClick={handleAddToCart}
                 className="btn-premium"
                 style={{
                   width: "100%",
-                  minHeight: "44px",
-                  fontSize: "12px",
+                  minHeight: "52px",
+                  fontSize: "13px",
+                  letterSpacing: "0.08em",
                   backgroundColor: isAdded ? "var(--color-success)" : undefined,
                   borderColor: isAdded ? "var(--color-success)" : undefined,
                   color: isAdded ? "#fff" : undefined,
                   transition: "background-color 0.2s, border-color 0.2s",
                 }}
               >
-                {isOutOfStock ? "Sold Out" : isAdded ? "Added ✓" : "Add to Cart"}
+                {isOutOfStock ? "Sold Out" : isAdded ? "Added ✓" : "Add to Cart ✦"}
               </Button>
+              <Button
+                variant="secondary"
+                disabled={isOutOfStock || !selectedVariant || isPending}
+                loading={isBuyingNow || isPending}
+                onClick={handleBuyNow}
+                className="btn-premium"
+                style={{ width: "100%", minHeight: "44px", fontSize: "12px" }}
+              >
+                {isOutOfStock ? "Sold Out" : `Buy Now`}
+              </Button>
+            </div>
+
+            {/* ── Trust Block ── */}
+            <div style={{ padding: "0 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginTop: "4px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--color-text-secondary)" }}>
+                <span style={{ fontSize: "14px" }}>📦</span> Free Delivery
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--color-text-secondary)" }}>
+                <span style={{ fontSize: "14px" }}>🔄</span> 7-Day Returns
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--color-text-secondary)" }}>
+                <span style={{ fontSize: "14px" }}>💵</span> COD Available
+              </div>
             </div>
 
             {/* ── Description quote box — PDF p.4/5: scroll icon + italic quote ── */}
@@ -801,11 +868,6 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 id: "fit",
                 label: "Fit & Dimensions",
                 content: "Standard sizing. We recommend going true to size. For reference, our model wears size M and is 183cm tall.",
-              },
-              {
-                id: "shipping",
-                label: "Shipping & Returns",
-                content: "Free standard delivery across India in 3–5 business days. 7-day returns accepted. Contact support to initiate.",
               },
             ].map(({ id, label, content }) => (
               <div

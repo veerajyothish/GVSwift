@@ -272,9 +272,9 @@ export default function BannersListTable({ initialBanners }: BannersListTablePro
                       <span
                         className={getTypeBadgeClass(banner.type)}
                         style={{
-                          backgroundColor: "color-mix(in oklch, var(--color-primary) 12%, transparent)",
-                          color: "var(--color-primary)",
-                          border: "1px solid color-mix(in oklch, var(--color-primary) 25%, transparent)",
+                          backgroundColor: "color-mix(in oklch, var(--color-accent) 12%, transparent)",
+                          color: "var(--color-accent)",
+                          border: "1px solid color-mix(in oklch, var(--color-accent) 25%, transparent)",
                         }}
                       >
                         PROMO
@@ -366,8 +366,8 @@ export default function BannersListTable({ initialBanners }: BannersListTablePro
             <div
               style={{
                 padding: "10px",
-                backgroundColor: "var(--color-error-bg, #fef2f2)",
-                color: "var(--color-error, #dc2626)",
+                backgroundColor: "var(--color-error-bg)",
+                color: "var(--color-error)",
                 borderRadius: "var(--radius-sm)",
                 fontSize: "13px",
                 fontWeight: 500,
@@ -444,7 +444,7 @@ export default function BannersListTable({ initialBanners }: BannersListTablePro
               id="isActiveCheckbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              style={{ width: "16px", height: "16px", accentColor: "var(--color-primary)" }}
+              style={{ width: "16px", height: "16px", accentColor: "var(--color-accent)" }}
             />
             <label htmlFor="isActiveCheckbox" className="admin-settings-label cursor-pointer" style={{ margin: 0, fontWeight: 500 }}>
               Set as active banner immediately (will deactivate any other active banner)

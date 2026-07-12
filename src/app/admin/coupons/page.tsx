@@ -69,7 +69,7 @@ export default async function AdminCouponsPage() {
                 return (
                   <tr key={coupon.id} className="admin-table-row">
                     <td className="admin-table-cell">
-                      <code style={{ fontWeight: 700, fontSize: "14px", letterSpacing: "0.05em", color: "var(--color-primary)" }}>
+                      <code style={{ fontWeight: 700, fontSize: "14px", letterSpacing: "0.05em", color: "var(--color-accent)" }}>
                         {coupon.code}
                       </code>
                     </td>

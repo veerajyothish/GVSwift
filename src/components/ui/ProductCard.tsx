@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
+import { trackEvent } from "@/lib/analytics/ga4";
+import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 
 interface ProductImage {
   id?: string;
@@ -40,11 +42,16 @@ interface ProductCardProps {
   categoryName?: string;
   priority?: boolean;
   initialWishlisted?: boolean; // Keep for backward-compatibility with callers
+  listName?: string;
+  index?: number;
 }
 
 export default function ProductCard({
   product,
+  categoryName,
   priority = false,
+  listName,
+  index,
 }: ProductCardProps) {
   const router = useRouter();
   const { isWishlisted, toggleWishlist } = useWishlist();
@@ -59,6 +66,19 @@ export default function ProductCard({
   const handleMouseLeave = useCallback(() => {
     setHovered(false);
   }, []);
+
+  const handleProductClick = useCallback(() => {
+    const computedListName = listName || categoryName || "Products";
+    trackEvent("select_item", {
+      item_list_name: computedListName,
+      items: [
+        mapProductToGa4Item(product, {
+          index,
+          item_list_name: computedListName,
+        }),
+      ],
+    });
+  }, [product, listName, categoryName, index]);
 
   const totalStock =
     product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
@@ -94,7 +114,6 @@ export default function ProductCard({
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => router.push(`/products/${product.slug}`)}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -104,7 +123,6 @@ export default function ProductCard({
         borderRadius: "var(--radius-lg)",
         overflow: "hidden",
         position: "relative",
-        cursor: "pointer",
         willChange: hovered ? "transform" : "auto",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         boxShadow: hovered
@@ -127,7 +145,9 @@ export default function ProductCard({
         <Link
           href={`/products/${product.slug}`}
           prefetch={true}
-          onClick={(e) => e.stopPropagation()}
+          tabIndex={-1}
+          aria-hidden="true"
+          onClick={handleProductClick}
           style={{ display: "block", width: "100%", height: "100%", position: "relative" }}
         >
           <Image
@@ -146,12 +166,35 @@ export default function ProductCard({
               transform: hovered ? "scale(1.04)" : "scale(1)",
             }}
           />
+          <div
+            style={{
+              position: "absolute",
+              bottom: "16px",
+              left: "50%",
+              transform: hovered ? "translate(-50%, 0)" : "translate(-50%, 8px)",
+              opacity: hovered ? 1 : 0,
+              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(4px)",
+              padding: "8px 20px",
+              borderRadius: "999px",
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "var(--color-text-primary)",
+              boxShadow: "var(--shadow-sm)",
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              zIndex: 3,
+            }}
+          >
+            View Details
+          </div>
         </Link>
 
         {/* Heart icon */}
         <button
           onClick={handleWishlist}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           style={{
             position: "absolute",
             top: "10px",
@@ -218,7 +261,8 @@ export default function ProductCard({
           <Link
             href={`/products/${product.slug}`}
             prefetch={true}
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleProductClick}
+            className="product-card-title-link"
             style={{
               fontFamily: "var(--font-heading)",
               fontSize: "14px",

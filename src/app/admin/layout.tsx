@@ -97,7 +97,7 @@ export default async function AdminLayout({
                   width: "30px",
                   height: "30px",
                   borderRadius: "50%",
-                  backgroundColor: "var(--color-primary)",
+                  backgroundColor: "var(--color-accent)",
                   color: "#fff",
                   display: "flex",
                   alignItems: "center",

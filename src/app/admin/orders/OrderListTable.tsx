@@ -320,7 +320,7 @@ export default function OrderListTable({
           marginBottom: selectedIds.length > 0 ? "1rem" : "0px",
         }}
       >
-        <div className="card p-4 flex flex-wrap items-center justify-between gap-4" style={{ backgroundColor: "color-mix(in oklch, var(--color-primary) 6%, var(--color-surface))", borderColor: "color-mix(in oklch, var(--color-primary) 15%, var(--color-border))" }}>
+        <div className="card p-4 flex flex-wrap items-center justify-between gap-4" style={{ backgroundColor: "color-mix(in oklch, var(--color-accent) 6%, var(--color-surface))", borderColor: "color-mix(in oklch, var(--color-accent) 15%, var(--color-border))" }}>
           <div className="flex items-center gap-4">
             <span className="text-primary font-medium text-sm">
               {selectedIds.length} order{selectedIds.length !== 1 ? "s" : ""} selected
@@ -353,9 +353,9 @@ export default function OrderListTable({
             <button
               className={`btn ${isApplying ? "btn-loading" : ""}`}
               style={{
-                backgroundColor: "var(--color-primary)",
+                backgroundColor: "var(--color-accent)",
                 color: "#fff",
-                borderColor: "var(--color-primary)",
+                borderColor: "var(--color-accent)",
                 borderRadius: "9999px",
                 padding: "8px 20px",
                 fontSize: "0.875rem",
@@ -415,7 +415,7 @@ export default function OrderListTable({
                     cursor: "pointer",
                     width: "16px",
                     height: "16px",
-                    accentColor: "var(--color-primary)",
+                    accentColor: "var(--color-accent)",
                   }}
                 />
               </th>
@@ -446,7 +446,7 @@ export default function OrderListTable({
                     className="admin-table-row"
                     style={{
                       backgroundColor: isSelected
-                        ? "color-mix(in oklch, var(--color-primary) 6%, var(--color-surface))"
+                        ? "color-mix(in oklch, var(--color-accent) 6%, var(--color-surface))"
                         : undefined,
                     }}
                   >
@@ -465,7 +465,7 @@ export default function OrderListTable({
                           cursor: "pointer",
                           width: "16px",
                           height: "16px",
-                          accentColor: "var(--color-primary)",
+                          accentColor: "var(--color-accent)",
                         }}
                       />
                     </td>

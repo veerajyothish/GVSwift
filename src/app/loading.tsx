@@ -6,7 +6,7 @@ import React from "react";
 
 export default function AdminLoading() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+    <div aria-busy="true" aria-label="Loading dashboard..." style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
       {/* Header */}
       <div
         style={{

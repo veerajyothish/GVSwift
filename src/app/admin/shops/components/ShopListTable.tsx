@@ -112,7 +112,7 @@ export default function ShopListTable({ initialShops }: ShopListTableProps) {
       <div
         className="card p-4"
         style={{
-          backgroundColor: "var(--color-surface-container-low, #f6f3f2)",
+          backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-lg, 12px)",
           display: "flex",
@@ -221,7 +221,7 @@ export default function ShopListTable({ initialShops }: ShopListTableProps) {
                         height: "48px",
                         borderRadius: "8px",
                         overflow: "hidden",
-                        backgroundColor: "var(--color-surface-container-low, #eee)",
+                        backgroundColor: "var(--color-surface-offset)",
                         border: "1px solid var(--color-border)",
                       }}
                     >
@@ -240,7 +240,7 @@ export default function ShopListTable({ initialShops }: ShopListTableProps) {
                     <code
                       style={{
                         fontSize: "12px",
-                        background: "var(--color-surface-container-low, #eee)",
+                        background: "var(--color-surface-offset)",
                         padding: "2px 6px",
                         borderRadius: "4px",
                         color: "var(--color-text-primary)",

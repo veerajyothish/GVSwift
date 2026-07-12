@@ -115,7 +115,7 @@ export default async function AdminPage() {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}>
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
       {/* PDF p.16: "Overview" Garamond, subtitle, date pill + Export right */}
@@ -126,7 +126,7 @@ export default async function AdminPage() {
           alignItems: "flex-start",
           flexWrap: "wrap",
           gap: "16px",
-          paddingBottom: "24px",
+          paddingBottom: "var(--space-6)",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -193,7 +193,7 @@ export default async function AdminPage() {
                 background: "var(--color-bg)",
                 border: `1px solid ${alert ? "var(--color-error)" : "var(--color-border)"}`,
                 borderRadius: "var(--radius-lg)",
-                padding: "24px",
+                padding: "var(--space-6)",
                 display: "flex",
                 flexDirection: "column",
                 gap: "12px",
@@ -242,7 +242,7 @@ export default async function AdminPage() {
                     fontFamily: "var(--font-heading)",
                     fontSize: "28px",
                     fontWeight: 600,
-                    color: alert ? "var(--color-error)" : "var(--color-accent)",
+                    color: "var(--color-text-primary)",
                     margin: 0,
                     lineHeight: 1,
                     fontVariantNumeric: "tabular-nums",
@@ -281,7 +281,7 @@ export default async function AdminPage() {
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 320px",
-          gap: "24px",
+          gap: "var(--space-6)",
           alignItems: "start",
         }}
         className="admin-chart-grid"
@@ -297,7 +297,7 @@ export default async function AdminPage() {
         >
           <div
             style={{
-              padding: "20px 24px 16px",
+              padding: "20px var(--space-6) 16px",
               borderBottom: "1px solid var(--color-border)",
               display: "flex",
               justifyContent: "space-between",
@@ -328,7 +328,7 @@ export default async function AdminPage() {
             style={{
               background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%)",
               borderRadius: "var(--radius-lg)",
-              padding: "24px",
+              padding: "var(--space-6)",
               color: "var(--color-accent-text)",
             }}
           >
@@ -445,7 +445,7 @@ export default async function AdminPage() {
             background: "var(--color-warning-bg)",
             border: "1px solid var(--color-warning)",
             borderRadius: "var(--radius-lg)",
-            padding: "16px 24px",
+            padding: "16px var(--space-6)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -516,7 +516,7 @@ export default async function AdminPage() {
                   background: "var(--color-bg)",
                   border: "1px solid var(--color-border)",
                   borderRadius: "var(--radius-lg)",
-                  padding: "20px 24px",
+                  padding: "20px var(--space-6)",
                   display: "flex",
                   flexDirection: "column",
                   gap: "12px",

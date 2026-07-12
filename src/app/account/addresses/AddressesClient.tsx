@@ -205,6 +205,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
                 <div className="flex gap-4 items-center">
                   <Link
                     href={`/account/addresses/${address.id}/edit`}
+                    aria-label={`Edit address for ${address.fullName}`}
                     className="text-xs font-semibold text-primary hover:text-accent uppercase tracking-wider transition-colors"
                   >
                     Edit
@@ -215,6 +216,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
                       <div className="h-3 w-[1px]" style={{ backgroundColor: "var(--color-border)" }}></div>
                       <button
                         onClick={() => handleSetDefault(address.id)}
+                        aria-label={`Set address for ${address.fullName} as default`}
                         disabled={deletingId === address.id || settingDefaultId === address.id}
                         className="text-xs font-semibold text-primary hover:text-accent uppercase tracking-wider transition-colors bg-transparent border-none p-0 cursor-pointer"
                       >
@@ -226,6 +228,7 @@ export default function AddressesClient({ initialAddresses }: AddressesClientPro
 
                 <button
                   onClick={() => setConfirmDeleteId(address.id)}
+                  aria-label={`Delete address for ${address.fullName}`}
                   disabled={deletingId === address.id || settingDefaultId === address.id}
                   className="text-xs font-semibold text-secondary hover:text-error uppercase tracking-wider transition-colors ml-auto bg-transparent border-none p-0 cursor-pointer"
                 >

@@ -8,6 +8,8 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { trackEvent } from "@/lib/analytics/ga4";
+import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 
 interface Address {
   id: string;
@@ -126,6 +128,12 @@ export default function CheckoutClient({
   const [usePoints, setUsePoints] = useState(false);
 
   const [locating, setLocating] = useState(false);
+  const formStartedFired = React.useRef(false);
+
+  const trackValidationError = (error: string) => {
+    trackEvent("checkout_validation_error", { error_message: error });
+    toast.error(error);
+  };
 
   const handleGeolocation = async () => {
     setLocating(true);
@@ -342,6 +350,7 @@ export default function CheckoutClient({
   const handleApplyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
     if (!code) { setCouponError("Please enter a coupon code."); return; }
+    trackEvent("apply_coupon", { coupon: code });
     setCouponLoading(true);
     setCouponError(null);
     try {
@@ -352,10 +361,12 @@ export default function CheckoutClient({
       });
       const data = await res.json();
       if (!res.ok) {
+        trackEvent("coupon_failure", { coupon: code, error: data.error ?? "Invalid coupon code." });
         setCouponError(data.error ?? "Invalid coupon code.");
         setAppliedCoupon(null);
         return;
       }
+      trackEvent("coupon_success", { coupon: code, discount: data.discountPaise / 100 });
       setAppliedCoupon({ code: data.code, discountPaise: data.discountPaise });
       setCouponError(null);
       setCouponInput("");
@@ -370,6 +381,17 @@ export default function CheckoutClient({
     setAppliedCoupon(null);
     setCouponError(null);
     setCouponInput("");
+  };
+
+  const handleAddressSelect = (id: string) => {
+    setSelectedAddressId(id);
+    trackEvent("add_shipping_info", {
+      currency: "INR",
+      value: totalPaise / 100,
+      coupon: appliedCoupon?.code ?? undefined,
+      shipping_tier: "Standard",
+      items: initialCart.items.map((i) => mapProductToGa4Item(i)),
+    });
   };
 
   const isOverCodLimit = totalPaise > codLimitPaise;
@@ -467,7 +489,7 @@ export default function CheckoutClient({
       setAddresses((prev) => [...prev, newAddress]);
 
       // Auto-select this newly created address
-      setSelectedAddressId(data.id);
+      handleAddressSelect(data.id);
       
       // Refresh server component in the background so risk levels are resolved
       startTransition(() => {
@@ -483,32 +505,40 @@ export default function CheckoutClient({
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
-      toast.error("Please select a shipping address");
+      trackValidationError("Please select a shipping address");
       return;
     }
 
     if (selectedAddress?.isCodBlocked) {
-      toast.error("Cash on Delivery is not available for the selected address");
+      trackValidationError("Cash on Delivery is not available for the selected address");
       return;
     }
 
     if (!selectedAddress?.isServiceable) {
-      toast.error("The selected address is not serviceable");
+      trackValidationError("The selected address is not serviceable");
       return;
     }
 
     if (isOverCodLimit) {
-      toast.error("Order total exceeds the Cash on Delivery limit");
+      trackValidationError("Order total exceeds the Cash on Delivery limit");
       return;
     }
 
     if (!isTcChecked) {
-      toast.error("You must agree to the Terms & Conditions to place an order");
+      trackValidationError("You must agree to the Terms & Conditions to place an order");
       return;
     }
 
     setSubmittingOrder(true);
     setServerError(null);
+
+    trackEvent("add_payment_info", {
+      currency: "INR",
+      value: totalPaise / 100,
+      coupon: appliedCoupon?.code ?? undefined,
+      payment_type: "COD",
+      items: initialCart.items.map(i => mapProductToGa4Item(i)),
+    });
 
     try {
       const res = await fetch("/api/v1/checkout", {
@@ -529,6 +559,15 @@ export default function CheckoutClient({
       if (!res.ok) {
         throw new Error(data.error || "An error occurred during checkout");
       }
+
+      const orderId = data.order.id;
+      trackEvent("purchase", {
+        currency: "INR",
+        transaction_id: orderId,
+        value: totalPaise / 100,
+        coupon: appliedCoupon?.code ?? undefined,
+        items: initialCart.items.map(i => mapProductToGa4Item(i)),
+      });
 
       toast.success("Order placed successfully!");
 
@@ -556,7 +595,6 @@ export default function CheckoutClient({
       setTimeout(() => container.remove(), 2500);
 
       // Redirect after confetti plays
-      const orderId = data.order.id;
       setTimeout(() => {
         startTransition(() => {
           router.push(`/account/orders/${orderId}`);
@@ -584,12 +622,45 @@ export default function CheckoutClient({
     <div className="checkout-grid">
       {/* Checkout Steps Form */}
       <div className="checkout-main-col">
+        {/* Mobile Expandable Summary */}
+        <div className="lg:hidden w-full max-w-[800px] mb-8">
+          <details 
+            style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-lg)", padding: "16px", marginBottom: "16px" }}
+            onToggle={(e) => {
+              if (e.currentTarget.open) trackEvent("checkout_order_summary_opened");
+            }}
+          >
+            <summary style={{ fontWeight: 600, fontSize: "14px", cursor: "pointer", listStyle: "none", display: "flex", justifyContent: "space-between" }}>
+              <span>Order Summary</span>
+              <span style={{ color: "var(--color-accent)" }}>{formatRupees(totalPaise)}</span>
+            </summary>
+            <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--color-border)" }}>
+              {initialCart.items.map((item) => (
+                <div key={item.id} style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", fontSize: "13px" }}>
+                  <span>{item.quantity}x {item.product.name}</span>
+                  <span>{formatRupees((item.variant ? (item.product.basePricePaise + item.variant.priceDeltaPaise) : item.product.basePricePaise) * item.quantity)}</span>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", fontSize: "13px" }}>
+                <span className="footer-text-muted">Subtotal</span>
+                <span>{formatRupees(subtotalPaise)}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "13px" }}>
+                <span className="footer-text-muted">Shipping</span>
+                <span style={{ color: "var(--color-success)" }}>Free &middot; Delivery in 3–5 days</span>
+              </div>
+            </div>
+          </details>
+        </div>
+
         {/* Step 1: Shipping Address Selection */}
         <Card className="checkout-card">
-          <div className="checkout-card-header">
-            <h2 className="text-xl font-semibold checkout-header-title">
-              1. Shipping Address
-            </h2>
+          <fieldset style={{ border: "none", margin: 0, padding: 0, minWidth: 0 }}>
+            <legend className="sr-only">1. Shipping Address</legend>
+            <div className="checkout-card-header">
+              <h2 className="text-xl font-semibold checkout-header-title" aria-hidden="true">
+                1. Shipping Address
+              </h2>
             {!isModalOpen && (
               <Button
                 variant="secondary"
@@ -615,6 +686,13 @@ export default function CheckoutClient({
                     value={formData.fullName}
                     error={fieldErrors.fullName}
                     required
+                    autoComplete="name"
+                    onFocus={() => {
+                      if (!formStartedFired.current) {
+                        formStartedFired.current = true;
+                        trackEvent("checkout_form_started");
+                      }
+                    }}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
                   <Input
@@ -623,6 +701,7 @@ export default function CheckoutClient({
                     value={formData.phone}
                     error={fieldErrors.phone}
                     required
+                    autoComplete="tel"
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
                   />
                 </div>
@@ -652,6 +731,7 @@ export default function CheckoutClient({
                     value={formData.pincode}
                     error={fieldErrors.pincode}
                     required
+                    autoComplete="postal-code"
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, "") })}
                   />
                   <Input
@@ -660,6 +740,7 @@ export default function CheckoutClient({
                     value={formData.city}
                     error={fieldErrors.city}
                     required
+                    autoComplete="address-level2"
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   />
                   <Input
@@ -668,6 +749,7 @@ export default function CheckoutClient({
                     value={formData.state}
                     error={fieldErrors.state}
                     required
+                    autoComplete="address-level1"
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                   />
                 </div>
@@ -678,6 +760,7 @@ export default function CheckoutClient({
                   value={formData.line1}
                   error={fieldErrors.line1}
                   required
+                  autoComplete="address-line1"
                   onChange={(e) => setFormData({ ...formData, line1: e.target.value })}
                 />
 
@@ -686,6 +769,7 @@ export default function CheckoutClient({
                   placeholder="Area, Street, Sector, Village"
                   value={formData.line2}
                   error={fieldErrors.line2}
+                  autoComplete="address-line2"
                   onChange={(e) => setFormData({ ...formData, line2: e.target.value })}
                 />
 
@@ -754,7 +838,7 @@ export default function CheckoutClient({
                 return (
                   <div
                     key={addr.id}
-                    onClick={() => setSelectedAddressId(addr.id)}
+                    onClick={() => handleAddressSelect(addr.id)}
                     className={`checkout-address-option ${isSelected ? "checkout-address-option-selected" : ""}`}
                   >
                     <div style={{ display: "flex", alignItems: "start", marginTop: "4px" }}>
@@ -763,7 +847,7 @@ export default function CheckoutClient({
                         id={`addr-${addr.id}`}
                         name="selectedAddress"
                         checked={isSelected}
-                        onChange={() => setSelectedAddressId(addr.id)}
+                        onChange={() => handleAddressSelect(addr.id)}
                         style={{
                           accentColor: "var(--color-accent)",
                           width: "18px",
@@ -844,28 +928,32 @@ export default function CheckoutClient({
               })}
             </div>
           )}
+          </fieldset>
         </Card>
 
         {/* Step 2: Payment Method */}
         <Card className="checkout-card">
-          <div className="checkout-card-header">
-            <h2 className="text-xl font-semibold checkout-header-title">
-              2. Payment Method
-            </h2>
-          </div>
-
-          <div className="checkout-payment-box">
-            <div className="checkout-payment-title-row">
-              <span style={{ fontSize: "20px" }}>💵</span>
-              <strong className="checkout-payment-title">Cash on Delivery (COD)</strong>
+          <fieldset style={{ border: "none", margin: 0, padding: 0, minWidth: 0 }}>
+            <legend className="sr-only">2. Payment Method</legend>
+            <div className="checkout-card-header">
+              <h2 className="text-xl font-semibold checkout-header-title" aria-hidden="true">
+                2. Payment Method
+              </h2>
             </div>
-            <p style={{ color: "var(--color-text-primary)", fontSize: "14px", margin: "4px 0" }}>
-              Pay in cash when your order is delivered to your doorstep.
-            </p>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "12px" }}>
-              Note: There are no extra handling fees for COD. The COD fee is ₹0.
-            </span>
-          </div>
+
+            <div className="checkout-payment-box">
+              <div className="checkout-payment-title-row">
+                <span style={{ fontSize: "20px" }}>💵</span>
+                <strong className="checkout-payment-title">Cash on Delivery (COD)</strong>
+              </div>
+              <p style={{ color: "var(--color-text-primary)", fontSize: "14px", margin: "4px 0" }}>
+                Pay in cash when your order is delivered to your doorstep.
+              </p>
+              <span style={{ color: "var(--color-text-secondary)", fontSize: "12px" }}>
+                Note: There are no extra handling fees for COD. The COD fee is ₹0.
+              </span>
+            </div>
+          </fieldset>
         </Card>
       </div>
 
@@ -1003,7 +1091,8 @@ export default function CheckoutClient({
                 style={{ flex: 1, fontSize: "13px" }}
                 placeholder="Coupon code"
                 value={couponInput}
-                onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(null); }}
+                onChange={(e) => { setCouponInput(e.target.value); setCouponError(null); }}
+                onBlur={(e) => setCouponInput(e.target.value.trim().toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
                 disabled={couponLoading}
               />
@@ -1239,12 +1328,16 @@ export default function CheckoutClient({
             style={{ width: "100%", padding: "14px 28px", fontSize: "15px" }}
             className="btn-premium"
           >
-            Place COD Order &rarr;
+            Place Order &middot; Pay on Delivery
           </Button>
 
-          <span style={{ fontSize: "11px", color: "var(--color-text-secondary)", textAlign: "center", display: "block" }}>
-            Your details are encrypted and processed securely.
-          </span>
+          <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--color-text-secondary)", justifyContent: "center" }}>
+            <span>🔒 Secure Checkout</span>
+            <span>•</span>
+            <span>🔄 Easy Returns</span>
+            <span>•</span>
+            <span>💵 COD Available</span>
+          </div>
         </div>
       </div>
 

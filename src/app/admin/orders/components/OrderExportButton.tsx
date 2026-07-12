@@ -151,9 +151,9 @@ export default function OrderExportButton() {
                   type="submit"
                   className={`btn ${isLoading ? "btn-loading" : ""}`}
                   style={{
-                    backgroundColor: "var(--color-primary)",
+                    backgroundColor: "var(--color-accent)",
                     color: "#fff",
-                    borderColor: "var(--color-primary)",
+                    borderColor: "var(--color-accent)",
                   }}
                   disabled={isLoading}
                 >

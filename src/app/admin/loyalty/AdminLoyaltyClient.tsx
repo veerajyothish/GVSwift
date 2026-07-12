@@ -191,7 +191,7 @@ export default function AdminLoyaltyClient({
               </thead>
               <tbody>
                 {topUsers.map((u, i) => (
-                  <tr key={u.userId} style={{ borderBottom: "1px solid var(--color-border)", background: i % 2 === 0 ? "transparent" : "color-mix(in oklch, var(--color-primary) 2%, transparent)" }}>
+                  <tr key={u.userId} style={{ borderBottom: "1px solid var(--color-border)", background: i % 2 === 0 ? "transparent" : "color-mix(in oklch, var(--color-accent) 2%, transparent)" }}>
                     <td style={{ padding: "10px 12px", color: "var(--color-text-primary)", fontWeight: 500 }}>
                       {u.name ?? "—"}
                     </td>
@@ -231,7 +231,7 @@ export default function AdminLoyaltyClient({
               </thead>
               <tbody>
                 {recentReferrals.map((r, i) => (
-                  <tr key={r.id} style={{ borderBottom: "1px solid var(--color-border)", background: i % 2 === 0 ? "transparent" : "color-mix(in oklch, var(--color-primary) 2%, transparent)" }}>
+                  <tr key={r.id} style={{ borderBottom: "1px solid var(--color-border)", background: i % 2 === 0 ? "transparent" : "color-mix(in oklch, var(--color-accent) 2%, transparent)" }}>
                     <td style={{ padding: "10px 12px", color: "var(--color-text-primary)" }}>
                       {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </td>

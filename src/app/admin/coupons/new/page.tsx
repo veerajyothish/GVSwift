@@ -165,7 +165,7 @@ export default function NewCouponPage() {
               type="checkbox"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              style={{ width: "18px", height: "18px", cursor: "pointer", accentColor: "var(--color-primary)" }}
+              style={{ width: "18px", height: "18px", cursor: "pointer", accentColor: "var(--color-accent)" }}
             />
             <label htmlFor="is-active" className="admin-settings-label" style={{ cursor: "pointer" }}>
               Active (customers can apply this coupon immediately)

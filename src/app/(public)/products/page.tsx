@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
+import { ViewItemList } from "@/components/analytics/ViewItemList";
 
 export const revalidate = 300;
 
@@ -68,20 +69,24 @@ async function ProductGrid({
   }
 
   return (
-    <div className="product-grid animate-in">
-      {products.map((product, idx) => {
-        const categoryName = categories.find((c) => c.id === product.categoryId)?.name || "";
-        return (
-          <ProductCard
-            key={product.id}
-            product={product}
-            categoryName={categoryName}
-            initialWishlisted={wishlistedIds.includes(product.id)}
-            priority={idx < 4}
-          />
-        );
-      })}
-    </div>
+    <ViewItemList products={products} listId="plp_products" listName="All Products">
+      <div className="product-grid animate-in">
+        {products.map((product, idx) => {
+          const categoryName = categories.find((c) => c.id === product.categoryId)?.name || "";
+          return (
+            <ProductCard
+              key={product.id}
+              product={product}
+              categoryName={categoryName}
+              initialWishlisted={wishlistedIds.includes(product.id)}
+              priority={idx < 4}
+              listName="All Products"
+              index={idx + 1}
+            />
+          );
+        })}
+      </div>
+    </ViewItemList>
   );
 }
 
@@ -232,7 +237,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}
             className="animate-in delay-50"
           >
-            <nav style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <nav style={{
+              display: "flex", gap: "8px", overflowX: "auto", flexWrap: "nowrap", flexGrow: 1,
+              paddingBottom: "8px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch"
+            }} className="hide-scrollbar">
               <Link href={buildUrl({ categoryId: null, page: 1 })} className={!currentCategoryId ? "category-link-active" : "category-link"}>
                 All Products
               </Link>
@@ -245,7 +253,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
               <span style={{ fontSize: "13px", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>Sort by:</span>
-              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+              <nav style={{
+              display: "flex", gap: "12px", overflowX: "auto", flexWrap: "nowrap", flexGrow: 1,
+              paddingBottom: "8px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch"
+            }} className="hide-scrollbar">
                 {[
                   { label: "Featured", value: "newest" },
                   { label: "Price ↑", value: "price-asc" },
@@ -262,12 +273,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     {opt.label}
                   </Link>
                 ))}
-              </div>
+              </nav>
             </div>
           </div>
 
           {/* Price filter */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "36px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", overflowX: "auto", marginBottom: "36px", paddingBottom: "4px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }} className="hide-scrollbar">
             <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--color-text-secondary)" }}>
               Price:
             </span>
