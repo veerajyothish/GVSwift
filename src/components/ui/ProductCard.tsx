@@ -115,6 +115,7 @@ export default function ProductCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
+        position: "relative",
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -122,7 +123,6 @@ export default function ProductCard({
         border: "1px solid var(--color-border)",
         borderRadius: "var(--radius-lg)",
         overflow: "hidden",
-        position: "relative",
         willChange: hovered ? "transform" : "auto",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         boxShadow: hovered
@@ -132,19 +132,21 @@ export default function ProductCard({
         borderColor: hovered ? "rgba(107,30,46,0.18)" : "var(--color-border)",
       }}
     >
-      {/* Image */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "240px",
-          overflow: "hidden",
-          background: "var(--color-surface)",
-        }}
+      <Link
+        href={`/products/${product.slug}`}
+        prefetch={true}
+        onClick={handleProductClick}
+        style={{ display: "flex", flexDirection: "column", flexGrow: 1, textDecoration: "none", color: "inherit" }}
       >
+        {/* Image */}
         <div
-          aria-hidden="true"
-          style={{ display: "block", width: "100%", height: "100%", position: "relative" }}
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "240px",
+            overflow: "hidden",
+            background: "var(--color-surface)",
+          }}
         >
           <Image
             src={imgError ? svgFallback : imageUrl}
@@ -185,86 +187,49 @@ export default function ProductCard({
           >
             View Details
           </div>
+
+          {isOutOfStock ? (
+            <span className="product-card-badge-error">Out of Stock</span>
+          ) : totalStock <= 5 ? (
+            <span className="product-card-badge-warning">Only {totalStock} left</span>
+          ) : null}
         </div>
 
-        {/* Heart icon */}
-        <button
-          onClick={handleWishlist}
-          aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        {/* Content */}
+        <div
           style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            width: "32px",
-            height: "32px",
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(253,250,245,0.9)",
-            backdropFilter: "blur(4px)",
+            padding: "14px 14px 16px",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 2,
+            flexDirection: "column",
+            gap: "4px",
+            flexGrow: 1,
           }}
         >
-          <Heart
-            size={15}
-            style={{
-              fill: wishlisted ? "var(--color-accent)" : "none",
-              stroke: wishlisted ? "var(--color-accent)" : "var(--color-text-secondary)",
-              strokeWidth: 2,
-            }}
-          />
-        </button>
+          {/* Brand name */}
+          {product.brand && (
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--color-accent)",
+                display: "block",
+                marginBottom: "2px",
+              }}
+            >
+              {product.brand}
+            </span>
+          )}
 
-        {isOutOfStock ? (
-          <span className="product-card-badge-error">Out of Stock</span>
-        ) : totalStock <= 5 ? (
-          <span className="product-card-badge-warning">Only {totalStock} left</span>
-        ) : null}
-      </div>
-
-      {/* Content */}
-      <div
-        style={{
-          padding: "14px 14px 16px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-          flexGrow: 1,
-        }}
-      >
-        {/* Brand name */}
-        {product.brand && (
-          <span
+          {/* Product name */}
+          <h3
             style={{
-              fontSize: "10px",
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "var(--color-accent)",
-              display: "block",
-              marginBottom: "2px",
-            }}
-          >
-            {product.brand}
-          </span>
-        )}
-
-        {/* Product name */}
-        <h3 style={{ margin: 0 }}>
-          <Link
-            href={`/products/${product.slug}`}
-            prefetch={true}
-            onClick={handleProductClick}
-            className="product-card-title-link"
-            style={{
+              margin: 0,
               fontFamily: "var(--font-heading)",
               fontSize: "14px",
               fontWeight: 500,
               color: "var(--color-text-primary)",
-              textDecoration: "none",
               display: "-webkit-box",
               WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
@@ -273,77 +238,108 @@ export default function ProductCard({
             }}
           >
             {product.name}
-          </Link>
-        </h3>
+          </h3>
 
-        {/* Short description (1 line, truncated) */}
-        {product.description ? (
-          <p
-            style={{
-              fontSize: "12px",
-              color: "var(--color-text-secondary)",
-              margin: "2px 0 4px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              lineHeight: 1.4,
-            }}
-          >
-            {product.description}
-          </p>
-        ) : (
-          <p
-            style={{
-              fontSize: "12px",
-              color: "var(--color-text-secondary)",
-              margin: "2px 0 4px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              lineHeight: 1.4,
-              opacity: 0,
-            }}
-          >
-            &nbsp;
-          </p>
-        )}
+          {/* Short description */}
+          {product.description ? (
+            <p
+              style={{
+                fontSize: "12px",
+                color: "var(--color-text-secondary)",
+                margin: "2px 0 4px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                lineHeight: 1.4,
+              }}
+            >
+              {product.description}
+            </p>
+          ) : (
+            <p
+              style={{
+                fontSize: "12px",
+                color: "var(--color-text-secondary)",
+                margin: "2px 0 4px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                lineHeight: 1.4,
+                opacity: 0,
+              }}
+            >
+              &nbsp;
+            </p>
+          )}
 
-        {/* Rating (stars + count, if available) */}
-        {product.avgRating !== undefined && product.avgRating !== null && product.avgRating > 0 ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px" }}>
-            <div style={{ display: "flex", gap: "1px" }}>
-              {Array.from({ length: 5 }).map((_, i) => {
-                const fill = i < Math.round(product.avgRating ?? 0);
-                return (
-                  <span key={i} style={{ color: "var(--color-accent)", fontSize: "12px" }}>
-                    {fill ? "★" : "☆"}
-                  </span>
-                );
-              })}
+          {/* Rating */}
+          {product.avgRating !== undefined && product.avgRating !== null && product.avgRating > 0 ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px" }}>
+              <div style={{ display: "flex", gap: "1px" }}>
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const fill = i < Math.round(product.avgRating ?? 0);
+                  return (
+                    <span key={i} style={{ color: "var(--color-accent)", fontSize: "12px" }}>
+                      {fill ? "★" : "☆"}
+                    </span>
+                  );
+                })}
+              </div>
+              <span style={{ color: "var(--color-text-secondary)", fontSize: "11px" }}>
+                ({product.reviewCount ?? 0})
+              </span>
             </div>
-            <span style={{ color: "var(--color-text-secondary)", fontSize: "11px" }}>
-              ({product.reviewCount ?? 0})
-            </span>
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px", opacity: 0 }}>
-            <span>&nbsp;</span>
-          </div>
-        )}
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", margin: "2px 0 6px", opacity: 0 }}>
+              <span>&nbsp;</span>
+            </div>
+          )}
 
-        {/* Price */}
-        <span
+          {/* Price */}
+          <span
+            style={{
+              fontSize: "14px",
+              fontWeight: 600,
+              color: "var(--color-text-primary)",
+              fontVariantNumeric: "tabular-nums",
+              marginTop: "auto",
+            }}
+          >
+            {formattedPrice}
+          </span>
+        </div>
+      </Link>
+
+      {/* Heart icon OUTSIDE the Link so it doesn't break HTML structure, positioned absolute to the outer div */}
+      <button
+        onClick={handleWishlist}
+        aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          width: "32px",
+          height: "32px",
+          borderRadius: "50%",
+          border: "none",
+          background: "rgba(253,250,245,0.9)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          zIndex: 10,
+        }}
+      >
+        <Heart
+          size={15}
           style={{
-            fontSize: "14px",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-            fontVariantNumeric: "tabular-nums",
-            marginTop: "auto",
+            fill: wishlisted ? "var(--color-accent)" : "none",
+            stroke: wishlisted ? "var(--color-accent)" : "var(--color-text-secondary)",
+            strokeWidth: 2,
           }}
-        >
-          {formattedPrice}
-        </span>
-      </div>
+        />
+      </button>
     </div>
   );
 }
