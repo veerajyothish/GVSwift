@@ -2,7 +2,7 @@
 
 GVSwift — Premium fashion e-commerce platform built with Next.js 15, Supabase, and Prisma ORM.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-gvswift.vercel.app-black?style=for-the-badge)](https://gvswift.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-gvswift.vercel.app-black?style=for-the-badge)](https://gvswift.com)
 
 ## Tech Stack
 
