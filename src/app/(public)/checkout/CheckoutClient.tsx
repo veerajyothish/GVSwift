@@ -571,6 +571,28 @@ export default function CheckoutClient({
 
       toast.success("Order placed successfully!");
 
+      // Trigger order confirmation email
+      try {
+        await fetch('/api/email/order-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerEmail: data.order.user.email,
+            customerName: data.order.user.name || "Customer",
+            orderId: orderId,
+            orderItems: data.order.items.map((item: { product: { name: string }, quantity: number, unitPricePaise: number }) => ({
+              name: item.product.name,
+              quantity: item.quantity,
+              price: item.unitPricePaise / 100,
+            })),
+            totalAmount: data.order.totalPaise / 100,
+            deliveryAddress: `${data.order.address.line1}, ${data.order.address.city}, ${data.order.address.state} ${data.order.address.pincode}`,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Failed to trigger order confirmation email", emailErr);
+      }
+
       // ponytail: CSS-only confetti burst
       const colors = ["#6b1e2e", "#d4a574", "#e8c8a0", "#8b3a4a", "#c49a6c", "#f0d8b4", "#a0522d", "#deb887"];
       const container = document.createElement("div");
