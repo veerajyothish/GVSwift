@@ -15,7 +15,7 @@ interface FadeInProps {
 export function FadeIn({
   children,
   delay = 0,
-  duration = 0.6,
+  duration = 0.3,
   y = 24,
   className = "",
   style,
@@ -59,8 +59,8 @@ interface StaggerContainerProps {
 
 export function StaggerContainer({
   children,
-  delayChildren = 0.1,
-  staggerChildren = 0.08,
+  delayChildren = 0.05,
+  staggerChildren = 0.04,
   className = "",
   style,
 }: StaggerContainerProps) {
@@ -101,7 +101,7 @@ interface StaggerChildProps {
 export function StaggerChild({
   children,
   y = 20,
-  duration = 0.5,
+  duration = 0.3,
   className = "",
   style,
 }: StaggerChildProps) {

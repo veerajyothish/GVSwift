@@ -6,8 +6,36 @@ import { Navbar } from "@/components/ui/Navbar";
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
 
+import { getSiteUrl } from "@/lib/env";
+
 export const revalidate = 300;
 
+export async function generateMetadata({ params }: ProductDetailPageProps) {
+  const { slug } = await params;
+  const product = await getCachedProductBySlug(slug);
+
+  if (!product) {
+    return { title: "Product Not Found | GVSwift" };
+  }
+
+  const canonicalUrl = `${getSiteUrl()}/products/${slug}`;
+  const imageUrl = product.images?.[0]?.url;
+  const description = product.description ? product.description.substring(0, 160) : "Shop premium fashion and accessories at GVSwift.";
+
+  return {
+    title: `${product.name} | GVSwift`,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${product.name} | GVSwift`,
+      description,
+      url: canonicalUrl,
+      images: imageUrl ? [{ url: imageUrl }] : [],
+    },
+  };
+}
 
 interface ProductDetailPageProps {
   params: Promise<{ slug: string }>;

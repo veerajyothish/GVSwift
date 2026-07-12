@@ -604,8 +604,7 @@ export default function CheckoutClient({
       const error = err as Error;
       setServerError(error.message || "Failed to place order. Please try again.");
       toast.error(error.message || "Checkout failed", "Error");
-    } finally {
-      setSubmittingOrder(false);
+      setSubmittingOrder(false); // Only re-enable on error
     }
   };
 
@@ -1036,43 +1035,47 @@ export default function CheckoutClient({
           </div>
 
           {/* B12: Loyalty Points Checkbox */}
-          {loyaltyBalance >= 100 && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 0",
-                fontSize: "13px",
-                color: "var(--color-text-primary)",
-                fontWeight: 500,
-                userSelect: "none",
-                cursor: "pointer",
-                marginTop: "4px",
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 0",
+              fontSize: "13px",
+              color: loyaltyBalance >= 100 ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+              fontWeight: 500,
+              userSelect: "none",
+              cursor: loyaltyBalance >= 100 ? "pointer" : "not-allowed",
+              marginTop: "4px",
+            }}
+            onClick={() => {
+              if (loyaltyBalance >= 100) setUsePoints((v) => !v);
+            }}
+          >
+            <input
+              type="checkbox"
+              id="loyalty-points-checkbox"
+              checked={usePoints}
+              onChange={(e) => {
+                if (loyaltyBalance >= 100) setUsePoints(e.target.checked);
               }}
-              onClick={() => setUsePoints((v) => !v)}
+              disabled={loyaltyBalance < 100}
+              style={{
+                accentColor: "var(--color-accent)",
+                width: "20px",
+                height: "20px",
+                cursor: loyaltyBalance >= 100 ? "pointer" : "not-allowed",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <label
+              htmlFor="loyalty-points-checkbox"
+              style={{ cursor: loyaltyBalance >= 100 ? "pointer" : "not-allowed", flexGrow: 1 }}
+              onClick={(e) => e.preventDefault()} // Let parent div handle the click to prevent double firing
             >
-              <input
-                type="checkbox"
-                id="loyalty-points-checkbox"
-                checked={usePoints}
-                onChange={(e) => setUsePoints(e.target.checked)}
-                style={{
-                  accentColor: "var(--color-accent)",
-                  width: "16px",
-                  height: "16px",
-                  cursor: "pointer",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              />
-              <label
-                htmlFor="loyalty-points-checkbox"
-                style={{ cursor: "pointer", flexGrow: 1 }}
-              >
-                Use my loyalty points (<span style={{ fontVariantNumeric: "tabular-nums" }}>{redeemablePoints}</span> pts = ₹<span style={{ fontVariantNumeric: "tabular-nums" }}>{(redeemablePoints / 100) * loyaltySettings.rupeesPer100Points}</span> off)
-              </label>
-            </div>
-          )}
+              Use my loyalty points (<span style={{ fontVariantNumeric: "tabular-nums" }}>{loyaltyBalance >= 100 ? redeemablePoints : loyaltyBalance}</span> pts{loyaltyBalance >= 100 ? ` = ₹${(redeemablePoints / 100) * loyaltySettings.rupeesPer100Points} off` : " available. Min 100 required."})
+            </label>
+          </div>
 
           <div style={{ borderBottom: "1px solid var(--color-border)" }} />
 
@@ -1250,7 +1253,15 @@ export default function CheckoutClient({
           </div>
 
           {/* T&C Consent checkbox */}
-          <div style={{ display: "flex", gap: "10px", alignItems: "start" }}>
+          <div 
+            style={{ display: "flex", gap: "10px", alignItems: "start", cursor: "pointer", padding: "4px 0" }}
+            onClick={(e) => {
+              // Prevent toggling if a link was clicked
+              if ((e.target as HTMLElement).tagName !== 'A') {
+                setIsTcChecked(!isTcChecked);
+              }
+            }}
+          >
             <input
               type="checkbox"
               id="tcConsent"
@@ -1258,12 +1269,13 @@ export default function CheckoutClient({
               onChange={(e) => setIsTcChecked(e.target.checked)}
               style={{
                 accentColor: "var(--color-accent)",
-                width: "18px",
-                height: "18px",
+                width: "20px",
+                height: "20px",
                 cursor: "pointer",
                 marginTop: "2px",
                 flexShrink: 0,
               }}
+              onClick={(e) => e.stopPropagation()}
             />
             <label
               htmlFor="tcConsent"
@@ -1274,17 +1286,18 @@ export default function CheckoutClient({
                 userSelect: "none",
                 lineHeight: "1.4",
               }}
+              onClick={(e) => e.preventDefault()} // Parent handles the toggle
             >
               I agree to the{" "}
-              <Link href="/terms" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+              <Link href="/terms" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }} onClick={(e) => e.stopPropagation()}>
                 Terms &amp; Conditions
               </Link>
               ,{" "}
-              <Link href="/shipping" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+              <Link href="/shipping" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }} onClick={(e) => e.stopPropagation()}>
                 Shipping Policy
               </Link>
               , and{" "}
-              <Link href="/returns" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }}>
+              <Link href="/returns" target="_blank" style={{ color: "var(--color-accent)", textDecoration: "underline" }} onClick={(e) => e.stopPropagation()}>
                 Returns Policy
               </Link>
               .
@@ -1323,12 +1336,12 @@ export default function CheckoutClient({
           <Button
             variant="primary"
             onClick={handlePlaceOrder}
-            disabled={isPlaceOrderDisabled}
-            loading={submittingOrder || isPending}
+            disabled={isPlaceOrderDisabled || submittingOrder}
+            loading={submittingOrder && !isPending}
             style={{ width: "100%", padding: "14px 28px", fontSize: "15px" }}
             className="btn-premium"
           >
-            Place Order &middot; Pay on Delivery
+            {submittingOrder ? "Redirecting..." : "Place Order & Pay on Delivery"}
           </Button>
 
           <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--color-text-secondary)", justifyContent: "center" }}>

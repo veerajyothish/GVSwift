@@ -5,6 +5,7 @@ import { OrderPlacedEmail } from "@/emails/order-placed";
 import { OrderStatusChangeEmail } from "@/emails/order-status-change";
 import { SupportReplyEmail } from "@/emails/support-reply";
 import { withRetry } from "@/lib/retry";
+import { getSiteUrl } from "@/lib/env";
 
 let resend: Resend | null = null;
 
@@ -40,7 +41,7 @@ type SupportTicketForEmail = Prisma.SupportTicketGetPayload<{
 }>;
 
 function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app").replace(/\/$/, "");
+  return getSiteUrl();
 }
 
 function senderAddress() {

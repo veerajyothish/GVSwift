@@ -84,6 +84,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
   // Loading and error states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -314,6 +315,36 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
       setErrorMsg(err instanceof Error ? err.message : "An error occurred while saving the product.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!initialData?.id) return;
+    
+    const confirmed = window.confirm("Are you sure you want to permanently delete this product? This action cannot be undone.");
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/v1/admin/products/${initialData.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete product.");
+      }
+
+      alert("Product permanently deleted successfully.");
+      router.push("/admin/products");
+      router.refresh();
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to delete product.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -706,11 +737,21 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
 
       {/* Action Buttons */}
       <div className="flex gap-4 justify-between mt-2 pt-20" style={{ borderTop: "1px solid var(--color-border)" }}>
+        {isEdit && (
+          <button
+            type="button"
+            className="btn btn-danger flex-1"
+            onClick={handleDelete}
+            disabled={isSubmitting || isDeleting || isUploading}
+          >
+            {isDeleting ? "Deleting..." : "Permanently Delete"}
+          </button>
+        )}
         <button
           type="button"
           className="btn btn-secondary flex-1"
           onClick={() => router.push("/admin/products")}
-          disabled={isSubmitting}
+          disabled={isSubmitting || isDeleting || isUploading}
         >
           Cancel
         </button>

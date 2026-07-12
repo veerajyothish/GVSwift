@@ -6,11 +6,12 @@ import { OrderStatusChangeEmail } from "@/emails/order-status-change";
 import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 import { withRetry } from "@/lib/retry";
 import { OrderStatus } from "@prisma/client";
+import { getSiteUrl } from "@/lib/env";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app").replace(/\/$/, "");
+  return getSiteUrl();
 }
 
 function senderAddress() {

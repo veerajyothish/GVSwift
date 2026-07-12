@@ -105,5 +105,5 @@ OrderPlacedEmail.PreviewProps = {
     { name: "Signature Blend Coffee", quantity: 2, lineTotalPaise: 500000 },
     { name: "Ceramic Pour-Over Dripper", quantity: 1, lineTotalPaise: 750000 }
   ],
-  orderUrl: "https://gvswift.vercel.app/orders/ORD-12345678"
+  orderUrl: "https://gvswift.com/orders/ORD-12345678"
 } as OrderPlacedEmailProps;

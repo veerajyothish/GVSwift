@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   title: "Loyalty & Referrals — GVSwift",
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app";
+import { getSiteUrl } from "@/lib/env";
+const SITE_URL = getSiteUrl();
 
 export default async function LoyaltyPage() {
   const user = await requireUser();

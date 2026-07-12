@@ -18,9 +18,16 @@ export async function generateMetadata({ params }: ShopPageProps): Promise<Metad
   try {
     const shop = await getShopBySlug(slug);
     if (!shop || !shop.isActive) return {};
+    
+    const { getSiteUrl } = await import("@/lib/env");
+    const canonicalUrl = `${getSiteUrl()}/shops/${slug}`;
+
     return {
       title: `${shop.name} Curation — GVSwift`,
       description: shop.tagline || shop.description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
     };
   } catch {
     return {};

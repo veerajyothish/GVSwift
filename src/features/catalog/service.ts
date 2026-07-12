@@ -172,6 +172,25 @@ export async function adminDeleteProduct(id: string) {
 }
 
 /**
+ * Hard deletes a product (Admin action).
+ */
+export async function adminHardDeleteProduct(id: string) {
+  if (!id) {
+    throw new AppError("VALIDATION_ERROR", "Product ID is required", 400);
+  }
+  
+  try {
+    await repository.hardDeleteProduct(id);
+  } catch (err: unknown) {
+    const error = err as Error;
+    if (error.message.includes("Cannot permanently delete")) {
+      throw new AppError("CONFLICT", error.message, 409);
+    }
+    throw error;
+  }
+}
+
+/**
  * Returns active related products in the same category.
  */
 export async function getRelatedProducts(categoryId: string, excludeProductId: string, limit = 4) {

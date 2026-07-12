@@ -475,6 +475,44 @@ export async function softDeleteProduct(id: string): Promise<ProductWithVariants
 }
 
 /**
+ * Hard-deletes a product permanently if it has no historical orders.
+ */
+export async function hardDeleteProduct(id: string): Promise<void> {
+  const existing = await withRetry(() =>
+    prisma.product.findUnique({
+      where: { id },
+      select: { 
+        slug: true,
+        _count: {
+          select: { orderItems: true }
+        }
+      },
+    })
+  );
+
+  if (!existing) {
+    throw new Error("Product not found");
+  }
+
+  if (existing._count.orderItems > 0) {
+    throw new Error("Cannot permanently delete a product that has historical orders. Mark as Inactive instead to hide it.");
+  }
+
+  await withRetry(() =>
+    prisma.$transaction([
+      prisma.productImage.deleteMany({ where: { productId: id } }),
+      prisma.productVariant.deleteMany({ where: { productId: id } }),
+      prisma.cartItem.deleteMany({ where: { productId: id } }),
+      prisma.wishlistItem.deleteMany({ where: { productId: id } }),
+      prisma.productReview.deleteMany({ where: { productId: id } }),
+      prisma.product.delete({ where: { id } }),
+    ])
+  );
+
+  await invalidateProductCache(existing.slug);
+}
+
+/**
  * Fetches active products in the same category, excluding the current one, capped at limit.
  */
 export async function getRelatedProducts(

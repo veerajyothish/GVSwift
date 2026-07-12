@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
-import { adminDeleteProduct } from "@/features/catalog/service";
+import { adminHardDeleteProduct } from "@/features/catalog/service";
 import { prisma } from "@/lib/prisma";
 import { toSafeError } from "@/lib/errors";
 import { EditProductSchema } from "@/features/catalog/validation";
@@ -242,30 +242,23 @@ export async function DELETE(
     const { user, errorResponse } = await requireAdminForApi();
     if (errorResponse) return errorResponse;
 
-    const product = await adminDeleteProduct(id);
-    if (product) {
-      await invalidateProductCache(product.slug);
-      logAuditEvent({
-        actorId: user?.id ?? "",
-        action: "PRODUCT_DELETE",
-        targetType: "PRODUCT",
-        targetId: id,
-        details: {
-          name: product.name,
-          slug: product.slug,
-        },
-      });
-      revalidatePath("/admin/products");
-      revalidatePath("/products");
-      revalidatePath(`/products/${product.slug}`);
-      if (product.shopId) {
-        revalidatePath(`/shops/${product.shopId}`);
-      }
-      revalidatePath("/");
-    }
+    await adminHardDeleteProduct(id);
+    
+    logAuditEvent({
+      actorId: user?.id ?? "",
+      action: "PRODUCT_DELETE",
+      targetType: "PRODUCT",
+      targetId: id,
+      details: {
+        message: "Product permanently deleted",
+      },
+    });
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+    revalidatePath("/");
 
     return NextResponse.json(
-      { message: "Product deactivated successfully", product },
+      { message: "Product permanently deleted successfully" },
       { status: 200 }
     );
   } catch (err) {
@@ -273,3 +266,4 @@ export async function DELETE(
     return NextResponse.json({ error, code }, { status: statusCode });
   }
 }
+

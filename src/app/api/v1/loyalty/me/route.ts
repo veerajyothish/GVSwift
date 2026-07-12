@@ -10,7 +10,8 @@ import { requireUserForApi } from "@/lib/auth/guards";
 import { getOrCreateLoyaltyAccount, getOrCreateReferralCode, getLoyaltySettings } from "@/lib/loyalty";
 import { prisma } from "@/lib/prisma";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gvswift.vercel.app";
+import { getSiteUrl } from "@/lib/env";
+const SITE_URL = getSiteUrl();
 
 export async function GET() {
   const { user, errorResponse } = await requireUserForApi();

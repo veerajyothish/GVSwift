@@ -9,10 +9,39 @@ import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
+import { CatalogFilters } from "./components/CatalogFilters";
+
+import { getSiteUrl } from "@/lib/env";
 
 export const revalidate = 300;
 
+export async function generateMetadata({ searchParams }: ProductsPageProps) {
+  const params = await searchParams;
+  // Use clean canonical URL without sort/pagination for SEO
+  let canonicalUrl = `${getSiteUrl()}/products`;
+  
+  if (params.categoryId) {
+    // Note: ideally we would use the category slug if we had it, but using the base /products is safe
+    // as a fallback canonical for filtered states.
+    canonicalUrl = `${getSiteUrl()}/products`;
+  }
 
+  // If it's a search page, we usually noindex it to prevent infinite crawl spaces
+  if (params.search) {
+    return {
+      title: `Search: ${params.search} | GVSwift`,
+      robots: { index: false, follow: true },
+    };
+  }
+
+  return {
+    title: "All Products | GVSwift Premium Fashion",
+    description: "Browse the complete GVSwift collection. Premium clothing and curated accessories crafted for quality.",
+    alternates: {
+      canonical: canonicalUrl,
+    },
+  };
+}
 interface ProductsPageProps {
   searchParams: Promise<{
     categoryId?: string;
@@ -232,74 +261,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         </header>
 
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 24px 80px" }}>
-          {/* Category pills + sort */}
-          <div
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "40px" }}
-            className="animate-in delay-50"
-          >
-            <nav style={{
-              display: "flex", gap: "8px", overflowX: "auto", flexWrap: "nowrap", flexGrow: 1,
-              paddingBottom: "8px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch"
-            }} className="hide-scrollbar">
-              <Link href={buildUrl({ categoryId: null, page: 1 })} className={!currentCategoryId ? "category-link-active" : "category-link"}>
-                All Products
-              </Link>
-              {categories.map((cat) => (
-                <Link key={cat.id} href={buildUrl({ categoryId: cat.id, page: 1 })} className={currentCategoryId === cat.id ? "category-link-active" : "category-link"}>
-                  {cat.name}
-                </Link>
-              ))}
-            </nav>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-              <span style={{ fontSize: "13px", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>Sort by:</span>
-              <nav style={{
-              display: "flex", gap: "12px", overflowX: "auto", flexWrap: "nowrap", flexGrow: 1,
-              paddingBottom: "8px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch"
-            }} className="hide-scrollbar">
-                {[
-                  { label: "Featured", value: "newest" },
-                  { label: "Price ↑", value: "price-asc" },
-                  { label: "Price ↓", value: "price-desc" },
-                ].map((opt) => (
-                  <Link key={opt.value} href={buildUrl({ sort: opt.value, page: 1 })} style={{
-                    fontSize: "13px", padding: "6px 14px", borderRadius: "9999px",
-                    border: `1px solid ${currentSort === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
-                    background: currentSort === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
-                    color: currentSort === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
-                    fontWeight: currentSort === opt.value ? 600 : 400,
-                    textDecoration: "none", whiteSpace: "nowrap",
-                  }}>
-                    {opt.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </div>
-
-          {/* Price filter */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", overflowX: "auto", marginBottom: "36px", paddingBottom: "4px", scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }} className="hide-scrollbar">
-            <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--color-text-secondary)" }}>
-              Price:
-            </span>
-            {[
-              { label: "All", value: "" },
-              { label: "Under ₹500", value: "500" },
-              { label: "Under ₹1,000", value: "1000" },
-              { label: "Under ₹2,000", value: "2000" },
-            ].map((opt) => (
-              <Link key={opt.value} href={buildUrl({ maxPrice: opt.value || null, page: 1 })} style={{
-                fontSize: "12px", padding: "5px 14px", borderRadius: "9999px",
-                border: `1px solid ${currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
-                background: currentMaxPrice === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
-                color: currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
-                fontWeight: currentMaxPrice === opt.value ? 600 : 400,
-                textDecoration: "none",
-              }}>
-                {opt.label}
-              </Link>
-            ))}
-          </div>
+          {/* Client-side Filters with Optimistic UI */}
+          <CatalogFilters
+            categories={categories}
+            currentCategoryId={currentCategoryId}
+            currentSort={currentSort}
+            currentMaxPrice={currentMaxPrice}
+            currentSearch={currentSearch}
+          />
 
           {/* Search indicator */}
           {currentSearch && (

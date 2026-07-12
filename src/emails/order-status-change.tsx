@@ -165,7 +165,7 @@ export function OrderStatusChangeEmail({
 OrderStatusChangeEmail.PreviewProps = {
   orderId: "ORD-12345678",
   status: "SHIPPED",
-  orderUrl: "https://gvswift.vercel.app/orders/ORD-12345678",
+  orderUrl: "https://gvswift.com/orders/ORD-12345678",
   totalPaise: 1250000,
   items: [
     { name: "Signature Blend Coffee", quantity: 2, lineTotalPaise: 500000 },

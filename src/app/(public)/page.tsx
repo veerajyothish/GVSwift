@@ -13,10 +13,22 @@ import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated
 import { ViewItemList } from "@/components/analytics/ViewItemList";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
 
+import { getSiteUrl } from "@/lib/env";
+
 export const metadata = {
-  title: "GVSwift — Shop with Confidence",
+  title: "GVSwift | Premium Fashion & Accessories",
   description:
-    "Premium fashion with Cash on Delivery across India. Free shipping. 7-day returns.",
+    "Shop GVSwift for premium fashion and curated accessories. Experience uncompromising craftsmanship with Cash on Delivery across India, free shipping, and 7-day returns.",
+  alternates: {
+    canonical: getSiteUrl(),
+  },
+  openGraph: {
+    title: "GVSwift | Premium Fashion & Accessories",
+    description: "Shop GVSwift for premium fashion and curated accessories. Experience uncompromising craftsmanship with Cash on Delivery across India.",
+    url: getSiteUrl(),
+    siteName: "GVSwift",
+    type: "website",
+  },
 };
 
 export default async function HomePage() {
@@ -44,8 +56,38 @@ export default async function HomePage() {
     }
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${getSiteUrl()}/#website`,
+        url: getSiteUrl(),
+        name: "GVSwift",
+        description: "Premium fashion with Cash on Delivery across India.",
+        publisher: {
+          "@id": `${getSiteUrl()}/#organization`,
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${getSiteUrl()}/#organization`,
+        name: "GVSwift",
+        url: getSiteUrl(),
+        logo: {
+          "@type": "ImageObject",
+          url: `${getSiteUrl()}/monogram.png`,
+        },
+      },
+    ],
+  };
+
   return (
     <div className="homepage-wrapper">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <ViewItemList products={products} listId="homepage_trending" listName="Trending Now" />
 
