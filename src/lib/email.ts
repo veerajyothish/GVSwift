@@ -1,21 +1,31 @@
 import { resend } from './resend';
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@gvswift.com';
-const REPLY_TO = process.env.RESEND_REPLY_TO || 'support@gvswift.com';
+// Dedicated sending addresses — each has a clear purpose
+const FROM_ORDERS  = process.env.RESEND_FROM_ORDERS  || 'orders@gvswift.com';   // order confirmations, invoices, shipping
+const FROM_NOREPLY = process.env.RESEND_FROM_NOREPLY || 'noreply@gvswift.com';  // welcome, OTP, password reset, automation
+const REPLY_TO     = process.env.RESEND_REPLY_TO     || 'support@gvswift.com';  // all replies land in Zoho inbox
+
+export type EmailSender = 'orders' | 'noreply';
 
 export async function sendEmail({
   to,
   subject,
   html,
   text,
+  sender = 'noreply',
 }: {
   to: string;
   subject: string;
   html: string;
   text?: string;
+  sender?: EmailSender;
 }) {
+  const from = sender === 'orders'
+    ? `GVSwift Orders <${FROM_ORDERS}>`
+    : `GVSwift <${FROM_NOREPLY}>`;
+
   return await resend.emails.send({
-    from: `GVSwift <${FROM_EMAIL}>`,
+    from,
     replyTo: REPLY_TO,
     to,
     subject,
