@@ -142,12 +142,8 @@ export default function ProductCard({
           background: "var(--color-surface)",
         }}
       >
-        <Link
-          href={`/products/${product.slug}`}
-          prefetch={true}
-          tabIndex={-1}
+        <div
           aria-hidden="true"
-          onClick={handleProductClick}
           style={{ display: "block", width: "100%", height: "100%", position: "relative" }}
         >
           <Image
@@ -189,7 +185,7 @@ export default function ProductCard({
           >
             View Details
           </div>
-        </Link>
+        </div>
 
         {/* Heart icon */}
         <button
