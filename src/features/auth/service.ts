@@ -7,7 +7,7 @@ import { getSiteUrl } from "@/lib/env";
 import { isPasswordLeaked } from "@/lib/auth/checkLeakedPassword";
 import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
 import { sendEmail } from "@/lib/email";
-import { renderAsync } from "@react-email/render";
+import { render } from "@react-email/render";
 import { WelcomeEmail } from "@/emails/welcome";
 
 export const SignupSchema = z.object({
@@ -144,13 +144,13 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
   // Send welcome email — fire-and-forget (never block signup on email failure)
   if (prismaUser) {
     const firstName = firstNameFromEmail(parsed.data.email);
-    renderAsync(
+    render(
       WelcomeEmail({
         firstName,
         shopUrl: `${getSiteUrl()}/shop`,
       })
     )
-      .then((html) =>
+      .then((html: string) =>
         sendEmail({
           to: parsed.data.email,
           subject: `Welcome to GVSwift, ${firstName}! 🎉`,
@@ -158,7 +158,7 @@ export async function signupUser(input: SignupInput, referralCode?: string) {
           sender: 'noreply',
         })
       )
-      .catch((emailErr) =>
+      .catch((emailErr: unknown) =>
         logger.warn({ userId: prismaUser!.id, error: emailErr }, 'Welcome email failed — non-fatal')
       );
   }

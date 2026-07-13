@@ -121,8 +121,6 @@ export async function PUT(
         orderId: order.id,
         details: auditDetails,
       });
-      // ponytail: fire and forget email on update
-      sendOrderStatusEmail(orderId).catch((e) => logger.error('email failed', e));
       return NextResponse.json({ success: true, order: updatedOrder });
     }
 

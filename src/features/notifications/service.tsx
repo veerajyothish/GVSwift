@@ -25,7 +25,7 @@ const notificationStatuses = new Set<OrderStatus>([
 
 type OrderForEmail = Prisma.OrderGetPayload<{
   include: {
-    user: { select: { email: true } };
+    user: { select: { email: true, name: true } };
     items: {
       include: {
         product: { select: { name: true } };
@@ -111,6 +111,8 @@ export function sendOrderPlacedEmail(order: OrderForEmail) {
           quantity: item.quantity,
           lineTotalPaise: item.lineTotalPaise,
         }))}
+        customerName={order.user.name || "Customer"}
+        deliveryAddress="Please refer to the order details link below for delivery information."
       />
     ),
   });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { renderAsync } from '@react-email/render';
+import { render } from '@react-email/render';
 import { sendEmail } from '@/lib/email';
 import { OrderPlacedEmail } from '@/emails/order-placed';
 import { getSiteUrl } from '@/lib/env';
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const orderUrl = `${getSiteUrl()}/orders/${orderId}`;
 
-    const html = await renderAsync(
+    const html = await render(
       OrderPlacedEmail({
         orderId,
         customerName,
