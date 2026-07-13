@@ -106,7 +106,7 @@ export function WelcomeEmail({
 
           {/* Footer */}
           <Text style={{ fontSize: '12px', color: '#7a7974', textAlign: 'center', margin: '8px 0 0', lineHeight: 1.7 }}>
-            Questions? We're always here —{' '}
+            Questions? We&apos;re always here —{' '}
             <a href={`mailto:${supportEmail}`} style={{ color: '#6B1E2E' }}>{supportEmail}</a>
             <br />© 2026 GVSwift. All rights reserved.
           </Text>
