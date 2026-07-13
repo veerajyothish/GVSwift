@@ -27,6 +27,8 @@ import { transitionOrderStatus } from "@/features/orders/state-machine";
 import { logAuditEvent } from "@/features/admin/audit-log";
 import { toSafeError, AppError } from "@/lib/errors";
 import { OrderStatus, Role } from "@prisma/client";
+import { sendOrderStatusEmail } from "@/lib/send-order-status-email";
+import { logger } from "@/lib/logger";
 
 export async function PUT(
   request: NextRequest,
@@ -119,9 +121,15 @@ export async function PUT(
         orderId: order.id,
         details: auditDetails,
       });
+      // ponytail: fire and forget email on update
+      sendOrderStatusEmail(orderId).catch((e) => logger.error('email failed', e));
       return NextResponse.json({ success: true, order: updatedOrder });
     }
 
+    if (status) {
+      // ponytail: fire and forget email on status change
+      sendOrderStatusEmail(orderId).catch((e) => logger.error('email failed', e));
+    }
     return NextResponse.json({ success: true, order: statusOrder });
   } catch (err) {
     const { error, code, statusCode } = toSafeError(err);

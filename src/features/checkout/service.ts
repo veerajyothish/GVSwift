@@ -45,6 +45,7 @@ import {
   getOrCreateLoyaltyAccount,
   getLoyaltySettings,
 } from "@/lib/loyalty";
+import { sendOrderStatusEmail } from "@/lib/send-order-status-email";
 
 /* ── helpers ──────────────────────────────────────────────────────────── */
 
@@ -503,6 +504,9 @@ export async function createOrder(
   }).catch((err) => {
     logger.error({ err, orderId: finalOrder.id }, "Failed to send order/placed event to Inngest");
   });
+
+  // ponytail: fire and forget the order placed email
+  sendOrderStatusEmail(finalOrder.id).catch((e) => logger.error('email failed', e));
 
   // Structured Logging for order placement success
   logger.info(
