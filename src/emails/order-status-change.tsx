@@ -61,6 +61,8 @@ const statusMeta: Record<OrderStatus, { title: string; message: string }> = {
   },
 };
 
+const headingFontFamily = "Georgia, 'Times New Roman', serif";
+
 function formatRupees(paise: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -93,7 +95,7 @@ export function OrderStatusChangeEmail({
             borderRadius: '12px', padding: '28px 32px',
             textAlign: 'center', marginBottom: '20px',
           }}>
-            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: 'Georgia, "Times New Roman", serif', fontStyle: 'italic', fontWeight: 'normal', letterSpacing: '0.01em' }}>
+            <Heading style={{ color: 'white', margin: 0, fontSize: '24px', fontFamily: headingFontFamily, fontStyle: 'italic', fontWeight: 'normal', letterSpacing: '0.01em' }}>
               {meta.title}
             </Heading>
           </Section>
@@ -152,7 +154,9 @@ export function OrderStatusChangeEmail({
           </Section>
 
           <Text style={{ fontSize: '12px', color: '#7a7974', textAlign: 'center', margin: 0 }}>
-            Thank you for choosing GVSwift.<br />
+            Thank you for choosing GVSwift.
+          </Text>
+          <Text style={{ fontSize: '12px', color: '#7a7974', textAlign: 'center', margin: '4px 0 0' }}>
             If you have any questions, please contact our support team.
           </Text>
         </Container>
