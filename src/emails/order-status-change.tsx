@@ -1,4 +1,3 @@
-
 import React from "react";
 import type { OrderStatus } from "@prisma/client";
 import {
@@ -111,7 +110,7 @@ export function OrderStatusChangeEmail({
               <Text style={{ fontSize: '14px', color: '#28251D', margin: '0 0 16px' }}>
                 Order ID: <strong style={{ color: '#6B1E2E' }}>{orderId.slice(-8).toUpperCase()}</strong>
               </Text>
-              
+
               {items.map((item) => (
                 <Row key={`${item.name}-${item.quantity}`} style={{ marginBottom: '8px' }}>
                   <Column style={{ width: '70%' }}>
@@ -123,9 +122,9 @@ export function OrderStatusChangeEmail({
                   </Column>
                 </Row>
               ))}
-              
+
               <Hr style={{ borderColor: '#E8DDD9', margin: '12px 0' }} />
-              
+
               <Row>
                 <Column><Text style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#28251D' }}>Total Paid</Text></Column>
                 <Column style={{ textAlign: 'right' }}>
