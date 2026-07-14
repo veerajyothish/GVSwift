@@ -35,8 +35,8 @@ export default function GrievancePage() {
             <div>
               <strong className="text-secondary">Designated Email Address:</strong>
               <br />
-              <a href="mailto:gvswift.help@gmail.com" className="text-accent text-base font-medium">
-                gvswift.help@gmail.com
+              <a href="mailto:support@gvswift.com" className="text-accent text-base font-medium">
+                support@gvswift.com
               </a>
             </div>
 

@@ -21,7 +21,7 @@ export async function sendEmail({
   sender?: EmailSender;
 }) {
   const from = sender === 'orders'
-    ? `GVSwift Orders <${FROM_ORDERS}>`
+    ? `GVSwift <${FROM_ORDERS}>`
     : `GVSwift <${FROM_NOREPLY}>`;
 
   return await resend.emails.send({

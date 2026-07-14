@@ -72,7 +72,7 @@ export default function FaqPage() {
               Q: How can I contact customer support?
             </h3>
             <p className="text-sm legal-text margin-0">
-              A: You can open a ticket in our <Link href="/support" className="text-accent font-medium">Support Portal</Link>. Alternatively, you can email us at <a href="mailto:gvswift.help@gmail.com" className="text-accent">gvswift.help@gmail.com</a>.
+              A: You can open a ticket in our <Link href="/support" className="text-accent font-medium">Support Portal</Link>. Alternatively, you can email us at <a href="mailto:support@gvswift.com" className="text-accent">support@gvswift.com</a>.
             </p>
           </div>
 

@@ -75,7 +75,7 @@ export const orderPlacedEmail = inngest.createFunction(
     const adminEmailPromise = withRetry(() =>
       resend.emails.send({
         from: senderAddress(),
-        to: process.env.ADMIN_EMAIL ?? "gvswift.help@gmail.com",
+        to: process.env.ADMIN_EMAIL ?? "support@gvswift.com",
         subject: `[New Order] #${order.id.slice(-8).toUpperCase()} placed by ${order.user.email}`,
         react: (
           <OrderStatusChangeEmail

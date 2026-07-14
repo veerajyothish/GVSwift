@@ -61,7 +61,7 @@ export default function DisclaimerPage() {
           <p className="legal-text">
             For queries about our legal disclaimers, please contact us:
             <br />
-            <strong>Email</strong>: <a href="mailto:gvswift.help@gmail.com" className="text-accent">gvswift.help@gmail.com</a>
+            <strong>Email</strong>: <a href="mailto:support@gvswift.com" className="text-accent">support@gvswift.com</a>
           </p>
         </section>
       </main>

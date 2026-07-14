@@ -82,7 +82,7 @@ export default function ReturnsPage() {
           <p className="legal-text">
             For help with returns, please open a ticket on our <Link href="/support" className="text-accent font-medium">Support Portal</Link> or email:
             <br />
-            <strong>Email</strong>: <a href="mailto:gvswift.help@gmail.com" className="text-accent">gvswift.help@gmail.com</a>
+            <strong>Email</strong>: <a href="mailto:support@gvswift.com" className="text-accent">support@gvswift.com</a>
           </p>
         </section>
       </main>

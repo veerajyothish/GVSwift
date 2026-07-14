@@ -65,7 +65,7 @@ export default function CookiesPage() {
           <p className="legal-text">
             For questions about our cookie policy, please contact us at:
             <br />
-            <strong>Email</strong>: <a href="mailto:gvswift.help@gmail.com" className="text-accent">gvswift.help@gmail.com</a>
+            <strong>Email</strong>: <a href="mailto:support@gvswift.com" className="text-accent">support@gvswift.com</a>
           </p>
         </section>
       </main>

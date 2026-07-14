@@ -75,7 +75,7 @@ export default function ShippingPage() {
           <p className="legal-text">
             For delivery status questions, you can view your order tracking reference in the Order Details page or email:
             <br />
-            <strong>Email</strong>: <a href="mailto:gvswift.help@gmail.com" className="text-accent">gvswift.help@gmail.com</a>
+            <strong>Email</strong>: <a href="mailto:support@gvswift.com" className="text-accent">support@gvswift.com</a>
           </p>
         </section>
       </main>

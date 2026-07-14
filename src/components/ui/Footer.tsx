@@ -122,8 +122,8 @@ export function Footer() {
                   {label}
                 </a>
               ))}
-              <a href="mailto:gvswift.help@gmail.com" className="footer-link footer-link-highlight">
-                gvswift.help@gmail.com
+              <a href="mailto:support@gvswift.com" className="footer-link footer-link-highlight">
+                support@gvswift.com
               </a>
             </div>
           </div>
