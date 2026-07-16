@@ -77,7 +77,7 @@ If you receive a damaged, defective, or incorrect item:
 
 ## 8. Contact
 
-For any return or refund queries, raise a support ticket via the Platform or email [SUPPORT EMAIL].
+For any return or refund queries, raise a support ticket via the Platform or email support@gvswift.com.
 
 ---
 

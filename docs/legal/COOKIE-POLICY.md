@@ -54,7 +54,7 @@ We do not allow third-party advertising or tracking cookies on GVSwift. The only
 
 ## 5. Contact
 
-For cookie-related queries, email [SUPPORT EMAIL].
+For cookie-related queries, email support@gvswift.com.
 
 ---
 

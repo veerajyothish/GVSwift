@@ -10,9 +10,9 @@
 
 ## 1. About GVSwift
 
-GVSwift ("we", "us", "our") is a B2C e-commerce store operated by [BUSINESS NAME / FOUNDER NAME] ("Seller"), registered at [REGISTERED ADDRESS], Visakhapatnam, Andhra Pradesh, India.
+GVSwift ("we", "us", "our") is a B2C e-commerce store operated by GVSwift, located at MVP Colony, Sector 9, 2-1-7/1, Visakhapatnam, Andhra Pradesh — 530017, India.
 
-By accessing or using the GVSwift website at [DOMAIN] ("Platform"), you ("Customer", "User") agree to be bound by these Terms and Conditions ("Terms"). If you do not agree, do not use the Platform.
+By accessing or using the GVSwift website at [gvswift.com](https://gvswift.com) ("Platform"), you ("Customer", "User") agree to be bound by these Terms and Conditions ("Terms"). If you do not agree, do not use the Platform.
 
 ---
 
@@ -81,7 +81,7 @@ By accessing or using the GVSwift website at [DOMAIN] ("Platform"), you ("Custom
 
 - You are responsible for maintaining the confidentiality of your account password.
 - You are responsible for all activity under your account.
-- Notify us immediately at [SUPPORT EMAIL] if you suspect unauthorised access.
+- Notify us immediately at support@gvswift.com if you suspect unauthorised access.
 - We reserve the right to suspend or terminate accounts that violate these Terms, engage in fraud, or abuse the platform.
 
 ---
@@ -133,16 +133,16 @@ We reserve the right to update these Terms at any time. Material changes will be
 
 In compliance with the Information Technology Act 2000 and Consumer Protection (E-Commerce) Rules 2020:
 
-**Grievance Officer:** [GRIEVANCE OFFICER NAME]  
-**Email:** [GRIEVANCE EMAIL]  
-**Address:** [REGISTERED ADDRESS], Visakhapatnam, Andhra Pradesh, India  
+**Grievance Officer:** P Govind  
+**Email:** gvswift.help@gmail.com  
+**Address:** MVP Colony, Sector 9, 2-1-7/1, Visakhapatnam, Andhra Pradesh — 530017, India  
 **Response time:** Acknowledgement within 48 hours; resolution within 30 days.
 
 ---
 
 ## 15. Contact
 
-For any queries regarding these Terms, contact us at [SUPPORT EMAIL].
+For any queries regarding these Terms, contact us at support@gvswift.com.
 
 ---
 

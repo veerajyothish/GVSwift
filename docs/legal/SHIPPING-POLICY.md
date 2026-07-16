@@ -49,7 +49,7 @@ GVSwift does not guarantee delivery within the estimated timeframe and is not li
 ## 5. Order Processing
 
 - Orders are processed on business days (Monday–Saturday, excluding public holidays).
-- Orders placed after [CUTOFF TIME, e.g., 2 PM] may be processed the next business day.
+- Orders placed after 2:00 PM IST may be processed the next business day.
 - You will receive an email once your order is confirmed and another when it is shipped.
 
 ---
@@ -74,13 +74,13 @@ GVSwift does not guarantee delivery within the estimated timeframe and is not li
 
 - You are responsible for providing an accurate and complete delivery address.
 - GVSwift is not liable for non-delivery due to an incorrect or incomplete address provided by you.
-- Address changes after an order is CONFIRMED may not be possible. Contact support immediately at [SUPPORT EMAIL] if you need to change your address.
+- Address changes after an order is CONFIRMED may not be possible. Contact support immediately at support@gvswift.com if you need to change your address.
 
 ---
 
 ## 9. Contact
 
-For shipping queries, raise a support ticket via the Platform or email [SUPPORT EMAIL].
+For shipping queries, raise a support ticket via the Platform or email support@gvswift.com.
 
 ---
 

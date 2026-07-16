@@ -10,7 +10,7 @@
 
 ## 1. Who We Are
 
-GVSwift is operated by [BUSINESS NAME / FOUNDER NAME], located at [REGISTERED ADDRESS], Visakhapatnam, Andhra Pradesh, India ("Data Fiduciary" under the DPDP Act 2023). This policy explains what personal data we collect, why, and how we protect it.
+GVSwift is operated by GVSwift, located at MVP Colony, Sector 9, 2-1-7/1, Visakhapatnam, Andhra Pradesh — 530017, India ("Data Fiduciary" under the DPDP Act 2023). This policy explains what personal data we collect, why, and how we protect it.
 
 ---
 
@@ -107,7 +107,7 @@ Under the DPDP Act 2023, you have the right to:
 - **Nominate** — nominate a person to exercise rights on your behalf in the event of death or incapacity.
 - **Grievance** — file a complaint with our Grievance Officer (see below) or with the Data Protection Board of India once it is constituted.
 
-To exercise any right, email [SUPPORT EMAIL] with the subject line "Data Rights Request".
+To exercise any right, email support@gvswift.com with the subject line "Data Rights Request".
 
 ---
 
@@ -133,7 +133,7 @@ See our separate **Cookie Policy** (`docs/legal/COOKIE-POLICY.md`) for full deta
 
 ## 10. Children's Privacy
 
-GVSwift is not directed at children under 18. We do not knowingly collect personal data from children. If you believe a child has provided us data, contact us immediately at [SUPPORT EMAIL].
+GVSwift is not directed at children under 18. We do not knowingly collect personal data from children. If you believe a child has provided us data, contact us immediately at support@gvswift.com.
 
 ---
 
@@ -145,9 +145,9 @@ We may update this policy from time to time. Material changes will be communicat
 
 ## 12. Grievance Officer
 
-**Grievance Officer:** [GRIEVANCE OFFICER NAME]  
-**Email:** [GRIEVANCE EMAIL]  
-**Address:** [REGISTERED ADDRESS], Visakhapatnam, Andhra Pradesh, India  
+**Grievance Officer:** P Govind  
+**Email:** gvswift.help@gmail.com  
+**Address:** MVP Colony, Sector 9, 2-1-7/1, Visakhapatnam, Andhra Pradesh — 530017, India  
 **Response time:** Acknowledgement within 48 hours; resolution within 30 days.
 
 ---

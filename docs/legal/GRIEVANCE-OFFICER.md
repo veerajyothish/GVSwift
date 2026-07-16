@@ -18,10 +18,10 @@ This notice is published in compliance with:
 
 ## Grievance Officer Details
 
-**Name:** [GRIEVANCE OFFICER NAME]  
+**Name:** P Govind  
 **Designation:** Grievance Officer, GVSwift  
-**Email:** [GRIEVANCE EMAIL]  
-**Postal Address:** [REGISTERED ADDRESS], Visakhapatnam, Andhra Pradesh — [PINCODE], India  
+**Email:** gvswift.help@gmail.com  
+**Postal Address:** MVP Colony, Sector 9, 2-1-7/1, Visakhapatnam, Andhra Pradesh — 530017, India  
 **Working Hours:** Monday to Saturday, 10:00 AM – 6:00 PM IST (excluding public holidays)
 
 ---
@@ -29,7 +29,7 @@ This notice is published in compliance with:
 ## How to File a Grievance
 
 1. **Preferred:** Log in to GVSwift → Support → Create Ticket (links to relevant order if applicable).
-2. **Email:** Send to [GRIEVANCE EMAIL] with subject line: `GRIEVANCE: [brief description]`.
+2. **Email:** Send to gvswift.help@gmail.com with subject line: `GRIEVANCE: [brief description]`.
 3. **Post:** Written complaint to the postal address above.
 
 Please include:
