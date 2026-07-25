@@ -77,6 +77,10 @@ export function Footer() {
               <span className="footer-chevron" aria-hidden="true">{openSections.shop ? "▲" : "▼"}</span>
             </button>
             <div id="footer-shop" className={`footer-content ${openSections.shop ? "open" : ""}`}>
+              <Link href="/categories/women" className="footer-link">Women</Link>
+              <Link href="/categories/men" className="footer-link">Men</Link>
+              <Link href="/categories/accessories" className="footer-link">Accessories</Link>
+              <Link href="/categories/gifts-decor" className="footer-link">Gifts & Decor</Link>
               <Link href="/products" className="footer-link">All Products</Link>
               <Link href="/products?sort=newest" className="footer-link">New Arrivals</Link>
               <Link href="/shops" className="footer-link">Shops</Link>
