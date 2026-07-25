@@ -99,9 +99,8 @@ export function useOverlay(isOpen: boolean, onClose: () => void, panelRef: React
       window.removeEventListener("popstate", handlePopState);
       
       // Clean up the history state if it was left hanging (e.g. closed without back button/Esc)
-      if (window.history.state?.overlayOpen) {
-         window.history.back();
-      }
+      // Removed history.back() because it breaks Next.js <Link> navigation
+      // when a user clicks a link inside the overlay.
 
       // Restore focus to trigger
       if (triggerElementRef.current) {

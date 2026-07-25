@@ -4,6 +4,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import "./globals.css";
 
 import { getSiteUrl } from "@/lib/env";
+import dynamic from "next/dynamic";
 
 const SITE_URL = getSiteUrl();
 const SITE_TITLE = "GVSwift — Online Fashion Store in Andhra Pradesh";
@@ -68,11 +69,12 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { GlobalClickInteraction } from "@/components/ui/GlobalClickInteraction";
-import { CartOverlay } from "@/components/cart/CartOverlay";
-import { QuickViewOverlay } from "@/components/products/QuickViewOverlay";
-import { WishlistOverlay } from "@/components/ui/WishlistOverlay";
-import { SizeGuideOverlay } from "@/components/ui/SizeGuideOverlay";
-import { OrderTrackingOverlay } from "@/components/account/OrderTrackingOverlay";
+
+const CartOverlay = dynamic(() => import("@/components/cart/CartOverlay").then((mod) => mod.CartOverlay), { ssr: false });
+const QuickViewOverlay = dynamic(() => import("@/components/products/QuickViewOverlay").then((mod) => mod.QuickViewOverlay), { ssr: false });
+const WishlistOverlay = dynamic(() => import("@/components/ui/WishlistOverlay").then((mod) => mod.WishlistOverlay), { ssr: false });
+const SizeGuideOverlay = dynamic(() => import("@/components/ui/SizeGuideOverlay").then((mod) => mod.SizeGuideOverlay), { ssr: false });
+const OrderTrackingOverlay = dynamic(() => import("@/components/account/OrderTrackingOverlay").then((mod) => mod.OrderTrackingOverlay), { ssr: false });
 
 export const viewport: Viewport = {
   width: "device-width",
