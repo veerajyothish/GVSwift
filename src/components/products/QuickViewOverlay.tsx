@@ -124,6 +124,8 @@ export function QuickViewOverlay() {
 
   if (!mounted || !isOpen) return null;
 
+  if (!mounted) return null;
+
   return createPortal(
     <div
       style={{

@@ -149,6 +149,8 @@ export function CartOverlay() {
     }
   };
 
+  if (!mounted) return null;
+
   return createPortal(
     <>
       {isOpen && (

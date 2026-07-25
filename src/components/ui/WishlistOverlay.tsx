@@ -45,6 +45,8 @@ export function WishlistOverlay() {
 
   if (!mounted || !isOpen) return null;
 
+  if (!mounted) return null;
+
   return createPortal(
     <div
       style={{

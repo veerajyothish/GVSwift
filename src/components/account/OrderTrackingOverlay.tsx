@@ -95,6 +95,8 @@ export function OrderTrackingOverlay() {
 
   if (!mounted || !isOpen) return null;
 
+  if (!mounted) return null;
+
   return createPortal(
     <div
       role="dialog"

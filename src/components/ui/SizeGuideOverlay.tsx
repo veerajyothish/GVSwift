@@ -69,6 +69,8 @@ export function SizeGuideOverlay() {
 
   if (!mounted || !isOpen) return null;
 
+  if (!mounted) return null;
+
   return createPortal(
     <div
       role="dialog"

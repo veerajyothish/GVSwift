@@ -70,11 +70,11 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { GlobalClickInteraction } from "@/components/ui/GlobalClickInteraction";
 
-const CartOverlay = dynamic(() => import("@/components/cart/CartOverlay").then((mod) => mod.CartOverlay), { ssr: false });
-const QuickViewOverlay = dynamic(() => import("@/components/products/QuickViewOverlay").then((mod) => mod.QuickViewOverlay), { ssr: false });
-const WishlistOverlay = dynamic(() => import("@/components/ui/WishlistOverlay").then((mod) => mod.WishlistOverlay), { ssr: false });
-const SizeGuideOverlay = dynamic(() => import("@/components/ui/SizeGuideOverlay").then((mod) => mod.SizeGuideOverlay), { ssr: false });
-const OrderTrackingOverlay = dynamic(() => import("@/components/account/OrderTrackingOverlay").then((mod) => mod.OrderTrackingOverlay), { ssr: false });
+const CartOverlay = dynamic(() => import("@/components/cart/CartOverlay").then((mod) => mod.CartOverlay));
+const QuickViewOverlay = dynamic(() => import("@/components/products/QuickViewOverlay").then((mod) => mod.QuickViewOverlay));
+const WishlistOverlay = dynamic(() => import("@/components/ui/WishlistOverlay").then((mod) => mod.WishlistOverlay));
+const SizeGuideOverlay = dynamic(() => import("@/components/ui/SizeGuideOverlay").then((mod) => mod.SizeGuideOverlay));
+const OrderTrackingOverlay = dynamic(() => import("@/components/account/OrderTrackingOverlay").then((mod) => mod.OrderTrackingOverlay));
 
 export const viewport: Viewport = {
   width: "device-width",
