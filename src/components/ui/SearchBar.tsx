@@ -79,7 +79,7 @@ export default function SearchBar() {
   const showDropdown = open && query.length >= 2;
 
   return (
-    <div ref={ref} style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
+    <div ref={ref} style={{ position: 'relative', width: '100%', maxWidth: '200px' }}>
       <form onSubmit={handleSubmit} style={{ position: 'relative' }}>
         <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#7a7974' }} />
         <input
