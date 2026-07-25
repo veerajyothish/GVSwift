@@ -278,7 +278,7 @@ export default async function HomePage() {
                     textWrap: "balance",
                   }}
                 >
-                  Elevating Local Stores to a Global Stage.
+                  Empowering Homegrown Brands, Direct to You.
                 </h2>
                 <p
                   style={{
@@ -360,7 +360,7 @@ export default async function HomePage() {
                     color: "var(--color-text-primary)",
                   }}
                 >
-                  Explore Our Store
+                  Categories
                 </h2>
               </div>
             </FadeIn>
@@ -373,10 +373,10 @@ export default async function HomePage() {
               }}
             >
               {[
-                { name: "Women", slug: "women", img: "/silks_satins.png" },
-                { name: "Men", slug: "men", img: "/fashion_product_mockup.png" },
-                { name: "Accessories", slug: "accessories", img: "/accessory_suite.png" },
-                { name: "Gifts & Decor", slug: "gifts-decor", img: "/premium_footwear.png" },
+                { name: "Women", slug: "women", img: "/cat_women.png" },
+                { name: "Men", slug: "men", img: "/cat_men.png" },
+                { name: "Accessories", slug: "accessories", img: "/cat_accessories.png" },
+                { name: "Gifts & Decor", slug: "gifts-decor", img: "/cat_gifts.png" },
               ].map((cat) => (
                 <StaggerChild key={cat.slug}>
                   <Link href={`/categories/${cat.slug}`} style={{ textDecoration: "none" }}>
