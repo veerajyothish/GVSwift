@@ -68,6 +68,16 @@ export async function requireUser(): Promise<User> {
 }
 
 /**
+ * Returns the Prisma User record for the authenticated user, or null if unauthenticated.
+ * Does not redirect.
+ */
+export async function getUser(): Promise<User | null> {
+  const session = await getServerSession();
+  if (!session) return null;
+  return getPrismaUserBySupabaseId(session.id);
+}
+
+/**
  * Returns the Prisma User record if the user is authenticated AND has
  * the ADMIN role.
  *
