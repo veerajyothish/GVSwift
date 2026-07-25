@@ -39,8 +39,7 @@ export default function LoginBanner() {
         if (!data || !data.isActive) return;
         setOffer(data);
         setMounted(true);
-        // Slight delay so it feels intentional, not jarring
-        setTimeout(() => setVisible(true), 600);
+        setVisible(true);
       } catch (err) {
         console.error("Failed to load welcome offer for dialog:", err);
       }

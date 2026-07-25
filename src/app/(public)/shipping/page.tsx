@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar } from "@/components/ui/Navbar";
+
 
 export const metadata = {
   title: "Shipping Policy | GVSwift",
@@ -9,8 +9,7 @@ export const metadata = {
 export default function ShippingPage() {
   return (
     <div className="min-h-screen bg-default">
-      <Navbar />
-      <main className="container-sm text-primary">
+<main className="container-sm text-primary">
         <h1 className="text-3xl legal-title">
           Shipping &amp; Delivery Policy
         </h1>

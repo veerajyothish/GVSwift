@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar } from "@/components/ui/Navbar";
+
 
 import Link from "next/link";
 
@@ -11,8 +11,7 @@ export const metadata = {
 export default function ReturnsPage() {
   return (
     <div className="min-h-screen bg-default">
-      <Navbar />
-      <main className="container-sm text-primary">
+<main className="container-sm text-primary">
         <h1 className="text-3xl legal-title">
           Returns &amp; Refunds Policy
         </h1>

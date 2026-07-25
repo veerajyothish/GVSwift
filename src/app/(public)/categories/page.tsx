@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Navbar } from "@/components/ui/Navbar";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/Card";
 import { Metadata } from "next";
@@ -47,9 +46,7 @@ export default async function CategoriesPage() {
 
   return (
     <div className="homepage-wrapper min-h-screen flex flex-col bg-default">
-      <Navbar />
-
-      <main id="main-content" className="container-lg flex-1" style={{ padding: "60px 20px" }}>
+<main id="main-content" className="container-lg flex-1" style={{ padding: "60px 20px" }}>
         <header className="mb-12">
           <h1 className="text-3xl font-semibold mb-4 text-primary" style={{ fontFamily: "var(--font-heading)" }}>
             Shop by Category

@@ -19,7 +19,6 @@ import {
   lookupUser,
 } from "@/features/risk/service";
 import { getCodLimitPaise } from "@/features/settings/service";
-import { Navbar } from "@/components/ui/Navbar";
 import CheckoutClient from "./CheckoutClient";
 import { Metadata } from "next";
 import { getOrCreateLoyaltyAccount, getLoyaltySettings } from "@/lib/loyalty";
@@ -40,8 +39,7 @@ export default async function CheckoutPage() {
   if (!isVerified) {
     return (
       <div style={{ background: "var(--color-bg)", minHeight: "100vh" }}>
-        <Navbar />
-        <main
+<main
           style={{
             maxWidth: "560px",
             margin: "80px auto 40px",

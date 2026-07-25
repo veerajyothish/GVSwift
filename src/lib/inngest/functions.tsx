@@ -4,7 +4,6 @@ import { prisma } from "../prisma";
 import { Resend } from "resend";
 import { OrderStatusChangeEmail } from "@/emails/order-status-change";
 import { getLoyaltySettings, awardPoints } from "@/lib/loyalty";
-import { withRetry } from "@/lib/retry";
 import { OrderStatus } from "@prisma/client";
 import { getSiteUrl } from "@/lib/env";
 
@@ -31,19 +30,17 @@ export const orderPlacedEmail = inngest.createFunction(
   async ({ event }) => {
     const { orderId } = event.data;
 
-    const order = await withRetry(() =>
-      prisma.order.findUnique({
-        where: { id: orderId },
-        include: {
-          user: { select: { email: true } },
-          items: {
-            include: {
-              product: { select: { name: true } },
-            },
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { email: true } },
+        items: {
+          include: {
+            product: { select: { name: true } },
           },
         },
-      })
-    );
+      },
+    });
 
     if (!order) {
       throw new Error(`Order ${orderId} not found`);
@@ -51,47 +48,43 @@ export const orderPlacedEmail = inngest.createFunction(
 
     const orderUrl = `${siteUrl()}/orders/${order.id}`;
 
-    const customerEmailPromise = withRetry(() =>
-      resend.emails.send({
-        from: senderAddress(),
-        to: order.user.email,
-        subject: `Order Confirmed — #${order.id.slice(-8).toUpperCase()} | GVSwift`,
-        react: (
-          <OrderStatusChangeEmail
-            orderId={order.id}
-            status={OrderStatus.PLACED}
-            orderUrl={orderUrl}
-            totalPaise={order.totalPaise}
-            items={order.items.map((item) => ({
-              name: item.product.name,
-              quantity: item.quantity,
-              lineTotalPaise: item.lineTotalPaise,
-            }))}
-          />
-        ),
-      })
-    );
+    const customerEmailPromise = resend.emails.send({
+      from: senderAddress(),
+      to: order.user.email,
+      subject: `Order Confirmed — #${order.id.slice(-8).toUpperCase()} | GVSwift`,
+      react: (
+        <OrderStatusChangeEmail
+          orderId={order.id}
+          status={OrderStatus.PLACED}
+          orderUrl={orderUrl}
+          totalPaise={order.totalPaise}
+          items={order.items.map((item) => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            lineTotalPaise: item.lineTotalPaise,
+          }))}
+        />
+      ),
+    });
 
-    const adminEmailPromise = withRetry(() =>
-      resend.emails.send({
-        from: senderAddress(),
-        to: process.env.ADMIN_EMAIL ?? "support@gvswift.com",
-        subject: `[New Order] #${order.id.slice(-8).toUpperCase()} placed by ${order.user.email}`,
-        react: (
-          <OrderStatusChangeEmail
-            orderId={order.id}
-            status={OrderStatus.PLACED}
-            orderUrl={`${siteUrl()}/admin/orders/${order.id}`}
-            totalPaise={order.totalPaise}
-            items={order.items.map((item) => ({
-              name: item.product.name,
-              quantity: item.quantity,
-              lineTotalPaise: item.lineTotalPaise,
-            }))}
-          />
-        ),
-      })
-    );
+    const adminEmailPromise = resend.emails.send({
+      from: senderAddress(),
+      to: process.env.ADMIN_EMAIL ?? "support@gvswift.com",
+      subject: `[New Order] #${order.id.slice(-8).toUpperCase()} placed by ${order.user.email}`,
+      react: (
+        <OrderStatusChangeEmail
+          orderId={order.id}
+          status={OrderStatus.PLACED}
+          orderUrl={`${siteUrl()}/admin/orders/${order.id}`}
+          totalPaise={order.totalPaise}
+          items={order.items.map((item) => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            lineTotalPaise: item.lineTotalPaise,
+          }))}
+        />
+      ),
+    });
 
     await Promise.all([customerEmailPromise, adminEmailPromise]);
 
@@ -105,19 +98,17 @@ export const orderStatusChangedEmail = inngest.createFunction(
   async ({ event }) => {
     const { orderId, status } = event.data;
 
-    const order = await withRetry(() =>
-      prisma.order.findUnique({
-        where: { id: orderId },
-        include: {
-          user: { select: { email: true } },
-          items: {
-            include: {
-              product: { select: { name: true } },
-            },
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { email: true } },
+        items: {
+          include: {
+            product: { select: { name: true } },
           },
         },
-      })
-    );
+      },
+    });
 
     if (!order) {
       throw new Error(`Order ${orderId} not found`);
@@ -126,27 +117,25 @@ export const orderStatusChangedEmail = inngest.createFunction(
     const orderUrl = `${siteUrl()}/orders/${order.id}`;
     const statusLabel = (status as string).toLowerCase().replaceAll("_", " ");
 
-    await withRetry(() =>
-      resend.emails.send({
-        from: senderAddress(),
-        to: order.user.email,
-        subject: `GVSwift order status update: ${statusLabel}`,
-        react: (
-          <OrderStatusChangeEmail
-            orderId={order.id}
-            status={status as OrderStatus}
-            orderUrl={orderUrl}
-            totalPaise={order.totalPaise}
-            items={order.items.map((item) => ({
-              name: item.product.name,
-              quantity: item.quantity,
-              lineTotalPaise: item.lineTotalPaise,
-            }))}
-            trackingReference={order.trackingReference}
-          />
-        ),
-      })
-    );
+    await resend.emails.send({
+      from: senderAddress(),
+      to: order.user.email,
+      subject: `GVSwift order status update: ${statusLabel}`,
+      react: (
+        <OrderStatusChangeEmail
+          orderId={order.id}
+          status={status as OrderStatus}
+          orderUrl={orderUrl}
+          totalPaise={order.totalPaise}
+          items={order.items.map((item) => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            lineTotalPaise: item.lineTotalPaise,
+          }))}
+          trackingReference={order.trackingReference}
+        />
+      ),
+    });
 
     return { status: "sent", orderId, nextStatus: status };
   }
@@ -158,7 +147,6 @@ export const loyaltyPointsCalculation = inngest.createFunction(
   async ({ event }) => {
     const { orderId, userId } = event.data;
 
-    await withRetry(async () => {
       const order = await prisma.order.findUnique({
         where: { id: orderId },
       });
@@ -205,7 +193,6 @@ export const loyaltyPointsCalculation = inngest.createFunction(
           data: { pointsAwarded: settings.referralBonus },
         });
       }
-    });
 
     return { status: "processed", orderId };
   }

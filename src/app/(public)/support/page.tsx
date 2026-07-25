@@ -9,10 +9,9 @@
 import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { requireUser } from "@/lib/auth/guards";
+import { getUser } from "@/lib/auth/guards";
 import { listOwnTickets } from "@/features/support/service";
 import { listUserOrders } from "@/features/orders/service";
-import { Navbar } from "@/components/ui/Navbar";
 import { SupportForm } from "./SupportForm";
 
 export const metadata: Metadata = {
@@ -36,7 +35,29 @@ function formatDate(date: Date): string {
 }
 
 export default async function SupportPage() {
-  const user = await requireUser();
+  const user = await getUser();
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-default">
+        <main className="container-lg">
+          <header className="mb-32">
+            <h1 className="text-3xl font-semibold text-primary mb-8">
+              Customer Support
+            </h1>
+            <p className="text-secondary">
+              Need help? Please sign in to open a support ticket or track your existing inquiries.
+            </p>
+          </header>
+          <div className="card p-5 text-center text-secondary">
+            <div className="mb-16" style={{ fontSize: "40px" }}>💬</div>
+            <p className="text-15 mb-24">You must be logged in to access support.</p>
+            <Link href="/login" style={{ display: "inline-block", background: "var(--color-accent)", color: "#fff", padding: "12px 24px", borderRadius: "99px", textDecoration: "none", fontWeight: 600 }}>Sign In</Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   const [tickets, ordersResult] = await Promise.all([
     listOwnTickets(user.id),
@@ -45,9 +66,7 @@ export default async function SupportPage() {
 
   return (
     <div className="min-h-screen bg-default">
-      <Navbar />
-
-      <main className="container-lg">
+<main className="container-lg">
         <header className="mb-32">
           <h1 className="text-3xl font-semibold text-primary mb-8">
             Customer Support

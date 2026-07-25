@@ -1,5 +1,4 @@
 import React from "react";
-import { Navbar } from "@/components/ui/Navbar";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -33,9 +32,7 @@ const APPAREL_SIZES = [
 export default function SizeGuidePage() {
   return (
     <div style={{ background: "var(--color-bg)", minHeight: "100vh" }}>
-      <Navbar />
-
-      {/* Header */}
+{/* Header */}
       <div
         style={{
           borderBottom: "1px solid var(--color-border)",

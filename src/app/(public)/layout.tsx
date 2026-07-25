@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import LoginBanner from "@/components/ui/LoginBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { headers } from "next/headers";
+import { Navbar } from "@/components/ui/Navbar";
 
 /**
  * Lazy-load Footer with ssr:false so it doesn't block the initial HTML render.
@@ -43,6 +44,7 @@ export default async function PublicLayout({
           background: "var(--color-bg)",
         }}
       >
+        <Navbar />
         <LoginBanner />
         <div style={{ flex: 1 }}>{children}</div>
         {showFooter && <Footer />}

@@ -13,7 +13,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdminForApi } from "@/lib/auth/guards";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { toSafeError } from "@/lib/errors";
-import { withRetry } from "@/lib/retry";
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,14 +70,12 @@ export async function POST(request: NextRequest) {
     const fileName = `${crypto.randomUUID()}.${imageType.ext}`;
     const filePath = `products/${fileName}`;
 
-    const { error: uploadError } = await withRetry(() =>
-      supabase.storage
-        .from("product-images")
-        .upload(filePath, buffer, {
-          contentType: imageType.mime,
-          duplex: "half",
-        })
-    );
+    const { error: uploadError } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, buffer, {
+        contentType: imageType.mime,
+        duplex: "half",
+      });
 
     if (uploadError) {
       console.error("[StorageUpload] Supabase upload failed:", uploadError);

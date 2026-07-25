@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getCachedProductBySlug, getCachedRelatedProducts } from "@/features/catalog/cached-queries";
+import { getCachedProductBySlug, getRelatedProducts as getCachedRelatedProducts } from "@/features/catalog/repository";
 import { ProductDetailClient } from "@/components/product/ProductDetailClient";
-import { Navbar } from "@/components/ui/Navbar";
+
 import { Breadcrumb, BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import ProductCard from "@/components/ui/ProductCard";
 
@@ -129,9 +129,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <Navbar />
-
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px 24px 0", width: "100%" }}>
+<div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px 24px 0", width: "100%" }}>
         <Breadcrumb items={breadcrumbItems} />
       </div>
 

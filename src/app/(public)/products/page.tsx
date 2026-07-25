@@ -1,11 +1,10 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
-import { getCachedProducts, getCachedCategories } from "@/features/catalog/cached-queries";
+import { getCachedProducts, getCollections as getCachedCategories } from "@/features/catalog/repository";
 import { searchProducts } from "@/features/catalog/search";
-import { Navbar } from "@/components/ui/Navbar";
+
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { getServerSession } from "@/lib/auth/session";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
@@ -164,13 +163,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const wishlistPromise: Promise<string[]> = session
     ? createSupabaseServerClient()
         .then(async (supabase) => {
-          const { data } = await withRetry(async () => {
-            const response = await supabase
-              .from("wishlists")
-              .select("product_id")
-              .eq("user_id", session.id);
-            return response;
-          });
+          const { data } = await supabase
+            .from("wishlists")
+            .select("product_id")
+            .eq("user_id", session.id);
           return (data?.map((w) => w.product_id) ?? []) as string[];
         })
         .catch(() => [] as string[])
@@ -229,9 +225,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <Navbar />
-
-      <main id="main-content" style={{ flex: 1 }}>
+<main id="main-content" style={{ flex: 1 }}>
         {/* Header */}
         <header
           style={{

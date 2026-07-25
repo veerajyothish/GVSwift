@@ -1,13 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Navbar } from "@/components/ui/Navbar";
+
 import { getFeaturedProducts } from "@/features/catalog/repository";
 import { getShops } from "@/features/catalog/service";
 import ShopCard from "@/components/ui/ShopCard";
 import { getServerSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { withRetry } from "@/lib/retry";
 import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
@@ -43,13 +42,10 @@ export default async function HomePage() {
   if (session) {
     try {
       const supabase = await createSupabaseServerClient();
-      const { data: wishlistItems } = await withRetry(async () => {
-        const response = await supabase
-          .from("wishlists")
-          .select("product_id")
-          .eq("user_id", session.id);
-        return response;
-      });
+      const { data: wishlistItems } = await supabase
+        .from("wishlists")
+        .select("product_id")
+        .eq("user_id", session.id);
       wishlistedIds = wishlistItems?.map((w) => w.product_id) ?? [];
     } catch (e) {
       console.error("Failed to fetch wishlisted IDs on server:", e);
@@ -88,8 +84,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Navbar />
-      <ViewItemList products={products} listId="homepage_trending" listName="Trending Now" />
+<ViewItemList products={products} listId="homepage_trending" listName="Trending Now" />
 
       <main id="main-content">
         {/* ── HERO ──────────────────────────────────────────────────────────── */}

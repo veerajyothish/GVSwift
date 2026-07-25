@@ -11,7 +11,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/guards";
 import { getOwnTicketDetail } from "@/features/support/service";
-import { Navbar } from "@/components/ui/Navbar";
 import { SupportReplyForm } from "./SupportReplyForm";
 import { AppError } from "@/lib/errors";
 
@@ -66,9 +65,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-default">
-      <Navbar />
-
-      <main className="container-sm">
+<main className="container-sm">
         {/* Breadcrumb */}
         <nav className="order-breadcrumb mb-24" aria-label="Breadcrumb">
           <Link href="/support" className="order-breadcrumb-link">

@@ -13,7 +13,7 @@ import { AppError } from "@/lib/errors";
 import { OrderStatus, Role, Prisma } from "@prisma/client";
 import { logAuditEvent } from "@/features/admin/audit-log";
 import { inngest } from "@/lib/inngest/client";
-import { withRetry } from "@/lib/retry";
+
 import { logger } from "@/lib/logger";
 
 /* ── Transition Configuration ────────────────────────────────────────── */
@@ -326,32 +326,28 @@ export async function transitionOrderStatus(
     });
 
     if (orderForEmail) {
-      withRetry(() =>
-        inngest.send({
-          name: "order/status.changed",
-          data: {
-            orderId: result.order.id,
-            status: actualToStatus,
-            userId: result.order.userId,
-            email: orderForEmail.user.email,
-          },
-        })
-      ).catch((err) => {
+      inngest.send({
+        name: "order/status.changed",
+        data: {
+          orderId: result.order.id,
+          status: actualToStatus,
+          userId: result.order.userId,
+          email: orderForEmail.user.email,
+        },
+      }).catch((err) => {
         logger.error({ err, orderId: result.order.id }, "Failed to send order/status.changed event to Inngest");
       });
     }
 
     // Award loyalty points ONLY on transitions to DELIVERED status
     if (actualToStatus === OrderStatus.DELIVERED) {
-      withRetry(() =>
-        inngest.send({
-          name: "order/delivered",
-          data: {
-            orderId: result.order.id,
-            userId: result.order.userId,
-          },
-        })
-      ).catch((err) => {
+      inngest.send({
+        name: "order/delivered",
+        data: {
+          orderId: result.order.id,
+          userId: result.order.userId,
+        },
+      }).catch((err) => {
         logger.error({ err, orderId: result.order.id }, "Failed to send order/delivered event to Inngest");
       });
     }
