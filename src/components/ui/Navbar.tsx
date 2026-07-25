@@ -83,9 +83,8 @@ export async function Navbar() {
           {/* PDF p.1: COLLECTION · HERITAGE · STORES · JOURNAL, small caps */}
           <div className="navbar-desktop-links">
             {[
-              { label: "New Arrivals", href: "/products?sort=newest" },
-              { label: "Collections", href: "/products" },
-              { label: "Shops", href: "/shops" },
+              { label: "Women", href: "/categories/women" },
+              { label: "Men", href: "/categories/men" },
             ].map(({ label, href }) => (
               <Link
                 key={label}

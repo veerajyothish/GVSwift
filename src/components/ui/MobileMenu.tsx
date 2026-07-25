@@ -185,6 +185,29 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
 
               {/* Nav links */}
               <nav className="mobile-drawer-nav">
+                <div style={{
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-secondary)",
+                  margin: "12px 16px 4px",
+                }}>
+                  Categories
+                </div>
+                {[
+                  { label: "Women", href: "/categories/women" },
+                  { label: "Men", href: "/categories/men" },
+                  { label: "Accessories", href: "/categories/accessories" },
+                  { label: "Gifts & Decor", href: "/categories/gifts-decor" },
+                ].map(({ label, href }) => (
+                  <Link key={label} href={href} onClick={close} className="mobile-drawer-link">
+                    {label}
+                  </Link>
+                ))}
+
+                <div className="mobile-drawer-divider" />
+                
                 {[
                   { label: "New Arrivals", href: "/products?sort=newest" },
                   { label: "Collections",  href: "/products" },
