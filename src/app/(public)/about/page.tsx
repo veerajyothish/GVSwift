@@ -135,7 +135,7 @@ export default function AboutPage() {
                     marginBottom: 0,
                   }}
                 >
-                  Unlike other platforms, we believe in fair growth. <strong>We charge zero maintenance fees, zero platform fees, and zero delivery fees</strong>—not from our customers, and not from our partner stores. Every aspect of the platform's logistics and maintenance is fully managed by the dedicated team at GVSwift. When you shop with us, you are directly supporting the growth of local businesses without hidden markups.
+                  Unlike other platforms, we believe in fair growth. <strong>We charge zero maintenance fees, zero platform fees, and zero delivery fees</strong>—not from our customers, and not from our partner stores. Every aspect of the platform&apos;s logistics and maintenance is fully managed by the dedicated team at GVSwift. When you shop with us, you are directly supporting the growth of local businesses without hidden markups.
                 </p>
               </section>
             </StaggerChild>
