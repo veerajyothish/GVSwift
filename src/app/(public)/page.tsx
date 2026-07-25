@@ -232,173 +232,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* ── AUTUMN EDIT BENTO ── */}
-        <section
-          style={{
-            background: "var(--color-surface)",
-            borderBottom: "1px solid var(--color-border)",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "1200px",
-              margin: "0 auto",
-              padding: "80px 24px",
-            }}
-          >
-            {/* Section header */}
-            <FadeIn>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                  marginBottom: "40px",
-                  flexWrap: "wrap",
-                  gap: "12px",
-                }}
-              >
-                <div>
-                  <span
-                    style={{
-                      display: "block",
-                      fontFamily: "var(--font-body)",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.16em",
-                      textTransform: "uppercase",
-                      color: "var(--color-text-secondary)",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Bestsellers
-                  </span>
-                  <h2
-                    style={{
-                      fontFamily: "var(--font-heading)",
-                      fontSize: "clamp(30px, 3.5vw, 42px)",
-                      fontWeight: 400,
-                      fontStyle: "normal",
-                      color: "var(--color-text-primary)",
-                      lineHeight: 1.15,
-                    }}
-                  >
-                    The Seasonal Edit
-                  </h2>
-                </div>
-                <TrackedLink
-                  eventName="bestseller_cta_click"
-                  href="/products?sort=newest"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: "12px",
-                    fontWeight: 500,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-secondary)",
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  Shop Bestsellers &rarr;
-                </TrackedLink>
-              </div>
-            </FadeIn>
-
-            {/* Bento Grid */}
-            <StaggerContainer className="autumn-edit-grid">
-              {/* Large featured card */}
-              <StaggerChild>
-                <div
-                  className="hover-lift"
-                  style={{
-                    position: "relative",
-                    borderRadius: "20px",
-                    overflow: "hidden",
-                    border: "1px solid var(--color-border)",
-                    minHeight: "460px",
-                    background: "var(--color-bg)",
-                  }}
-                >
-                  <Image
-                    src="/structured_wool_blazer.png"
-                    alt="Reference Wool Coat"
-                    fill
-                    sizes="(max-width: 767px) 90vw, 55vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                  {/* Minimal glass overlay caption */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "20px",
-                      left: "20px",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      background: "rgba(253, 250, 245, 0.85)",
-                      backdropFilter: "blur(4px)",
-                      fontSize: "12px",
-                      color: "var(--color-text-secondary)",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      fontWeight: 500,
-                      border: "1px solid var(--color-border)",
-                    }}
-                  >
-                    New Arrivals &middot; Outerwear
-                  </div>
-                </div>
-              </StaggerChild>
-
-              {/* Second featured card */}
-              <StaggerChild>
-                <div
-                  className="hover-lift"
-                  style={{
-                    position: "relative",
-                    borderRadius: "20px",
-                    overflow: "hidden",
-                    border: "1px solid var(--color-border)",
-                    minHeight: "460px",
-                    background: "var(--color-bg)",
-                  }}
-                >
-                  <Image
-                    src="/accessory_suite.png"
-                    alt="Reference Leathercraft"
-                    fill
-                    sizes="(max-width: 767px) 90vw, 55vw"
-                    style={{ objectFit: "cover" }}
-                  />
-                  {/* Minimal glass overlay caption */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "20px",
-                      left: "20px",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      background: "rgba(253, 250, 245, 0.85)",
-                      backdropFilter: "blur(4px)",
-                      fontSize: "12px",
-                      color: "var(--color-text-secondary)",
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      fontWeight: 500,
-                      border: "1px solid var(--color-border)",
-                    }}
-                  >
-                    Curated &middot; Accessories
-                  </div>
-                </div>
-              </StaggerChild>
-            </StaggerContainer>
-          </div>
-        </section>
-
-        {/* ── EDITORIAL QUOTE ───────────────────────────────────────────────── */}
+        {/* ── OUR STORY ── */}
         <section
           style={{
             background: "var(--color-bg)",
@@ -417,99 +251,204 @@ export default async function HomePage() {
             }}
             className="editorial-grid-responsive"
           >
-            {/* Quote panel */}
             <FadeIn>
-              <div
-                style={{
-                  background: "var(--color-surface)",
-                  borderRadius: "20px",
-                  border: "1px solid var(--color-border)",
-                  padding: "52px 44px",
-                  position: "relative",
-                }}
-              >
-                {/* Large decorative quotemark */}
+              <div>
                 <span
-                  aria-hidden
                   style={{
-                    position: "absolute",
-                    top: "20px",
-                    left: "28px",
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "96px",
-                    lineHeight: 1,
-                    color: "var(--color-text-secondary)",
-                    opacity: 0.2,
-                    userSelect: "none",
-                    pointerEvents: "none",
+                    display: "block",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    color: "var(--color-accent)",
+                    marginBottom: "16px",
                   }}
                 >
-                  &ldquo;
+                  Our Story
                 </span>
-                <p
+                <h2
                   style={{
                     fontFamily: "var(--font-heading)",
-                    fontSize: "clamp(16px, 1.8vw, 20px)",
-                    fontStyle: "italic",
+                    fontSize: "clamp(32px, 4vw, 48px)",
                     fontWeight: 400,
-                    lineHeight: 1.65,
                     color: "var(--color-text-primary)",
+                    lineHeight: 1.15,
+                    marginBottom: "24px",
+                    textWrap: "balance",
+                  }}
+                >
+                  Elevating Local Stores to a Global Stage.
+                </h2>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    lineHeight: 1.7,
+                    color: "var(--color-text-secondary)",
                     marginBottom: "32px",
-                    position: "relative",
-                    paddingTop: "16px",
                     textWrap: "pretty",
                   }}
                 >
-                  &ldquo;GVSwift redefines the boundary between accessory and
-                  architecture. Each piece is a masterclass in intentional design,
-                  meant to be inherited, not replaced.&rdquo;
+                  GVSwift was born from a simple idea: homegrown brands and local stores 
+                  deserve a platform to expand their business online without the burden of 
+                  exorbitant fees. We operate as a zero-markup, zero-fee multi-complex platform.
+                  <br /><br />
+                  This means you get authentic products directly from the creators at their 
+                  true value, while local businesses keep what they earn. Discover fashion, 
+                  accessories, and decor that tell a story.
                 </p>
-                {/* Attribution */}
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "1px",
-                      background: "var(--color-primary)",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: "var(--color-primary)",
-                    }}
-                  >
-                    The Artisan Journal
-                  </span>
-                </div>
               </div>
             </FadeIn>
-
-            {/* Close-up texture/material image */}
             <FadeIn delay={0.15}>
               <div
                 style={{
                   position: "relative",
                   width: "100%",
-                  aspectRatio: "4 / 3",
+                  aspectRatio: "4 / 5",
                   borderRadius: "20px",
                   overflow: "hidden",
                   border: "1px solid var(--color-border)",
                 }}
               >
                 <Image
-                  src="/premium_footwear.png"
-                  alt="Artisan craftsmanship — material detail"
+                  src="/structured_wool_blazer.png"
+                  alt="Our Story - Local Craftsmanship"
                   fill
                   sizes="(max-width: 767px) 90vw, 45vw"
                   style={{ objectFit: "cover" }}
                 />
               </div>
             </FadeIn>
+          </div>
+        </section>
+
+        {/* ── EXPLORE OUR STORE ── */}
+        <section
+          style={{
+            background: "var(--color-surface)",
+            borderBottom: "1px solid var(--color-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "88px 24px",
+            }}
+          >
+            <FadeIn>
+              <div style={{ textAlign: "center", marginBottom: "56px" }}>
+                <span
+                  style={{
+                    display: "block",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    color: "var(--color-text-secondary)",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Curated Selections
+                </span>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "clamp(30px, 3.5vw, 42px)",
+                    fontWeight: 400,
+                    color: "var(--color-text-primary)",
+                  }}
+                >
+                  Explore Our Store
+                </h2>
+              </div>
+            </FadeIn>
+
+            <StaggerContainer
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                gap: "24px",
+              }}
+            >
+              {[
+                { name: "Women", slug: "women", img: "/silks_satins.png" },
+                { name: "Men", slug: "men", img: "/fashion_product_mockup.png" },
+                { name: "Accessories", slug: "accessories", img: "/accessory_suite.png" },
+                { name: "Gifts & Decor", slug: "gifts-decor", img: "/premium_footwear.png" },
+              ].map((cat) => (
+                <StaggerChild key={cat.slug}>
+                  <Link href={`/categories/${cat.slug}`} style={{ textDecoration: "none" }}>
+                    <div
+                      className="hover-lift"
+                      style={{
+                        position: "relative",
+                        borderRadius: "16px",
+                        overflow: "hidden",
+                        height: "320px",
+                        border: "1px solid var(--color-border)",
+                        background: "var(--color-bg)",
+                      }}
+                    >
+                      <Image
+                        src={cat.img}
+                        alt={cat.name}
+                        fill
+                        sizes="(max-width: 767px) 90vw, 25vw"
+                        style={{ objectFit: "cover" }}
+                      />
+                      {/* Dark gradient overlay for text readability */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%)",
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "24px",
+                          left: "24px",
+                          right: "24px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <h3
+                          style={{
+                            fontFamily: "var(--font-heading)",
+                            fontSize: "24px",
+                            fontWeight: 400,
+                            color: "#ffffff",
+                            margin: 0,
+                          }}
+                        >
+                          {cat.name}
+                        </h3>
+                        <div
+                          style={{
+                            width: "36px",
+                            height: "36px",
+                            borderRadius: "50%",
+                            background: "rgba(255, 255, 255, 0.2)",
+                            backdropFilter: "blur(4px)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#ffffff",
+                          }}
+                        >
+                          &rarr;
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </StaggerChild>
+              ))}
+            </StaggerContainer>
           </div>
         </section>
 
