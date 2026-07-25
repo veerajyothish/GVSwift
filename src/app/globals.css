@@ -845,7 +845,14 @@ select.input-field {
 }
 
 /* ── Mobile Menu ─────────────────────────────────────────────────────────────── */
-.mobile-hamburger-btn { display: none; }
+.mobile-hamburger-btn {
+  display: block;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-accent);
+  padding: 8px;
+}
 
 .mobile-drawer-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -881,10 +888,6 @@ select.input-field {
 
 @media (max-width: 767px) {
   .navbar-desktop-links { display: none !important; }
-  .mobile-hamburger-btn {
-    display: block !important; background: none; border: none;
-    cursor: pointer; color: var(--color-accent); padding: 8px;
-  }
 }
 
 /* ── Orders ──────────────────────────────────────────────────────────────────── */
