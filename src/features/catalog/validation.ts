@@ -35,7 +35,7 @@ export const CreateProductSchema = z.object({
   variants: z
     .array(
       z.object({
-        sku: z.string().min(3, "SKU must be at least 3 characters").max(50),
+        sku: z.string().min(1, "SKU must be at least 1 character").max(50),
         stock: z.number().int("Stock must be an integer").nonnegative("Stock cannot be negative"),
         priceDeltaPaise: z.number().int("Price delta must be an integer"),
       })
@@ -76,7 +76,7 @@ export const EditProductSchema = z.object({
     .array(
       z.object({
         id: z.string().uuid("Invalid variant ID").optional(),
-        sku: z.string().min(3, "SKU must be at least 3 characters").max(50),
+        sku: z.string().min(1, "SKU must be at least 1 character").max(50),
         stock: z.number().int("Stock must be an integer").nonnegative("Stock cannot be negative"),
         priceDeltaPaise: z.number().int("Price delta must be an integer"),
       })
