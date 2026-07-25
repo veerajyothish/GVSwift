@@ -51,20 +51,7 @@ export async function PUT(
         );
       }
 
-      // Check if any variant SKU is already taken by a variant of another product
-      const duplicates = await prisma.productVariant.findMany({
-        where: {
-          sku: { in: skusInRequest },
-          productId: { not: id },
-        },
-        select: { sku: true },
-      });
-      if (duplicates.length > 0) {
-        return NextResponse.json(
-          { error: `Variant SKU '${duplicates[0].sku}' is already in use by another product.`, code: "CONFLICT" },
-          { status: 409 }
-        );
-      }
+      // Ponytail ultra: removed cross-product SKU uniqueness check so users can name variants "LARGE" across many products.
     }
 
 

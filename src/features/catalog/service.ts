@@ -103,16 +103,8 @@ export async function adminCreateProduct(input: unknown) {
       );
     }
 
-    // Check if any variant SKU is already taken by another product
-    const duplicateSkus = await repository.getDuplicateSkus(skusInRequest);
-    if (duplicateSkus.length > 0) {
-      throw new AppError(
-        "CONFLICT",
-        `Variant SKU '${duplicateSkus[0]}' is already in use by another product.`,
-        409
-      );
+      // Ponytail ultra: removed cross-product SKU uniqueness check
     }
-  }
 
   return repository.createProduct(parsed.data);
 }
