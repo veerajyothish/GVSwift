@@ -6,9 +6,9 @@ import "./globals.css";
 import { getSiteUrl } from "@/lib/env";
 
 const SITE_URL = getSiteUrl();
-const SITE_TITLE = "GVSwift";
+const SITE_TITLE = "GVSwift — Online Fashion Store in Andhra Pradesh";
 const SITE_DESCRIPTION =
-  "Shop GVSwift for premium fashion with Cash on Delivery across India.";
+  "GVSwift is an online fashion store delivering to Andhra Pradesh. Shop the latest styles and pay cash on delivery.";
 
 /**
  * Inter: display=swap + preload prevents render-blocking.

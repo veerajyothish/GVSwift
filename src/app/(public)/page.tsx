@@ -15,18 +15,19 @@ import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { getSiteUrl } from "@/lib/env";
 
 export const metadata = {
-  title: "GVSwift | Premium Fashion & Accessories",
+  title: 'GVSwift — Online Fashion Store in Andhra Pradesh',
   description:
-    "Shop GVSwift for premium fashion and curated accessories. Experience uncompromising craftsmanship with Cash on Delivery across India, free shipping, and 7-day returns.",
+    'GVSwift is an online fashion store delivering to Andhra Pradesh. ' +
+    'Shop the latest styles and pay cash on delivery.',
   alternates: {
     canonical: getSiteUrl(),
   },
   openGraph: {
-    title: "GVSwift | Premium Fashion & Accessories",
-    description: "Shop GVSwift for premium fashion and curated accessories. Experience uncompromising craftsmanship with Cash on Delivery across India.",
+    title: 'GVSwift — Online Fashion Store in Andhra Pradesh',
+    description: 'GVSwift is an online fashion store delivering to Andhra Pradesh. Shop the latest styles and pay cash on delivery.',
     url: getSiteUrl(),
-    siteName: "GVSwift",
-    type: "website",
+    siteName: 'GVSwift',
+    type: 'website',
   },
 };
 
@@ -109,9 +110,8 @@ export default async function HomePage() {
           >
             {/* Left: Text block */}
             <div>
-              {/* "INTRODUCING" eyebrow */}
               <FadeIn delay={0.05} y={15}>
-                <span
+                <h2
                   style={{
                     display: "block",
                     fontFamily: "var(--font-body)",
@@ -121,10 +121,12 @@ export default async function HomePage() {
                     textTransform: "uppercase",
                     color: "var(--color-text-secondary)",
                     marginBottom: "20px",
+                    margin: 0,
+                    paddingBottom: "20px",
                   }}
                 >
-                  Introducing
-                </span>
+                  GVSwift
+                </h2>
               </FadeIn>
 
               {/* Large Garamond serif heading */}
@@ -157,7 +159,7 @@ export default async function HomePage() {
                     textWrap: "pretty",
                   }}
                 >
-                  Discover uncompromising craftsmanship with Cash on Delivery and free shipping across India.
+                  GVSwift is an online fashion store delivering to Andhra Pradesh. Shop the latest styles and pay cash on delivery.
                 </p>
               </FadeIn>
 
