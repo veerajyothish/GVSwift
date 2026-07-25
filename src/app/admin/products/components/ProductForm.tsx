@@ -686,14 +686,15 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
                     />
                   </div>
 
-                  <div className="flex items-center gap-6 mt-2">
+                  <div className="flex flex-wrap items-center gap-4 mt-2">
                     {/* Primary Image Toggle */}
                     <div className="flex items-center gap-2">
                       <input
-                        type="checkbox"
+                        type="radio"
+                        name="primaryImage"
                         id={`img-primary-${index}`}
                         checked={img.isPrimary}
-                        onChange={(e) => updateImage(index, "isPrimary", e.target.checked)}
+                        onChange={(e) => updateImage(index, "isPrimary", true)}
                         disabled={isSubmitting}
                         style={{ cursor: "pointer", accentColor: "var(--color-accent)" }}
                       />
