@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from "@/components/motion-primitives/dialog";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -17,85 +23,16 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   footer,
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Esc key to close modal
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden"; // Prevent scrolling behind modal
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
-
-  // Focus trap
-  useEffect(() => {
-    if (!isOpen || !modalRef.current) return;
-    const focusable = modalRef.current.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
-    );
-    if (focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    
-    const trap = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      if (e.shiftKey) { 
-        if (document.activeElement === first) { 
-          last.focus(); 
-          e.preventDefault(); 
-        } 
-      } else { 
-        if (document.activeElement === last) { 
-          first.focus(); 
-          e.preventDefault(); 
-        } 
-      }
-    };
-    
-    document.addEventListener("keydown", trap);
-    // Focus first element on open
-    first.focus();
-    
-    return () => document.removeEventListener("keydown", trap);
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div
-      className="modal-overlay"
-      onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-      <div className="modal-container" ref={modalRef}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent 
+        className="modal-container fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0 p-0 border border-border bg-bg shadow-lg rounded-lg max-w-lg w-full animate-none"
+      >
         <div className="modal-header">
-          <h2 id="modal-title" className="modal-title">
+          <DialogTitle className="modal-title m-0 p-0 text-[22px] font-semibold text-primary font-heading">
             {title}
-          </h2>
-          <button
-            className="modal-close-btn"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
+          </DialogTitle>
+          <DialogClose className="modal-close-btn relative top-auto right-auto opacity-100 hover:opacity-100 bg-transparent flex items-center justify-center p-1 rounded-sm text-secondary hover:text-accent hover:bg-surface transition-all">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -110,11 +47,11 @@ export const Modal: React.FC<ModalProps> = ({
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          </button>
+          </DialogClose>
         </div>
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -52,73 +52,77 @@ export async function Navbar() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "24px",
+            position: "relative",
           }}
         >
-          {/* ── Logo (left) ──────────────────────────────────────────────── */}
-          <Link
-            href="/"
-            prefetch={true}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              flexShrink: 0,
-            }}
-            aria-label="GVSwift home"
-          >
-            <Image
-              src="/logo.png"
-              alt="GVSwift Logo"
-              width={240}
-              height={56}
-              style={{
-                height: "56px",
-                width: "auto",
-                objectFit: "contain",
-              }}
-            />
-          </Link>
-
-          {/* ── Centre nav links (desktop only) ──────────────────────────── */}
-          {/* PDF p.1: COLLECTION · HERITAGE · STORES · JOURNAL, small caps */}
-          <div className="navbar-desktop-links">
-            {[
-              { label: "Women", href: "/categories/women" },
-              { label: "Men", href: "/categories/men" },
-            ].map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                prefetch={true}
-                className="navbar-center-link nav-link-hover"
-                style={{
-                  fontSize: "13px",
-                  letterSpacing: "0.02em",
-                  color: "var(--color-text-secondary)",
-                  textDecoration: "none",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </Link>
-            ))}
-            <SearchBar />
-          </div>
-
-          {/* ── Right: icons + mobile hamburger ──────────────────────────── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            {/* Icons: account + cart */}
-            <NavbarIconsAndSearch
-              isLoggedIn={isLoggedIn}
-              cartCount={cartCount}
-              wishlistIcon={null}
-            />
-
-            {/* Mobile hamburger */}
+          {/* ── Left side: Hamburger + Women/Men ─────────────────────────── */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
             <MobileMenu
               isLoggedIn={isLoggedIn}
               isAdmin={isAdmin}
               cartCount={cartCount}
+            />
+            
+            <div className="navbar-desktop-links" style={{ display: "flex", gap: "24px" }}>
+              {[
+                { label: "Women", href: "/categories/women" },
+                { label: "Men", href: "/categories/men" },
+              ].map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  prefetch={true}
+                  className="navbar-center-link nav-link-hover"
+                  style={{
+                    fontSize: "13px",
+                    letterSpacing: "0.02em",
+                    color: "var(--color-text-secondary)",
+                    textDecoration: "none",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Center: Logo ──────────────────────────────────────────────── */}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Link
+              href="/"
+              prefetch={true}
+              aria-label="GVSwift home"
+            >
+              <Image
+                src="/logo.png"
+                alt="GVSwift Logo"
+                width={240}
+                height={56}
+                style={{
+                  height: "56px",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            </Link>
+          </div>
+
+          {/* ── Right side: Search + Icons ───────────────────────────────── */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1, justifyContent: "flex-end" }}>
+            <SearchBar />
+            <NavbarIconsAndSearch
+              isLoggedIn={isLoggedIn}
+              cartCount={cartCount}
+              wishlistIcon={null}
             />
           </div>
         </div>

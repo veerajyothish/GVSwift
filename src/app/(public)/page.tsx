@@ -11,6 +11,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { TextEffect } from "@/components/motion-primitives/text-effect";
 
 import { getSiteUrl } from "@/lib/env";
 
@@ -131,7 +132,9 @@ export default async function HomePage() {
 
               {/* Large Garamond serif heading */}
               <FadeIn delay={0.15} duration={0.9} y={32}>
-                <h1
+                <TextEffect
+                  as="h1"
+                  preset="fade"
                   style={{
                     fontFamily: "var(--font-heading)",
                     fontSize: "clamp(44px, 5.5vw, 68px)",
@@ -145,7 +148,7 @@ export default async function HomePage() {
                   }}
                 >
                   Premium Fashion, Delivered Seamlessly.
-                </h1>
+                </TextEffect>
               </FadeIn>
 
               <FadeIn delay={0.35} duration={0.7} y={20}>
