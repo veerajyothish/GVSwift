@@ -251,8 +251,8 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
         if (!v.sku) {
           throw new Error("All variants must have a SKU.");
         }
-        if (v.sku.length < 3) {
-          throw new Error(`Variant SKU '${v.sku}' must be at least 3 characters.`);
+        if (v.sku.trim().length < 1) {
+          throw new Error(`Variant SKU '${v.sku}' must be at least 1 character.`);
         }
         if (v.sku.length > 50) {
           throw new Error(`Variant SKU '${v.sku}' cannot exceed 50 characters.`);
