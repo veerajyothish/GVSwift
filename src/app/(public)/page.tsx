@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-
+import { Store, Megaphone, Truck } from "lucide-react";
 import { getFeaturedProducts } from "@/features/catalog/repository";
 import { getShops } from "@/features/catalog/service";
 import ShopCard from "@/components/ui/ShopCard";
@@ -229,6 +229,100 @@ export default async function HomePage() {
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 24px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
             <span style={{ fontSize: "14px", color: "var(--color-accent)" }}>⭐️⭐️⭐️⭐️⭐️</span>
             <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--color-text-secondary)" }}>Trusted by shoppers across India.</span>
+          </div>
+        </section>
+
+        {/* ── OUR OFFERINGS ── */}
+        <section
+          style={{
+            background: "var(--color-bg)",
+            borderBottom: "1px solid var(--color-border)",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "1200px",
+              margin: "0 auto",
+              padding: "88px 24px",
+            }}
+          >
+            <FadeIn>
+              <div style={{ textAlign: "center", marginBottom: "56px" }}>
+                <span
+                  style={{
+                    display: "block",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    color: "var(--color-text-secondary)",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Our Offerings
+                </span>
+                <h2
+                  style={{
+                    fontFamily: "var(--font-heading)",
+                    fontSize: "clamp(30px, 3.5vw, 42px)",
+                    fontWeight: 400,
+                    color: "var(--color-text-primary)",
+                  }}
+                >
+                  Empowering Growth
+                </h2>
+              </div>
+            </FadeIn>
+
+            <StaggerContainer
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "32px",
+              }}
+            >
+              {[
+                {
+                  icon: <Store size={32} color="var(--color-accent)" />,
+                  title: "DIGITAL MULTI-COMPLEX MARKETPLACE",
+                  desc: "A zero-fee platform enabling homegrown brands and local artisans to establish an online presence and sell their products directly to consumers."
+                },
+                {
+                  icon: <Megaphone size={32} color="var(--color-accent)" />,
+                  title: "BRAND AMPLIFICATION",
+                  desc: "Providing local stores with a digital stage to expand their reach and leverage modern marketing tools to connect with a global audience."
+                },
+                {
+                  icon: <Truck size={32} color="var(--color-accent)" />,
+                  title: "FREE DELIVERY SERVICE",
+                  desc: "Complimentary shipping and delivery services provided to shoppers for all orders placed through the curated local stores on the platform."
+                },
+              ].map((item, i) => (
+                <StaggerChild key={i}>
+                  <div
+                    style={{
+                      background: "var(--color-surface)",
+                      padding: "48px 32px",
+                      textAlign: "center",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "24px",
+                    }}
+                  >
+                    <div>{item.icon}</div>
+                    <h3 style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "0.05em", color: "var(--color-text-primary)", lineHeight: 1.4 }}>
+                      {item.title}
+                    </h3>
+                    <p style={{ fontSize: "14px", color: "var(--color-text-secondary)", lineHeight: 1.6, textWrap: "balance" }}>
+                      {item.desc}
+                    </p>
+                  </div>
+                </StaggerChild>
+              ))}
+            </StaggerContainer>
           </div>
         </section>
 
