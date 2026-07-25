@@ -99,6 +99,10 @@ export function NavbarIconsAndSearch({
         <Link
           href="/account/wishlist"
           prefetch={true}
+          onClick={(e) => {
+            e.preventDefault();
+            window.dispatchEvent(new CustomEvent("gvswift-open-wishlist"));
+          }}
           aria-label="Wishlist"
           style={{
             display: "inline-flex",
@@ -185,10 +189,13 @@ export function NavbarIconsAndSearch({
       </Link>
 
       {/* Cart / shopping bag icon — PDF p.1/4 */}
-      <Link
+      <a
         ref={cartRef}
         href="/cart"
-        prefetch={true}
+        onClick={(e) => {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent("gvswift-open-cart"));
+        }}
         aria-label={`Shopping cart${clientCartCount > 0 ? `, ${clientCartCount} items` : ""}`}
         style={{
           display: "inline-flex",
@@ -242,7 +249,7 @@ export function NavbarIconsAndSearch({
             {clientCartCount > 9 ? "9+" : clientCartCount}
           </span>
         )}
-      </Link>
+      </a>
     </div>
   );
 }

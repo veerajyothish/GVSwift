@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { createPortal } from "react-dom";
 
 interface CatalogFiltersProps {
   categories: { id: string; name: string }[];
@@ -20,19 +21,34 @@ export function CatalogFilters({
   currentSearch,
 }: CatalogFiltersProps) {
   const searchParams = useSearchParams();
-  const isPending = false; // We removed useTransition to keep it simple, or we can just remove isPending
+  const [mounted, setMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Optimistic UI state
-  const [optCategoryId, setOptCategoryId] = useState(currentCategoryId);
-  const [optSort, setOptSort] = useState(currentSort);
-  const [optMaxPrice, setOptMaxPrice] = useState(currentMaxPrice);
-
-  // Sync with actual URL when it changes
   useEffect(() => {
-    setOptCategoryId(currentCategoryId);
-    setOptSort(currentSort);
-    setOptMaxPrice(currentMaxPrice);
-  }, [currentCategoryId, currentSort, currentMaxPrice, searchParams]);
+    setMounted(true);
+  }, []);
+
+  // Close when escape is pressed
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const buildUrl = (updates: {
     categoryId?: string | null;
@@ -44,7 +60,6 @@ export function CatalogFilters({
     const catId = updates.categoryId !== undefined ? updates.categoryId : currentCategoryId;
     if (catId) p.set("categoryId", catId);
     
-    // Reset page to 1 when filters change unless page is explicitly passed
     const pg = updates.page !== undefined ? updates.page : 1; 
     if (pg && pg > 1) p.set("page", pg.toString());
     
@@ -58,158 +73,269 @@ export function CatalogFilters({
     return `/products${qs ? `?${qs}` : ""}`;
   };
 
-  return (
-    <>
+  const closeOverlay = () => setIsOpen(false);
+
+  const filterOverlay = mounted && isOpen ? createPortal(
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 99999,
+        display: "flex",
+        flexDirection: "column",
+        background: "rgba(255, 255, 255, 0.75)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        animation: "fadeIn 0.2s ease-out forwards",
+      }}
+    >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      `}} />
       <div
         style={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "16px",
-          marginBottom: "40px",
-          opacity: isPending ? 0.7 : 1,
-          transition: "opacity 0.2s ease",
+          alignItems: "center",
+          padding: "20px 24px",
+          borderBottom: "1px solid rgba(0,0,0,0.05)",
+          background: "rgba(255,255,255,0.8)",
         }}
-        className="animate-in delay-50"
       >
-        <nav
+        <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 600, fontFamily: "var(--font-heading)", letterSpacing: "0.02em", color: "var(--color-primary)" }}>
+          Filters & Sort
+        </h2>
+        <button
+          onClick={closeOverlay}
           style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "8px",
+            margin: "-8px",
+            color: "var(--color-primary)",
             display: "flex",
-            gap: "8px",
-            overflowX: "auto",
-            flexWrap: "nowrap",
-            flexGrow: 1,
-            paddingBottom: "8px",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
+            alignItems: "center",
+            justifyContent: "center",
           }}
-          className="hide-scrollbar"
+          aria-label="Close filters"
         >
-          <Link
-            href={buildUrl({ categoryId: null, page: 1 })}
-            onClick={() => {
-              setOptCategoryId("");
-              // Optional: Add useTransition for smoother React 18 rendering
-            }}
-            className={!optCategoryId ? "category-link-active" : "category-link"}
-          >
-            All Products
-          </Link>
-          {categories.map((cat) => (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          padding: "24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "32px",
+          animation: "slideUp 0.3s ease-out forwards",
+        }}
+      >
+        {/* Categories */}
+        <section>
+          <h3 style={{ fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-text-secondary)", marginBottom: "16px" }}>Category</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <Link
-              key={cat.id}
-              href={buildUrl({ categoryId: cat.id, page: 1 })}
-              onClick={() => {
-                setOptCategoryId(cat.id);
+              href={buildUrl({ categoryId: null, page: 1 })}
+              onClick={closeOverlay}
+              style={{
+                textDecoration: "none",
+                fontSize: "15px",
+                color: !currentCategoryId ? "var(--color-accent)" : "var(--color-primary)",
+                fontWeight: !currentCategoryId ? 600 : 400,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
               }}
-              className={optCategoryId === cat.id ? "category-link-active" : "category-link"}
             >
-              {cat.name}
+              All Products
+              {!currentCategoryId && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              )}
             </Link>
-          ))}
-        </nav>
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={buildUrl({ categoryId: cat.id, page: 1 })}
+                onClick={closeOverlay}
+                style={{
+                  textDecoration: "none",
+                  fontSize: "15px",
+                  color: currentCategoryId === cat.id ? "var(--color-accent)" : "var(--color-primary)",
+                  fontWeight: currentCategoryId === cat.id ? 600 : 400,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
+                {cat.name}
+                {currentCategoryId === cat.id && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-          <span style={{ fontSize: "13px", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>
-            Sort by:
-          </span>
-          <nav
-            style={{
-              display: "flex",
-              gap: "12px",
-              overflowX: "auto",
-              flexWrap: "nowrap",
-              flexGrow: 1,
-              paddingBottom: "8px",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-            className="hide-scrollbar"
-          >
+        <hr style={{ border: 0, height: "1px", background: "rgba(0,0,0,0.05)", margin: 0 }} />
+
+        {/* Sort */}
+        <section>
+          <h3 style={{ fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-text-secondary)", marginBottom: "16px" }}>Sort By</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             {[
               { label: "Featured", value: "newest" },
-              { label: "Price ↑", value: "price-asc" },
-              { label: "Price ↓", value: "price-desc" },
+              { label: "Price: Low to High", value: "price-asc" },
+              { label: "Price: High to Low", value: "price-desc" },
             ].map((opt) => (
               <Link
                 key={opt.value}
                 href={buildUrl({ sort: opt.value, page: 1 })}
-                onClick={() => setOptSort(opt.value)}
+                onClick={closeOverlay}
                 style={{
-                  fontSize: "13px",
-                  padding: "6px 14px",
+                  fontSize: "14px",
+                  padding: "8px 16px",
                   borderRadius: "9999px",
-                  border: `1px solid ${optSort === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
-                  background: optSort === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
-                  color: optSort === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
-                  fontWeight: optSort === opt.value ? 600 : 400,
+                  border: `1px solid ${currentSort === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
+                  background: currentSort === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
+                  color: currentSort === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
+                  fontWeight: currentSort === opt.value ? 600 : 400,
                   textDecoration: "none",
-                  whiteSpace: "nowrap",
                 }}
               >
                 {opt.label}
               </Link>
             ))}
-          </nav>
-        </div>
+          </div>
+        </section>
+
+        <hr style={{ border: 0, height: "1px", background: "rgba(0,0,0,0.05)", margin: 0 }} />
+
+        {/* Price */}
+        <section>
+          <h3 style={{ fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-text-secondary)", marginBottom: "16px" }}>Max Price</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {[
+              { label: "Any Price", value: "" },
+              { label: "Under ₹500", value: "500" },
+              { label: "Under ₹1,000", value: "1000" },
+              { label: "Under ₹2,000", value: "2000" },
+            ].map((opt) => (
+              <Link
+                key={opt.value}
+                href={buildUrl({ maxPrice: opt.value || null, page: 1 })}
+                onClick={closeOverlay}
+                style={{
+                  fontSize: "14px",
+                  padding: "8px 16px",
+                  borderRadius: "9999px",
+                  border: `1px solid ${currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
+                  background: currentMaxPrice === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
+                  color: currentMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
+                  fontWeight: currentMaxPrice === opt.value ? 600 : 400,
+                  textDecoration: "none",
+                }}
+              >
+                {opt.label}
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
 
+      {/* Footer sticky action */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          flexWrap: "nowrap",
-          overflowX: "auto",
-          marginBottom: "36px",
-          paddingBottom: "4px",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-          opacity: isPending ? 0.7 : 1,
-          transition: "opacity 0.2s ease",
+          padding: "20px 24px",
+          borderTop: "1px solid rgba(0,0,0,0.05)",
+          background: "rgba(255,255,255,0.9)",
         }}
-        className="hide-scrollbar"
       >
-        <span
+        <button
+          onClick={closeOverlay}
           style={{
-            fontSize: "12px",
+            width: "100%",
+            padding: "16px",
+            background: "var(--color-accent)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            fontSize: "15px",
             fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--color-text-secondary)",
+            cursor: "pointer",
+            letterSpacing: "0.02em",
           }}
         >
-          Price:
-        </span>
-        {[
-          { label: "All", value: "" },
-          { label: "Under ₹500", value: "500" },
-          { label: "Under ₹1,000", value: "1000" },
-          { label: "Under ₹2,000", value: "2000" },
-        ].map((opt) => (
-          <Link
-            key={opt.value}
-            href={buildUrl({ maxPrice: opt.value || null, page: 1 })}
-            onClick={() => setOptMaxPrice(opt.value)}
-            style={{
-              fontSize: "12px",
-              padding: "5px 14px",
-              borderRadius: "9999px",
-              border: `1px solid ${optMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-border)"}`,
-              background: optMaxPrice === opt.value ? "rgba(107,30,46,0.06)" : "transparent",
-              color: optMaxPrice === opt.value ? "var(--color-accent)" : "var(--color-text-secondary)",
-              fontWeight: optMaxPrice === opt.value ? 600 : 400,
-              textDecoration: "none",
-            }}
-          >
-            {opt.label}
-          </Link>
-        ))}
+          View Results
+        </button>
       </div>
+    </div>,
+    document.body
+  ) : null;
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "24px" }}>
+        <button
+          onClick={() => setIsOpen(true)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            background: "none",
+            border: "1px solid var(--color-border)",
+            padding: "10px 20px",
+            borderRadius: "9999px",
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "var(--color-primary)",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "var(--color-accent)";
+            e.currentTarget.style.color = "var(--color-accent)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "var(--color-border)";
+            e.currentTarget.style.color = "var(--color-primary)";
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14" />
+            <line x1="4" y1="10" x2="4" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" y2="3" />
+            <line x1="20" y1="21" x2="20" y2="16" />
+            <line x1="20" y1="12" x2="20" y2="3" />
+            <line x1="1" y1="14" x2="7" y2="14" />
+            <line x1="9" y1="8" x2="15" y2="8" />
+            <line x1="17" y1="16" x2="23" y2="16" />
+          </svg>
+          Filters & Sort
+          {/* Show badge if filters are active */}
+          {(currentCategoryId || currentSort !== "newest" || currentMaxPrice) && (
+            <span style={{ 
+              display: "inline-block", 
+              width: "8px", 
+              height: "8px", 
+              borderRadius: "50%", 
+              background: "var(--color-accent)",
+              marginLeft: "4px"
+            }} />
+          )}
+        </button>
+      </div>
+
+      {filterOverlay}
     </>
   );
 }

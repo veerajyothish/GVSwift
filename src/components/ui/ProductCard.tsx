@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
@@ -132,11 +131,29 @@ export default function ProductCard({
         borderColor: hovered ? "rgba(107,30,46,0.18)" : "var(--color-border)",
       }}
     >
-      <Link
-        href={`/products/${product.slug}`}
-        prefetch={true}
-        onClick={handleProductClick}
-        style={{ display: "flex", flexDirection: "column", flexGrow: 1, textDecoration: "none", color: "inherit" }}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          handleProductClick();
+          window.dispatchEvent(
+            new CustomEvent("gvswift-open-quickview", {
+              detail: { slug: product.slug },
+            })
+          );
+        }}
+        style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          flexGrow: 1, 
+          textDecoration: "none", 
+          color: "inherit",
+          background: "none",
+          border: "none",
+          padding: 0,
+          textAlign: "left",
+          cursor: "pointer",
+        }}
       >
         {/* Image */}
         <div
@@ -308,7 +325,7 @@ export default function ProductCard({
             {formattedPrice}
           </span>
         </div>
-      </Link>
+      </button>
 
       {/* Heart icon OUTSIDE the Link so it doesn't break HTML structure, positioned absolute to the outer div */}
       <button

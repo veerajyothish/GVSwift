@@ -68,6 +68,11 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { GlobalClickInteraction } from "@/components/ui/GlobalClickInteraction";
+import { CartOverlay } from "@/components/cart/CartOverlay";
+import { QuickViewOverlay } from "@/components/products/QuickViewOverlay";
+import { WishlistOverlay } from "@/components/ui/WishlistOverlay";
+import { SizeGuideOverlay } from "@/components/ui/SizeGuideOverlay";
+import { OrderTrackingOverlay } from "@/components/account/OrderTrackingOverlay";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -96,6 +101,11 @@ export default function RootLayout({
           <WishlistProvider>
             {children}
             <CookieConsentBanner />
+            <CartOverlay />
+            <QuickViewOverlay />
+            <WishlistOverlay />
+            <SizeGuideOverlay />
+            <OrderTrackingOverlay />
           </WishlistProvider>
         </ToastProvider>
         <GlobalClickInteraction />

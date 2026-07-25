@@ -9,6 +9,7 @@ import { requireUser } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { Metadata } from "next";
+import { TrackOrderButton } from "@/components/account/TrackOrderButton";
 
 export const metadata: Metadata = { title: "My Orders | GVSwift" };
 
@@ -307,13 +308,7 @@ export default async function AccountOrdersPage({ searchParams }: PageProps) {
                     </div>
 
                     {/* Track Order button — PDF p.12 */}
-                    <Link
-                      href={`/account/orders/${order.id}`}
-                      className="btn btn-secondary"
-                      style={{ minWidth: "140px", justifyContent: "center" }}
-                    >
-                      Track Order
-                    </Link>
+                    <TrackOrderButton orderId={order.id} />
                   </div>
                 </div>
               );

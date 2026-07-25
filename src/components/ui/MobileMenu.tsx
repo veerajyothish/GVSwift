@@ -248,12 +248,12 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                     <Link href="/account/profile" onClick={close} className="mobile-drawer-link">My Account</Link>
                     <Link href="/account/orders"  onClick={close} className="mobile-drawer-link">My Orders</Link>
                     <Link href="/account/wishlist" onClick={close} className="mobile-drawer-link">Wishlist</Link>
-                    <Link href="/cart" onClick={close} className="mobile-drawer-link" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <a href="/cart" onClick={(e) => { e.preventDefault(); close(); window.dispatchEvent(new CustomEvent('gvswift-open-cart')); }} className="mobile-drawer-link" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span>Cart</span>
                       {clientCartCount > 0 && (
                         <span className="mobile-drawer-badge">{clientCartCount}</span>
                       )}
-                    </Link>
+                    </a>
                     {isAdmin && (
                       <Link href="/admin" onClick={close} className="mobile-drawer-link" style={{ color: "var(--color-accent)", fontWeight: 600 }}>
                         Admin Console
