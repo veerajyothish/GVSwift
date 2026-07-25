@@ -52,45 +52,33 @@ export default function AccountSidebar() {
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
                 textDecoration: "none",
-            fontWeight: 400,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            textDecoration: "none",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          ← Back to Store
-        </Link>
+                color: isActive ? "var(--color-accent)" : "var(--color-text-secondary)",
+                background: isActive ? "rgba(107,30,46,0.04)" : "transparent",
+                transition: "background 0.2s, color 0.2s",
+              }}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
 
-        <SignOutButton
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "10px 14px",
-            borderRadius: "6px",
-            fontSize: "13px",
-            fontWeight: 400,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            background: "none",
-            border: "none",
-            color: "var(--color-error)",
-            cursor: "pointer",
-            width: "100%",
-            textAlign: "left",
-          }}
-        >
-          Sign Out
-        </SignOutButton>
+        <div style={{ padding: "12px 16px", marginTop: "16px", borderTop: "1px solid var(--color-border)", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Link
+            href="/"
+            style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: "0.05em",
+              color: "var(--color-text-secondary)",
+              textDecoration: "none",
+              textTransform: "uppercase",
+            }}
+          >
+            &larr; Back to Store
+          </Link>
+          <SignOutButton />
+        </div>
       </nav>
-
-      <style>{`
-        @media (max-width: 767px) {
-          .account-mobile-tabs { display: flex !important; }
-          aside nav { display: none; }
-        }
-      `}</style>
     </aside>
   );
 }
