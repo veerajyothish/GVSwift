@@ -218,10 +218,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   };
 
   const activeCategory = categories.find((c) => c.id === currentCategoryId);
-  const pageTitle = activeCategory?.name ?? "The Heritage Collection";
+  const pageTitle = activeCategory?.name ?? "The Archives";
   const pageDesc = activeCategory
-    ? `Explore our ${activeCategory.name} collection — curated pieces embodying timeless craft.`
-    : "A curated selection of archival pieces and artisanal garments, embodying the unhurried craftsmanship and timeless elegance of our founding legacy.";
+    ? `Explore our ${activeCategory.name} collection — an exercise in understated elegance.`
+    : "Discover our foundational garments. Unhurried craftsmanship, premium materials, and timeless silhouettes designed for the modern wardrobe.";
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>

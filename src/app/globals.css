@@ -859,16 +859,16 @@ select.input-field {
   background-color: rgba(26, 26, 26, 0.4); backdrop-filter: blur(4px); z-index: 1000;
 }
 .mobile-drawer {
-  position: fixed; top: 0; left: -100%; width: 80%; max-width: 320px;
+  position: fixed; top: 0; left: -100%; width: 75%; max-width: 280px;
   height: 100vh; background-color: var(--color-bg);
   box-shadow: var(--shadow-lg); z-index: 1001; transition: left 150ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
 .mobile-drawer-open { left: 0; }
-.mobile-drawer-inner { display: flex; flex-direction: column; height: 100%; padding: 24px; }
-.mobile-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.mobile-drawer-inner { display: flex; flex-direction: column; height: 100%; padding: 16px 20px; }
+.mobile-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .mobile-drawer-close { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); padding: 8px; }
-.mobile-drawer-nav { display: flex; flex-direction: column; gap: 20px; }
+.mobile-drawer-nav { display: flex; flex-direction: column; gap: 16px; }
 .mobile-drawer-link { font-size: 14px; font-weight: 400; color: var(--color-text-primary); display: block; letter-spacing: 0.01em; }
 .mobile-drawer-link:hover { color: var(--color-accent); }
 .mobile-drawer-divider { height: 1px; background-color: var(--color-border); margin: 12px 0; }
@@ -1015,12 +1015,12 @@ select.input-field {
 
 /* Category pills */
 .category-link-active {
-  padding: 8px 20px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500;
+  padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500;
   background-color: var(--color-accent); color: var(--color-accent-text);
   border: 1px solid var(--color-accent); text-decoration: none;
 }
 .category-link {
-  padding: 8px 20px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 400;
+  padding: 6px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 400;
   background-color: transparent; color: var(--color-text-primary);
   border: 1px solid var(--color-border); text-decoration: none;
   transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1), color 150ms cubic-bezier(0.16, 1, 0.3, 1);

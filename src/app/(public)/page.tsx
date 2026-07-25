@@ -150,7 +150,7 @@ export default async function HomePage() {
               <h1
                 style={{
                   fontFamily: "var(--font-heading)",
-                  fontSize: "clamp(48px, 6vw, 76px)",
+                  fontSize: "clamp(36px, 8vw, 76px)",
                   fontWeight: 400,
                   fontStyle: "normal",
                   lineHeight: 1.05,
@@ -167,7 +167,7 @@ export default async function HomePage() {
             <FadeIn delay={0.35} duration={0.7} y={20}>
               <p
                 style={{
-                  fontSize: "18px",
+                  fontSize: "clamp(15px, 4vw, 18px)",
                   lineHeight: 1.6,
                   color: "var(--color-text-secondary)",
                   marginBottom: "48px",
@@ -187,7 +187,7 @@ export default async function HomePage() {
                   eventName="hero_cta_click"
                   href="/products"
                   className="btn btn-primary btn-premium"
-                  style={{ padding: "20px 56px", fontSize: "15px", letterSpacing: "0.15em", borderRadius: "100px", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
+                  style={{ padding: "clamp(14px, 4vw, 20px) clamp(32px, 8vw, 56px)", fontSize: "14px", letterSpacing: "0.15em", borderRadius: "100px", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
                 >
                   EXPLORE THE COLLECTIONS &rarr;
                 </TrackedLink>
