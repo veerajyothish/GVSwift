@@ -311,7 +311,7 @@ export default async function HomePage() {
                 }}
               >
                 <Image
-                  src="/structured_wool_blazer.png"
+                  src="/illus_story.png"
                   alt="Our Story - Local Craftsmanship"
                   fill
                   sizes="(max-width: 767px) 90vw, 45vw"
