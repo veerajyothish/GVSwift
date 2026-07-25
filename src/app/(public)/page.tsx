@@ -99,118 +99,90 @@ export default async function HomePage() {
         >
           <div
             style={{
-              maxWidth: "1200px",
+              maxWidth: "800px",
               margin: "0 auto",
-              padding: "48px 24px 64px",
-              display: "grid",
-              gridTemplateColumns: "1fr 1.2fr",
-              gap: "72px",
+              padding: "80px 24px",
+              display: "flex",
+              flexDirection: "column",
               alignItems: "center",
+              textAlign: "center"
             }}
-            className="hero-grid-responsive"
           >
-            {/* Left: Text block */}
-            <div>
-              <FadeIn delay={0.05} y={15}>
-                <h2
-                  style={{
-                    display: "block",
-                    fontFamily: "var(--font-body)",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-secondary)",
-                    marginBottom: "20px",
-                    margin: 0,
-                    paddingBottom: "20px",
-                  }}
-                >
-                  GVSwift
-                </h2>
-              </FadeIn>
+            {/* Center: Text block */}
+            <FadeIn delay={0.05} y={15}>
+              <h2
+                style={{
+                  display: "block",
+                  fontFamily: "var(--font-body)",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  marginBottom: "20px",
+                  margin: 0,
+                  paddingBottom: "24px",
+                }}
+              >
+                Welcome to GVSwift
+              </h2>
+            </FadeIn>
 
-              {/* Large Garamond serif heading */}
-              <FadeIn delay={0.15} duration={0.9} y={32}>
-                <TextEffect
-                  as="h1"
-                  preset="fade"
-                  style={{
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "clamp(44px, 5.5vw, 68px)",
-                    fontWeight: 400,
-                    fontStyle: "normal",
-                    lineHeight: 1.07,
-                    color: "var(--color-text-primary)",
-                    marginBottom: "28px",
-                    letterSpacing: "-0.01em",
-                    textWrap: "balance",
-                  }}
-                >
-                  Premium Fashion, Delivered Seamlessly.
-                </TextEffect>
-              </FadeIn>
+            {/* Large Garamond serif heading */}
+            <FadeIn delay={0.15} duration={0.9} y={32}>
+              <TextEffect
+                as="h1"
+                preset="fade"
+                style={{
+                  fontFamily: "var(--font-heading)",
+                  fontSize: "clamp(36px, 5vw, 64px)",
+                  fontWeight: 400,
+                  fontStyle: "normal",
+                  lineHeight: 1.1,
+                  color: "var(--color-text-primary)",
+                  marginBottom: "28px",
+                  letterSpacing: "-0.01em",
+                  textWrap: "balance",
+                }}
+              >
+                Elevating Local Brands to a Global Stage.
+              </TextEffect>
+            </FadeIn>
 
-              <FadeIn delay={0.35} duration={0.7} y={20}>
-                <p
-                  style={{
-                    fontSize: "15px",
-                    lineHeight: 1.72,
-                    color: "var(--color-text-secondary)",
-                    marginBottom: "44px",
-                    maxWidth: "360px",
-                    textWrap: "pretty",
-                  }}
-                >
-                  GVSwift is an online fashion store delivering to Andhra Pradesh. Shop the latest styles and pay cash on delivery.
-                </p>
-              </FadeIn>
+            <FadeIn delay={0.35} duration={0.7} y={20}>
+              <p
+                style={{
+                  fontSize: "16px",
+                  lineHeight: 1.6,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: "44px",
+                  maxWidth: "600px",
+                  textWrap: "pretty",
+                  margin: "0 auto 44px"
+                }}
+              >
+                A premier digital multi-complex connecting you with the finest homegrown brands and local artisans. From fashion to gifts and decor—experience seamless shopping with zero platform fees and free delivery, always.
+              </p>
+            </FadeIn>
 
-              {/* pill-shaped primary CTA */}
-              <FadeIn delay={0.55} duration={0.6} y={16}>
+            {/* pill-shaped primary CTA */}
+            <FadeIn delay={0.55} duration={0.6} y={16}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}>
                 <TrackedLink
                   eventName="hero_cta_click"
                   href="/products"
                   className="btn btn-primary btn-premium"
-                  style={{ padding: "14px 40px", fontSize: "12px", letterSpacing: "0.1em" }}
+                  style={{ padding: "16px 48px", fontSize: "13px", letterSpacing: "0.1em" }}
                 >
-                  Shop the Collection &rarr;
+                  Explore the Collections &rarr;
                 </TrackedLink>
-                <div style={{ marginTop: "24px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", fontSize: "11px", color: "var(--color-text-secondary)" }}>
-                  <span>🔒 Secure Checkout</span>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: "14px", fontSize: "12px", color: "var(--color-text-secondary)", fontWeight: 500 }}>
+                  <span>✓ 0% Platform Fees</span>
                   <span>•</span>
-                  <span>🔄 7-Day Returns</span>
+                  <span>✓ Curated Local Stores</span>
                   <span>•</span>
-                  <span>💵 COD Available</span>
-                  <span>•</span>
-                  <span>📦 Free Delivery</span>
+                  <span>✓ Free Delivery</span>
                 </div>
-              </FadeIn>
-            </div>
-
-            {/* Right: Large product image */}
-            <FadeIn delay={0.2} duration={0.8} y={30} style={{ width: "100%" }}>
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: "4 / 5",
-                  borderRadius: "20px",
-                  overflow: "hidden",
-                  border: "1px solid var(--color-border)",
-                  background: "var(--color-surface)",
-                  boxShadow: "var(--shadow-md)",
-                }}
-                className="hover-lift"
-              >
-                <Image
-                  src="/silks_satins.png"
-                  alt="GVSwift — The New Standard"
-                  fill
-                  priority
-                  sizes="(max-width: 767px) 90vw, 50vw"
-                  style={{ objectFit: "cover" }}
-                />
               </div>
             </FadeIn>
           </div>

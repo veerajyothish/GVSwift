@@ -91,6 +91,7 @@ export function Footer() {
               <span className="footer-chevron" aria-hidden="true">{openSections.company ? "▲" : "▼"}</span>
             </button>
             <div id="footer-company" className={`footer-content ${openSections.company ? "open" : ""}`}>
+              <Link href="/about" className="footer-link">About Us</Link>
               <Link href="/support" className="footer-link">Customer Care</Link>
               <Link href="/returns" className="footer-link">Shipping & Returns</Link>
               <Link href="/privacy" className="footer-link">Privacy Policy</Link>
