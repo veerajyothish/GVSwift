@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useTransition } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/Toast";
 import { trackEvent } from "@/lib/analytics/ga4";
 import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 import type { ProductWithVariantsAndImages } from "@/features/catalog/types";
+import { useOverlay } from "@/hooks/useOverlay";
 
 export function QuickViewOverlay() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,9 @@ export function QuickViewOverlay() {
   const [selectedVariantId, setSelectedVariantId] = useState<string>("");
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const { toast } = useToast();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => setIsOpen(false), []);
+  useOverlay(isOpen, closeOverlay, panelRef);
 
   useEffect(() => {
     setMounted(true);
@@ -52,21 +56,7 @@ export function QuickViewOverlay() {
     };
   }, [toast]);
 
-  // Lock body scroll when open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
 
-  const closeOverlay = () => {
-    setIsOpen(false);
-  };
 
   const handleAddToCart = async () => {
     if (!product || !selectedVariantId) return;
@@ -150,6 +140,9 @@ export function QuickViewOverlay() {
         padding: "16px",
       }}
       onClick={closeOverlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quickview-heading"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -157,6 +150,7 @@ export function QuickViewOverlay() {
       `}} />
       
       <div
+        ref={panelRef}
         style={{
           background: "var(--color-bg)",
           borderRadius: "16px",
@@ -188,30 +182,6 @@ export function QuickViewOverlay() {
             }
           }
         `}} />
-
-        <button
-          onClick={closeOverlay}
-          style={{
-            position: "absolute",
-            top: "16px",
-            right: "16px",
-            background: "rgba(255,255,255,0.8)",
-            backdropFilter: "blur(4px)",
-            border: "none",
-            borderRadius: "50%",
-            width: "32px",
-            height: "32px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            zIndex: 10,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-          }}
-          aria-label="Close quick view"
-        >
-          <X size={18} color="#000" />
-        </button>
 
         {loading ? (
           <div style={{ padding: "100px", width: "100%", textAlign: "center", color: "var(--color-text-secondary)" }}>
@@ -260,11 +230,16 @@ export function QuickViewOverlay() {
             >
               <div>
                 {product.brand && (
-                  <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-text-secondary)", marginBottom: "4px" }}>
-                    {product.brand}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-text-secondary)", marginBottom: "4px" }}>
+                      {product.brand}
+                    </div>
+                    <button onClick={closeOverlay} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-text-primary)", padding: "4px" }} aria-label="Close">
+                      <X size={24} strokeWidth={1.5} />
+                    </button>
                   </div>
                 )}
-                <h2 style={{ fontSize: "24px", margin: "0 0 8px 0", fontFamily: "var(--font-heading)", color: "var(--color-primary)", lineHeight: 1.2 }}>
+                <h2 id="quickview-heading" style={{ margin: "0 0 8px 0", fontSize: "20px", fontFamily: "var(--font-heading)", color: "var(--color-primary)", lineHeight: 1.2 }}>
                   {product.name}
                 </h2>
                 <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--color-text-primary)" }}>

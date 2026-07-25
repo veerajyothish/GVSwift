@@ -694,7 +694,7 @@ export default function ProductForm({ initialData, categories, shops }: ProductF
                         name="primaryImage"
                         id={`img-primary-${index}`}
                         checked={img.isPrimary}
-                        onChange={(e) => updateImage(index, "isPrimary", true)}
+                        onChange={() => updateImage(index, "isPrimary", true)}
                         disabled={isSubmitting}
                         style={{ cursor: "pointer", accentColor: "var(--color-accent)" }}
                       />

@@ -1,9 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { getServerSession } from "@/lib/auth/session";
 
 export default async function AdminPage() {
-  const session = await getServerSession();
 
   const adminLinks = [
     { href: "/admin/orders", icon: "📦", label: "Orders", desc: "Manage and fulfill customer orders." },

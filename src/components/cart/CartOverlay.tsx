@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { useOverlay } from "@/hooks/useOverlay";
 
 // Matches Prisma schema query output (same as CartPageClient)
 interface CartItem {
@@ -44,6 +45,9 @@ export function CartOverlay() {
   const [loading, setLoading] = useState(false);
   const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
   const { toast } = useToast();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => setIsOpen(false), []);
+  useOverlay(isOpen, closeOverlay, panelRef);
 
   const fetchCart = useCallback(async () => {
     setLoading(true);
@@ -72,23 +76,7 @@ export function CartOverlay() {
     return () => window.removeEventListener("gvswift-open-cart", handleOpen);
   }, [fetchCart]);
 
-  // Trap focus / close on escape
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    // Prevent background scrolling
-    document.body.style.overflow = "hidden";
-    
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
+
 
   if (!mounted || typeof document === "undefined") return null;
 
@@ -165,6 +153,7 @@ export function CartOverlay() {
     <>
       {isOpen && (
         <div
+          ref={panelRef}
           style={{
             position: "fixed",
             inset: 0,
@@ -177,11 +166,11 @@ export function CartOverlay() {
           }}
           role="dialog"
           aria-modal="true"
-          aria-label="Shopping Cart"
+          aria-labelledby="cart-overlay-heading"
         >
           {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid var(--color-border)" }}>
-            <h2 style={{ fontFamily: "var(--font-heading)", fontStyle: "italic", fontSize: "28px", color: "var(--color-accent)", margin: 0, lineHeight: 1 }}>
+            <h2 id="cart-overlay-heading" style={{ fontFamily: "var(--font-heading)", fontStyle: "italic", fontSize: "28px", color: "var(--color-accent)", margin: 0, lineHeight: 1 }}>
               Your Cart
             </h2>
             <button

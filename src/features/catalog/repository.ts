@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma, Category, Shop } from "@prisma/client";
+import { Prisma, Category } from "@prisma/client";
 import { unstable_cache, revalidateTag } from "next/cache";
 import {
   ListProductsParams,

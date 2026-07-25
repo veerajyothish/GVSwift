@@ -1,17 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 import { X } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import type { ProductWithVariantsAndImages } from "@/features/catalog/types";
+import { useOverlay } from "@/hooks/useOverlay";
 
 export function WishlistOverlay() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<ProductWithVariantsAndImages[]>([]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => setIsOpen(false), []);
+  useOverlay(isOpen, closeOverlay, panelRef);
 
   useEffect(() => {
     setMounted(true);
@@ -37,13 +41,7 @@ export function WishlistOverlay() {
     return () => window.removeEventListener("gvswift-open-wishlist", handleOpen);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
 
-  const closeOverlay = () => setIsOpen(false);
 
   if (!mounted || !isOpen) return null;
 
@@ -61,12 +59,16 @@ export function WishlistOverlay() {
         justifyContent: "flex-end",
       }}
       onClick={closeOverlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wishlist-heading"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
       `}} />
       <div
+        ref={panelRef}
         style={{
           width: "100%",
           maxWidth: "480px", // A bit wider to accommodate product grid nicely, or single col
@@ -88,8 +90,8 @@ export function WishlistOverlay() {
             justifyContent: "space-between",
           }}
         >
-          <h2 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "24px", color: "var(--color-primary)" }}>
-            My Wishlist
+          <h2 id="wishlist-heading" style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "20px", color: "var(--color-primary)" }}>
+            Your Wishlist
           </h2>
           <button
             onClick={closeOverlay}

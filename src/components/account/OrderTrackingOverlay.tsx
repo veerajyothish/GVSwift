@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import Image from "next/image";
+import { useOverlay } from "@/hooks/useOverlay";
 
 // Basic formatting helpers
 function formatPaise(paise: number) {
@@ -55,6 +56,13 @@ export function OrderTrackingOverlay() {
   // Cancel/Return modals could be local state here if needed, but for the tracking overlay we'll keep it simple first
   const [activeTab, setActiveTab] = useState<"items" | "timeline">("timeline");
 
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => {
+    setIsOpen(false);
+    setOrder(null);
+  }, []);
+  useOverlay(isOpen, closeOverlay, panelRef);
+
   useEffect(() => {
     setMounted(true);
 
@@ -83,16 +91,7 @@ export function OrderTrackingOverlay() {
     return () => window.removeEventListener("gvswift-open-order-tracking", handleOpen);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
 
-  const closeOverlay = () => {
-    setIsOpen(false);
-    setOrder(null);
-  };
 
   if (!mounted || !isOpen) return null;
 
@@ -112,12 +111,14 @@ export function OrderTrackingOverlay() {
         justifyContent: "flex-end",
       }}
       onClick={closeOverlay}
+      aria-labelledby="ordertracking-heading"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
       `}} />
       <div
+        ref={panelRef}
         style={{
           width: "100%",
           maxWidth: "480px",
@@ -140,7 +141,7 @@ export function OrderTrackingOverlay() {
           }}
         >
           <div>
-            <h2 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "20px", color: "var(--color-primary)" }}>
+            <h2 id="ordertracking-heading" style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "20px", color: "var(--color-primary)" }}>
               Order Details
             </h2>
             {order && (

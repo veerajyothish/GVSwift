@@ -11,7 +11,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
-import { TextEffect } from "@/components/motion-primitives/text-effect";
+
 
 import { getSiteUrl } from "@/lib/env";
 

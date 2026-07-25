@@ -99,8 +99,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">Skip to content</a>
         <ToastProvider>
           <WishlistProvider>
-            {children}
-            <CookieConsentBanner />
+            <div id="main-content">
+              {children}
+              <CookieConsentBanner />
+            </div>
             <CartOverlay />
             <QuickViewOverlay />
             <WishlistOverlay />

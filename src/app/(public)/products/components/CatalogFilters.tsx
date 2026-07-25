@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
+import { useOverlay } from "@/hooks/useOverlay";
 
 interface CatalogFiltersProps {
   categories: { id: string; name: string }[];
@@ -20,35 +20,18 @@ export function CatalogFilters({
   currentMaxPrice,
   currentSearch,
 }: CatalogFiltersProps) {
-  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => setIsOpen(false), []);
+  useOverlay(isOpen, closeOverlay, panelRef);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Close when escape is pressed
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
 
-  // Lock body scroll when open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
 
   const buildUrl = (updates: {
     categoryId?: string | null;
@@ -73,10 +56,10 @@ export function CatalogFilters({
     return `/products${qs ? `?${qs}` : ""}`;
   };
 
-  const closeOverlay = () => setIsOpen(false);
 
   const filterOverlay = mounted && isOpen ? createPortal(
     <div
+      ref={panelRef}
       style={{
         position: "fixed",
         inset: 0,
@@ -88,6 +71,9 @@ export function CatalogFilters({
         WebkitBackdropFilter: "blur(12px)",
         animation: "fadeIn 0.2s ease-out forwards",
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="filters-heading"
     >
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -103,7 +89,7 @@ export function CatalogFilters({
           background: "rgba(255,255,255,0.8)",
         }}
       >
-        <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 600, fontFamily: "var(--font-heading)", letterSpacing: "0.02em", color: "var(--color-primary)" }}>
+        <h2 id="filters-heading" style={{ margin: 0, fontSize: "1.1rem", fontWeight: 600, fontFamily: "var(--font-heading)", letterSpacing: "0.02em", color: "var(--color-primary)" }}>
           Filters & Sort
         </h2>
         <button

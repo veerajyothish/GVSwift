@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useOverlay } from "@/hooks/useOverlay";
 
 const FOOTWEAR_SIZES = [
   { uk: "6", eu: "39", us: "7", cm: "24.5" },
@@ -41,6 +42,10 @@ export function SizeGuideOverlay() {
   const [userHeight, setUserHeight] = useState(175);
   const [userWeight, setUserWeight] = useState(70);
 
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeOverlay = useCallback(() => setIsOpen(false), []);
+  useOverlay(isOpen, closeOverlay, panelRef);
+
   useEffect(() => {
     setMounted(true);
     const handleOpen = () => {
@@ -50,13 +55,7 @@ export function SizeGuideOverlay() {
     return () => window.removeEventListener("gvswift-open-size-guide", handleOpen);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
 
-  const closeOverlay = () => setIsOpen(false);
 
   // Simple advisor logic (from ProductDetailClient)
   let recommended = "M";
@@ -74,6 +73,7 @@ export function SizeGuideOverlay() {
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby="sizeguide-heading"
       style={{
         position: "fixed",
         inset: 0,
@@ -92,6 +92,7 @@ export function SizeGuideOverlay() {
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
       `}} />
       <div
+        ref={panelRef}
         style={{
           width: "100%",
           maxWidth: "480px",
@@ -113,8 +114,8 @@ export function SizeGuideOverlay() {
             justifyContent: "space-between",
           }}
         >
-          <h2 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "24px", color: "var(--color-primary)" }}>
-            Fit & Sizing
+          <h2 id="sizeguide-heading" style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "20px", color: "var(--color-primary)" }}>
+            Size Guide
           </h2>
           <button
             onClick={closeOverlay}
