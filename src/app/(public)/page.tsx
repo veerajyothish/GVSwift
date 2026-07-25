@@ -92,20 +92,37 @@ export default async function HomePage() {
         {/* ── HERO ──────────────────────────────────────────────────────────── */}
         <section
           style={{
-            background: "var(--color-bg)",
+            background: "linear-gradient(to bottom, var(--color-bg), var(--color-surface))",
             borderBottom: "1px solid var(--color-border)",
             overflow: "hidden",
+            position: "relative",
           }}
         >
+          {/* Subtle background decoration */}
           <div
             style={{
-              maxWidth: "800px",
+              position: "absolute",
+              top: "-20%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "140vw",
+              height: "100%",
+              background: "radial-gradient(circle, rgba(140, 100, 100, 0.03) 0%, transparent 70%)",
+              pointerEvents: "none",
+            }}
+          />
+          
+          <div
+            style={{
+              maxWidth: "900px",
               margin: "0 auto",
-              padding: "80px 24px",
+              padding: "100px 24px 120px",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              textAlign: "center"
+              textAlign: "center",
+              position: "relative",
+              zIndex: 1,
             }}
           >
             {/* Center: Text block */}
@@ -114,12 +131,12 @@ export default async function HomePage() {
                 style={{
                   display: "block",
                   fontFamily: "var(--font-body)",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  letterSpacing: "0.2em",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  letterSpacing: "0.25em",
                   textTransform: "uppercase",
-                  color: "var(--color-accent)",
-                  marginBottom: "20px",
+                  color: "var(--color-primary)",
+                  marginBottom: "24px",
                   margin: 0,
                   paddingBottom: "24px",
                 }}
@@ -130,58 +147,77 @@ export default async function HomePage() {
 
             {/* Large Garamond serif heading */}
             <FadeIn delay={0.15} duration={0.9} y={32}>
-              <TextEffect
-                as="h1"
-                preset="fade"
+              <h1
                 style={{
                   fontFamily: "var(--font-heading)",
-                  fontSize: "clamp(36px, 5vw, 64px)",
+                  fontSize: "clamp(48px, 6vw, 76px)",
                   fontWeight: 400,
                   fontStyle: "normal",
-                  lineHeight: 1.1,
+                  lineHeight: 1.05,
                   color: "var(--color-text-primary)",
-                  marginBottom: "28px",
-                  letterSpacing: "-0.01em",
+                  marginBottom: "32px",
+                  letterSpacing: "-0.02em",
                   textWrap: "balance",
                 }}
               >
                 Elevating Local Brands to a Global Stage.
-              </TextEffect>
+              </h1>
             </FadeIn>
 
             <FadeIn delay={0.35} duration={0.7} y={20}>
               <p
                 style={{
-                  fontSize: "16px",
+                  fontSize: "18px",
                   lineHeight: 1.6,
                   color: "var(--color-text-secondary)",
-                  marginBottom: "44px",
-                  maxWidth: "600px",
+                  marginBottom: "48px",
+                  maxWidth: "700px",
                   textWrap: "pretty",
-                  margin: "0 auto 44px"
+                  margin: "0 auto 48px"
                 }}
               >
-                A premier digital multi-complex connecting you with the finest homegrown brands and local artisans. From fashion to gifts and decor—experience seamless shopping with zero platform fees and free delivery, always.
+                A premier digital multi-complex connecting you with the finest homegrown brands and local artisans. From fashion to gifts and decor—experience seamless shopping designed for you.
               </p>
             </FadeIn>
 
             {/* pill-shaped primary CTA */}
             <FadeIn delay={0.55} duration={0.6} y={16}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "40px" }}>
                 <TrackedLink
                   eventName="hero_cta_click"
                   href="/products"
                   className="btn btn-primary btn-premium"
-                  style={{ padding: "16px 48px", fontSize: "13px", letterSpacing: "0.1em" }}
+                  style={{ padding: "20px 56px", fontSize: "15px", letterSpacing: "0.15em", borderRadius: "100px", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
                 >
-                  Explore the Collections &rarr;
+                  EXPLORE THE COLLECTIONS &rarr;
                 </TrackedLink>
-                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: "14px", fontSize: "12px", color: "var(--color-text-secondary)", fontWeight: 500 }}>
-                  <span>✓ 0% Platform Fees</span>
-                  <span>•</span>
-                  <span>✓ Curated Local Stores</span>
-                  <span>•</span>
-                  <span>✓ Free Delivery</span>
+
+                <div 
+                  style={{ 
+                    display: "flex", 
+                    flexWrap: "wrap", 
+                    justifyContent: "center", 
+                    alignItems: "center", 
+                    gap: "32px", 
+                    padding: "24px 32px",
+                    background: "var(--color-surface)",
+                    borderRadius: "16px",
+                    border: "1px solid var(--color-border)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", color: "var(--color-text-primary)", fontWeight: 600 }}>
+                    <span style={{ fontSize: "20px", color: "var(--color-accent)" }}>✦</span>
+                    0% Platform Fees
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", color: "var(--color-text-primary)", fontWeight: 600 }}>
+                    <span style={{ fontSize: "20px", color: "var(--color-accent)" }}>✦</span>
+                    Curated Local Stores
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", color: "var(--color-text-primary)", fontWeight: 600 }}>
+                    <span style={{ fontSize: "20px", color: "var(--color-accent)" }}>✦</span>
+                    Free Delivery
+                  </div>
                 </div>
               </div>
             </FadeIn>

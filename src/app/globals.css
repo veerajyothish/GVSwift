@@ -869,7 +869,7 @@ select.input-field {
 .mobile-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
 .mobile-drawer-close { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); padding: 8px; }
 .mobile-drawer-nav { display: flex; flex-direction: column; gap: 20px; }
-.mobile-drawer-link { font-size: 16px; font-weight: 400; color: var(--color-text-primary); display: block; letter-spacing: 0.01em; }
+.mobile-drawer-link { font-size: 14px; font-weight: 400; color: var(--color-text-primary); display: block; letter-spacing: 0.01em; }
 .mobile-drawer-link:hover { color: var(--color-accent); }
 .mobile-drawer-divider { height: 1px; background-color: var(--color-border); margin: 12px 0; }
 .mobile-drawer-badge {

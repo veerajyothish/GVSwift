@@ -212,6 +212,7 @@ export function MobileMenu({ isLoggedIn, isAdmin, cartCount }: MobileMenuProps) 
                   { label: "New Arrivals", href: "/products?sort=newest" },
                   { label: "Collections",  href: "/products" },
                   { label: "Shops",        href: "/shops" },
+                  { label: "About Us",     href: "/about" },
                   { label: "FAQ",          href: "/faq" },
                   { label: "Support",      href: "/support" },
                 ].map(({ label, href }) => (

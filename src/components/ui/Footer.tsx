@@ -66,7 +66,7 @@ export function Footer() {
                 maxWidth: "200px",
               }}
             >
-              Exquisite Indian Craftsmanship. Shop with Confidence.
+              Elevating Local Brands to a Global Stage.
             </p>
           </div>
 
@@ -142,7 +142,7 @@ export function Footer() {
               opacity: 0.7,
             }}
           >
-            Shop with Confidence · Fast Delivery · COD Available
+            Zero Platform Fees · Curated Local Stores · Free Delivery
           </span>
         </div>
       </div>
