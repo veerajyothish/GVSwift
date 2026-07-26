@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, EB_Garamond } from "next/font/google";
+import { Outfit, EB_Garamond } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import "./globals.css";
 
@@ -12,10 +12,10 @@ const SITE_DESCRIPTION =
   "GVSwift is an online fashion store delivering to Andhra Pradesh. Shop the latest styles and pay cash on delivery.";
 
 /**
- * Inter: display=swap + preload prevents render-blocking.
- * Only load weights actually used — removed 300 (unused).
+ * Outfit: display=swap + preload prevents render-blocking.
+ * ponytail: replaced Inter with Outfit
  */
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -87,7 +87,7 @@ export default function RootLayout({
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
-    <html lang="en" className={`${inter.variable} ${ebGaramond.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${ebGaramond.variable}`}>
       <head>
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />

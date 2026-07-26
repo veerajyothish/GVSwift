@@ -61,6 +61,7 @@ AI-IMPLEMENTATION-INSTRUCTIONS.md
 .agents/
 .antigravity/
 .playwright-cli/
+.claude/
 
 # VS Code workspace files
 *.code-workspace
