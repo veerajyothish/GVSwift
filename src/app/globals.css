@@ -1673,3 +1673,9 @@ article[id] {
   .desktop-search-input { display: none; }
   .mobile-search-btn { display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--color-text-primary); padding: 8px; }
 }
+
+/* Utilities for motion-primitives (TextEffect) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.whitespace-pre { white-space: pre; }
