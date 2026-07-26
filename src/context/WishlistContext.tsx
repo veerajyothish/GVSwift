@@ -56,19 +56,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     setWishlistIds(newIds);
 
     try {
-      const added = await toggleWishlistApi(productId);
-      if (added !== !isCurrentlyAdded) {
-        // Server state differs — reconcile
-        await fetchWishlist();
-      }
-    } catch (err: unknown) {
-      // If unauthenticated, redirect to login
-      if (err instanceof Error && err.message.includes('401')) {
+      const result = await toggleWishlistApi(productId);
+      
+      if (!result.success && result.error === 'UNAUTHORIZED') {
         const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
         router.push(`/login?next=${returnUrl}`);
         return;
       }
-      // Revert optimistic update on other errors
+
+      if (result.success && result.added !== !isCurrentlyAdded) {
+        // Server state differs — reconcile
+        await fetchWishlist();
+      }
+    } catch (err: unknown) {
+      // Revert optimistic update on other unexpected errors
       setWishlistIds(new Set(wishlistIds));
     }
   }

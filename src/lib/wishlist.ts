@@ -40,15 +40,15 @@ export async function getWishlist(): Promise<string[]> {
   return getWishlistProductIds();
 }
 
-export async function toggleWishlist(productId: string): Promise<boolean> {
+export async function toggleWishlist(productId: string): Promise<{ success: boolean; added?: boolean; error?: string }> {
   const session = await getServerSession();
-  if (!session) throw new Error('Unauthorized');
+  if (!session) return { success: false, error: 'UNAUTHORIZED' };
 
   const user = await prisma.user.findUnique({
     where: { supabaseId: session.id },
     select: { id: true },
   });
-  if (!user) throw new Error('User not found');
+  if (!user) return { success: false, error: 'UNAUTHORIZED' };
 
   const existing = await prisma.wishlistItem.findUnique({
     where: {
@@ -68,7 +68,7 @@ export async function toggleWishlist(productId: string): Promise<boolean> {
         },
       },
     });
-    return false;
+    return { success: true, added: false };
   } else {
     await prisma.wishlistItem.create({
       data: {
@@ -76,6 +76,6 @@ export async function toggleWishlist(productId: string): Promise<boolean> {
         productId,
       },
     });
-    return true;
+    return { success: true, added: true };
   }
 }
