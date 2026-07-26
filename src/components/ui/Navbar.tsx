@@ -108,6 +108,7 @@ export async function Navbar() {
                 alt="GVSwift Logo"
                 width={240}
                 height={56}
+                priority={true}
                 style={{
                   height: "56px",
                   width: "auto",
