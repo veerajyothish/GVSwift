@@ -3,6 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { SignOutButton } from "@/components/ui/SignOutButton";
 
+/**
+ * Material Symbols font — loaded ONLY in the admin layout,
+ * not globally, to avoid blocking public page loads.
+ */
+const MATERIAL_SYMBOLS_CSS =
+  "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap";
+
 export default async function AdminLayout({
   children,
 }: {
@@ -27,7 +34,9 @@ export default async function AdminLayout({
   const initials = getInitials(displayName);
 
   return (
-    <div className="min-h-screen flex bg-default" style={{ backgroundColor: "var(--color-bg)" }}>
+    <>
+      <link rel="stylesheet" href={MATERIAL_SYMBOLS_CSS} />
+      <div className="min-h-screen flex bg-default" style={{ backgroundColor: "var(--color-bg)" }}>
       {/* ── Left Sidebar ───────────────────────────────────────────────── */}
       <aside
         className="admin-sidebar"
@@ -183,5 +192,6 @@ export default async function AdminLayout({
         </main>
       </div>
     </div>
+    </>
   );
 }

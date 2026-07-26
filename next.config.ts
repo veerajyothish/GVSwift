@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "@react-email/components",
       "recharts",
+      "motion",
+      "framer-motion",
     ],
     staleTimes: {
       dynamic: 30,
@@ -62,6 +64,26 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, s-maxage=60, stale-while-revalidate=300",
+          },
+        ],
+      },
+      // Cache category listing pages
+      {
+        source: "/categories/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=120, stale-while-revalidate=600",
+          },
+        ],
+      },
+      // Cache static content pages aggressively (FAQ, about, terms, etc.)
+      {
+        source: "/(faq|about|terms|privacy|returns|shipping|cookies|disclaimer|grievance)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, s-maxage=3600, stale-while-revalidate=86400",
           },
         ],
       },
