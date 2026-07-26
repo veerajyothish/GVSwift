@@ -120,25 +120,25 @@ const AnimationComponent: React.FC<{
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
   const content =
     per === 'line' ? (
-      <motion.span variants={variants} className='block'>
+      <motion.span variants={variants} style={{ display: 'block' }}>
         {segment}
       </motion.span>
     ) : per === 'word' ? (
       <motion.span
         aria-hidden='true'
         variants={variants}
-        className='inline-block whitespace-pre'
+        style={{ display: 'inline-block', whiteSpace: 'pre' }}
       >
         {segment}
       </motion.span>
     ) : (
-      <motion.span className='inline-block whitespace-pre'>
+      <motion.span style={{ display: 'inline-block', whiteSpace: 'pre' }}>
         {segment.split('').map((char, charIndex) => (
           <motion.span
             key={`char-${charIndex}`}
             aria-hidden='true'
             variants={variants}
-            className='inline-block whitespace-pre'
+            style={{ display: 'inline-block', whiteSpace: 'pre' }}
           >
             {char}
           </motion.span>
@@ -150,10 +150,10 @@ const AnimationComponent: React.FC<{
     return content;
   }
 
-  const defaultWrapperClassName = per === 'line' ? 'block' : 'inline-block';
+  const defaultWrapperStyle = per === 'line' ? { display: 'block' } : { display: 'inline-block' };
 
   return (
-    <span className={cn(defaultWrapperClassName, segmentWrapperClassName)}>
+    <span className={segmentWrapperClassName} style={defaultWrapperStyle}>
       {content}
     </span>
   );
@@ -293,7 +293,7 @@ export function TextEffect({
           onAnimationStart={onAnimationStart}
           style={style}
         >
-          {per !== 'line' ? <span className='sr-only'>{children}</span> : null}
+          {per !== 'line' ? <span style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', borderWidth: 0 }}>{children}</span> : null}
           {segments.map((segment, index) => (
             <AnimationComponent
               key={`${per}-${index}-${segment}`}
