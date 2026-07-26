@@ -11,6 +11,8 @@ import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { HeroHeadline } from "@/components/ui/HeroHeadline";
+import { SocialProofMarquee } from "@/components/ui/SocialProofMarquee";
 
 
 import { getSiteUrl } from "@/lib/env";
@@ -146,23 +148,21 @@ export default async function HomePage() {
             </FadeIn>
 
             {/* Large Garamond serif heading */}
-            <FadeIn delay={0.15} duration={0.9} y={32}>
-              <h1
-                style={{
-                  fontFamily: "var(--font-heading)",
-                  fontSize: "clamp(36px, 8vw, 76px)",
-                  fontWeight: 400,
-                  fontStyle: "normal",
-                  lineHeight: 1.05,
-                  color: "var(--color-text-primary)",
-                  marginBottom: "32px",
-                  letterSpacing: "-0.02em",
-                  textWrap: "balance",
-                }}
-              >
-                Elevating Local Brands to a Global Stage.
-              </h1>
-            </FadeIn>
+            <h1
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(36px, 8vw, 76px)",
+                fontWeight: 400,
+                fontStyle: "normal",
+                lineHeight: 1.05,
+                color: "var(--color-text-primary)",
+                marginBottom: "32px",
+                letterSpacing: "-0.02em",
+                textWrap: "balance",
+              }}
+            >
+              <HeroHeadline text="Elevating Local Brands to a Global Stage." />
+            </h1>
 
             <FadeIn delay={0.35} duration={0.7} y={20}>
               <p
@@ -187,7 +187,7 @@ export default async function HomePage() {
                   eventName="hero_cta_click"
                   href="/products"
                   className="btn btn-primary btn-premium"
-                  style={{ padding: "clamp(14px, 4vw, 20px) clamp(32px, 8vw, 56px)", fontSize: "14px", letterSpacing: "0.15em", borderRadius: "100px", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
+                  style={{ padding: "clamp(14px, 4vw, 20px) clamp(32px, 8vw, 56px)", fontSize: "14px", letterSpacing: "0.15em", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
                 >
                   EXPLORE THE COLLECTIONS &rarr;
                 </TrackedLink>
@@ -201,7 +201,6 @@ export default async function HomePage() {
                     gap: "32px", 
                     padding: "24px 32px",
                     background: "var(--color-surface)",
-                    borderRadius: "16px",
                     border: "1px solid var(--color-border)",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.03)"
                   }}
@@ -225,11 +224,8 @@ export default async function HomePage() {
         </section>
 
         {/* ── SOCIAL PROOF ── */}
-        <section style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 24px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "14px", color: "var(--color-accent)" }}>⭐️⭐️⭐️⭐️⭐️</span>
-            <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--color-text-secondary)" }}>Trusted by shoppers across India.</span>
-          </div>
+        <section style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)", padding: "16px 0" }}>
+          <SocialProofMarquee />
         </section>
 
         {/* ── OUR OFFERINGS ── */}
@@ -399,7 +395,6 @@ export default async function HomePage() {
                   position: "relative",
                   width: "100%",
                   aspectRatio: "4 / 5",
-                  borderRadius: "20px",
                   overflow: "hidden",
                   border: "1px solid var(--color-border)",
                 }}
@@ -478,7 +473,7 @@ export default async function HomePage() {
                       className="hover-lift"
                       style={{
                         position: "relative",
-                        borderRadius: "16px",
+
                         overflow: "hidden",
                         height: "320px",
                         border: "1px solid var(--color-border)",
@@ -526,7 +521,7 @@ export default async function HomePage() {
                           style={{
                             width: "36px",
                             height: "36px",
-                            borderRadius: "50%",
+
                             background: "rgba(255, 255, 255, 0.2)",
                             backdropFilter: "blur(4px)",
                             display: "flex",

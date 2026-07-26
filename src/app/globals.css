@@ -85,6 +85,35 @@
   100% { background-position: -200% 0; }
 }
 
+/* ── Infinite Marquee ─────────────────────────────────────────────────────── */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.infinite-marquee-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.infinite-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll var(--marquee-speed, 30s) linear infinite;
+}
+
+.infinite-marquee-pause-hover:hover {
+  animation-play-state: paused;
+}
+
+.infinite-marquee-content {
+  display: flex;
+  align-items: center;
+  gap: var(--marquee-gap, 48px);
+  padding-right: var(--marquee-gap, 48px);
+  flex-shrink: 0;
+}
+
 .sk {
   background: linear-gradient(90deg, var(--color-surface-offset) 25%, var(--color-surface-dynamic) 50%, var(--color-surface-offset) 75%);
   background-size: 400% 100%;

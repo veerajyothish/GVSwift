@@ -86,7 +86,7 @@ function Accordion({
   onValueChange,
 }: AccordionProps) {
   return (
-    <MotionConfig transition={transition}>
+    <MotionConfig transition={transition ?? { duration: 0.15, ease: 'easeOut' }}>
       <div className={cn('relative', className)} aria-orientation='vertical'>
         <AccordionProvider
           variants={variants}

@@ -25,7 +25,7 @@ export default function FaqPage() {
 
         <Accordion className="flex flex-col gap-4">
           
-          <AccordionItem value="q1" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q1" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: Where does GVSwift deliver?
             </AccordionTrigger>
@@ -34,7 +34,7 @@ export default function FaqPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="q2" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q2" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: What are the Cash on Delivery (COD) limits?
             </AccordionTrigger>
@@ -43,7 +43,7 @@ export default function FaqPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="q3" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q3" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: How long does shipping and delivery take?
             </AccordionTrigger>
@@ -52,7 +52,7 @@ export default function FaqPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="q4" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q4" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: What is the return window and process?
             </AccordionTrigger>
@@ -61,7 +61,7 @@ export default function FaqPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="q5" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q5" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: How will I receive my refund for a Cash on Delivery order?
             </AccordionTrigger>
@@ -70,7 +70,7 @@ export default function FaqPage() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="q6" className="card overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+          <AccordionItem value="q6" className="card overflow-hidden border border-black">
             <AccordionTrigger className="w-full flex items-center justify-between text-left p-5 text-base font-semibold text-accent">
               Q: How can I contact customer support?
             </AccordionTrigger>
