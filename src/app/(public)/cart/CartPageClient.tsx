@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { trackEvent } from "@/lib/analytics/ga4";
 import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
-import { TrackedLink } from "@/components/analytics/TrackedLink";
+import Link from "next/link";
 
 // Detailed interface matching our Prisma schema query output
 interface CartItem {
@@ -367,13 +367,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             </div>
           )}
 
-          <TrackedLink
-            eventName="begin_checkout"
-            eventParams={{
-              currency: "INR",
-              value: subtotal / 100,
-              items: cart?.items?.map(i => mapProductToGa4Item(i)) || []
-            }}
+          <Link
             href="/checkout"
             style={{
               display: "block",
@@ -381,6 +375,13 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
               pointerEvents: subtotal > 1000000 ? "none" : "auto",
             }}
             aria-disabled={subtotal > 1000000}
+            onClick={() => {
+              trackEvent("begin_checkout", {
+                currency: "INR",
+                value: subtotal / 100,
+                items: cart?.items?.map(i => mapProductToGa4Item(i)) || []
+              });
+            }}
           >
             <Button
               variant="primary"
@@ -393,7 +394,7 @@ export default function CartPageClient({ initialCart }: CartPageClientProps) {
             >
               {subtotal > 1000000 ? "COD Limit Exceeded" : "Proceed to Checkout 🔒"}
             </Button>
-          </TrackedLink>
+          </Link>
 
           <div style={{ marginTop: "16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--color-text-secondary)", justifyContent: "center" }}>
             <span>🔒 Secure Checkout</span>

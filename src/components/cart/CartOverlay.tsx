@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useToast } from "@/components/ui/Toast";
 import { Button } from "@/components/ui/Button";
 import { mapProductToGa4Item } from "@/lib/analytics/ecommerce";
-import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { trackEvent } from "@/lib/analytics/ga4";
 import { useOverlay } from "@/hooks/useOverlay";
 
 // Matches Prisma schema query output (same as CartPageClient)
@@ -282,21 +282,22 @@ export function CartOverlay() {
                   <span style={{ color: "var(--color-accent)" }}>{formatRupees(getSubtotal())}</span>
                 </div>
                 
-                <TrackedLink
-                  eventName="begin_checkout"
-                  eventParams={{
-                    currency: "INR",
-                    value: getSubtotal() / 100,
-                    items: cart?.items?.map(i => mapProductToGa4Item(i)) || []
-                  }}
+                <Link
                   href="/checkout"
                   style={{ display: "block", textDecoration: "none" }}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    trackEvent("begin_checkout", {
+                      currency: "INR",
+                      value: getSubtotal() / 100,
+                      items: cart?.items?.map(i => mapProductToGa4Item(i)) || []
+                    });
+                  }}
                 >
                   <Button variant="primary" style={{ width: "100%", padding: "14px" }}>
                     Proceed to Checkout 🔒
                   </Button>
-                </TrackedLink>
+                </Link>
               </div>
             </div>
           )}

@@ -10,7 +10,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ui/ProductCard";
 import { FadeIn, StaggerContainer, StaggerChild } from "@/components/ui/Animated";
 import { ViewItemList } from "@/components/analytics/ViewItemList";
-import { TrackedLink } from "@/components/analytics/TrackedLink";
+import Link from "next/link";
 import { HeroHeadline } from "@/components/ui/HeroHeadline";
 import { SocialProofMarquee } from "@/components/ui/SocialProofMarquee";
 
@@ -183,14 +183,13 @@ export default async function HomePage() {
             {/* pill-shaped primary CTA */}
             <FadeIn delay={0.55} duration={0.6} y={16}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "40px" }}>
-                <TrackedLink
-                  eventName="hero_cta_click"
+                <Link
                   href="/products"
                   className="btn btn-primary btn-premium"
                   style={{ padding: "clamp(14px, 4vw, 20px) clamp(32px, 8vw, 56px)", fontSize: "14px", letterSpacing: "0.15em", boxShadow: "0 10px 30px -10px rgba(0,0,0,0.3)" }}
                 >
                   EXPLORE THE COLLECTIONS &rarr;
-                </TrackedLink>
+                </Link>
 
                 <div 
                   style={{ 
@@ -686,8 +685,7 @@ export default async function HomePage() {
                   >
                     Trending Now
                   </h2>
-                  <TrackedLink
-                    eventName="trending_cta_click"
+                  <Link
                     href="/products"
                     style={{
                       fontFamily: "var(--font-body)",
@@ -700,7 +698,7 @@ export default async function HomePage() {
                     }}
                   >
                     Browse All &rarr;
-                  </TrackedLink>
+                  </Link>
                 </div>
               </FadeIn>
 
